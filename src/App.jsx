@@ -7,7 +7,7 @@ import Footer from "./components/Footer";
 
 export default function App() {
   return (
-    <div className="bg-primary w-full text-white overflow-hidden">
+    <div className="bg-primary font-poppins w-full text-black overflow-hidden">
       <div className={`${styles.paddingX} ${styles.flexCenter}`}>
         <div className={`${styles.boxWidth}`}><Navbar/> </div>
       </div>

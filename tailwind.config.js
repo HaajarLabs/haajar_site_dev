@@ -4,6 +4,14 @@ module.exports = {
   mode: "jit",
   theme: {
     extend: {
+      textShadow: {
+        sm: '0 1px 2px var(--tw-shadow-color)',
+        DEFAULT: '0 2px 4px var(--tw-shadow-color)',
+        lg: '0 8px 16px var(--tw-shadow-color)',
+      },
+      backgroundImage: {
+        'hero-pattern': "url('./src/assets/dr15.jpg')",
+      },
       colors: {
         primary: "#f1f1f1",
         secondary: "#00f6ff",

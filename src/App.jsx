@@ -7,7 +7,7 @@ import Footer from "./components/Footer";
 
 export default function App() {
   return (
-    <div className="bg-primary font-poppins w-full text-black overflow-hidden">
+    <div className="bg-primary font-poppins w-full  text-black overflow-hidden">
       <div className={`${styles.paddingX} ${styles.flexCenter}`}>
         <div className={`${styles.boxWidth}`}><Navbar/> </div>
       </div>
@@ -16,8 +16,10 @@ export default function App() {
         <div className={`${styles.boxWidth}`}><Hero/>   </div>
       </div>
       <div className={`bg-primary ${styles.paddingX}`}>
-        <div className={`${styles.boxWidth}`}><Stats/>  <Footer/> </div>
+        <div className={`${styles.boxWidth}`}><Stats/> </div>
+
       </div>
+      <Footer/> 
     </div>
   );
 }

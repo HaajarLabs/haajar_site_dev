@@ -12,7 +12,7 @@ export default function App() {
         <div className={`${styles.boxWidth}`}><Navbar/> </div>
       </div>
 
-      <div className={`bg-primary ${styles.flexStart}`}>
+      <div className={` ${styles.flexStart}`}>
         <div className={`${styles.boxWidth}`}><Hero/>   </div>
       </div>
       <div className={`bg-primary ${styles.paddingX}`}>

@@ -10,7 +10,7 @@ module.exports = {
         lg: '0 8px 16px var(--tw-shadow-color)',
       },
       backgroundImage: {
-        'hero-pattern': "url('./src/assets/dr15.jpg')",
+        'hero-pattern': "url('./src/assets/hero.png')",
       },
       colors: {
         primary: "#f1f1f1",

@@ -12,13 +12,15 @@ export default function App() {
         <div className={`${styles.boxWidth}`}><Navbar/> </div>
       </div>
 
-      <div className={` ${styles.flexStart}`}>
-        <div className={`${styles.boxWidth}`}><Hero/>   </div>
+   <div className=" bg-hero-pattern bg-cover">
+       <div className={` ${styles.flexStart}`} >
+        <div className={` ${styles.boxWidth}`}><Hero/>   </div>
       </div>
-      <div className={`bg-primary ${styles.paddingX}`}>
+      <div className={` ${styles.paddingX}`}>
         <div className={`${styles.boxWidth}`}><Stats/> </div>
 
       </div>
+   </div>
       <Footer/> 
     </div>
   );

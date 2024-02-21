@@ -1,27 +1,11 @@
 import * as React from "react";
-import styles from "./style";
-import Navbar from "./components/Navbar";
-import Hero from "./components/Hero";
-import Stats from "./components/Stats";
-import Footer from "./components/Footer";
+import Animatedroutes from "./Animatedroutes";
+import {BrowserRouter as Router} from 'react-router-dom'
 
 export default function App() {
   return (
-    <div className="bg-primary font-poppins w-full  text-black overflow-hidden">
-      <div className={`${styles.paddingX} ${styles.flexCenter}`}>
-        <div className={`${styles.boxWidth}`}><Navbar/> </div>
-      </div>
-
-   <div className=" bg-hero-pattern bg-cover">
-       <div className={` ${styles.flexStart}`} >
-        <div className={` ${styles.boxWidth}`}><Hero/>   </div>
-      </div>
-      <div className={` ${styles.paddingX}`}>
-        <div className={`${styles.boxWidth}`}><Stats/> </div>
-
-      </div>
-   </div>
-      <Footer/> 
-    </div>
+    <Router>
+       <Animatedroutes/>
+      </Router>
   );
 }

@@ -39,7 +39,7 @@ const Loginpage = () => {
     <div className="bg-primary  overflow-hidden">
       <div className="flex  bg-[#121312] h-screen w-screen   ">
         <div
-          className={` bg-[url('/assets/login.png')] w-2/3 hidden md:block  ${
+          className={` bg-[url('/login.png')] w-2/3 hidden md:block  ${
             isTyping ? "grayscale-0" : "grayscale"
           } ease-in-out duration-1000 h-[100vh] bg-cover`}
         ></div>

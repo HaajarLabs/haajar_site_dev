@@ -23,8 +23,13 @@ module.exports = {
         lg: '0 8px 16px var(--tw-shadow-color)',
       },
       backgroundImage: {
+<<<<<<< HEAD
         'hero-pattern': "url('./src/Assets/hero.PNG')",
         'login-back': "url('./src/Assets/login.PNG')"
+=======
+        'hero-pattern': "url('./src/assets/hero.png')",
+        'login-back': "url('./src/assets/login.png')"
+>>>>>>> parent of e10a462 (png)
       },
       colors: {
         primary: "#f1f1f1",

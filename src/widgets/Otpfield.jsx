@@ -36,7 +36,7 @@ const OtpField = () => {
         <input
           key={index}
           ref={el => (inputRefs.current[index] = el)}
-          type="text"
+          type="number"
           maxLength={1}
           className="w-14 h-14 text-center mx-2 rounded border border-gray-400 focus:outline-none"
           onChange={e => handleChange(e, index)}

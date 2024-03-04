@@ -13,7 +13,7 @@ const Landingpage = () => {
       <div className={`${styles.boxWidth}`}><Navbar/> </div>
     </div>
 
- <div className=" bg-hero-pattern bg-cover">
+ <div className=" bg-[url('./src/assets/hero.png')] bg-cover">
      <div className={` ${styles.flexStart}`} >
       <div className={` ${styles.boxWidth}`}><Hero/>   </div>
     </div>

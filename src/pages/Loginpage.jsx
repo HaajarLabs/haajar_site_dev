@@ -1,6 +1,5 @@
 import React, { useState, useRef } from "react";
 import logo1 from "../assets/logo.png";
-import backimage from "../assets/login.jpg";
 import logo from "../assets/translogoicon.png";
 import OtpField from "../widgets/Otpfield";
 import heroimg from "../assets/blackhero.png";
@@ -39,7 +38,7 @@ const Loginpage = () => {
     <div className="bg-primary  overflow-hidden">
       <div className="flex  bg-[#121312] h-screen w-screen   ">
         <div
-          className={` bg-login-back w-2/3 hidden md:block  ${
+          className={` bg-[url('./src/assets/login.png')] w-2/3 hidden md:block  ${
             isTyping ? "grayscale-0" : "grayscale"
           } ease-in-out duration-1000 h-[100vh] bg-cover`}
         ></div>

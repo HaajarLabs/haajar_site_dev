@@ -35,8 +35,8 @@ const Loginpage = () => {
     //     </div> */}
     //   </div>
     // </div>
-    <div className="bg-primary">
-      <div className="flex  bg-[#121312] h-screen w-screen  ">
+    <div className="bg-primary  overflow-hidden">
+      <div className="flex  bg-[#121312] h-screen w-screen   ">
         <div
           className={` bg-login-back w-2/3 hidden md:block  ${
             isTyping ? "grayscale-0" : "grayscale"
@@ -136,7 +136,7 @@ const Loginpage = () => {
               </button> */}
              
             </div>
-            <img src={heroimg} alt="hrot" className=" sm:hidden opacity-40 absolute inset-x-10 pt-7" />
+            <img src={heroimg} alt="hrot" className=" sm:hidden  relative inset-x-10 " />
           </div>
         </div>
        

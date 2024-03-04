@@ -100,7 +100,7 @@ const Loginpage = () => {
             </p>
 
             <div class="mt-2.5 relative flex justify-center text-gray-400 focus-within:text-gray-600">
-              <div class="absolute md:inset-y-0 inset-y-2  left-24  md:left-28 flex items-center md:pl-5 pointer-events-none">
+              <div class="absolute md:inset-y-0 inset-y-2  left-14  md:left-28 flex items-center md:pl-5 pointer-events-none">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   x="0px"

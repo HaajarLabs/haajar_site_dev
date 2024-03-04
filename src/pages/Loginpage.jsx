@@ -92,7 +92,7 @@ const Loginpage = () => {
                 Verify
               </button>
             </div>
-            <img src={heroimg} alt="hrot" className=" sm:hidden opacity-40 absolute inset-x-10 pt-7" />
+            <img src={heroimg} alt="hrot" className="  sm:hidden opacity-40  relative inset-x-10" />
           </div>
           <div className={`${clicked ? " hidden" : ""}`}>
             <p className=" text-sm flex justify-center font-semibold pt-8">
@@ -136,7 +136,7 @@ const Loginpage = () => {
               </button> */}
              
             </div>
-            <img src={heroimg} alt="hrot" className=" sm:hidden  relative inset-x-10 " />
+            <img src={heroimg} alt="hrot" className=" sm:hidden opacity-40  relative inset-x-10 " />
           </div>
         </div>
        

@@ -3,7 +3,8 @@ import logo1 from "../Assets/logo.png";
 import backimage from "../Assets/login.jpg";
 import logo from "../Assets/translogoicon.png";
 import OtpField from "../widgets/Otpfield";
-import heroimg from "../Assets/blackhero.png"
+import heroimg from "../Assets/blackhero.png";
+
 const Loginpage = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [clicked, setClicked] = useState(false);

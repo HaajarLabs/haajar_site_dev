@@ -4,6 +4,7 @@ import logo from "../assets/translogoicon.png";
 import OtpField from "../widgets/Otpfield";
 import heroimg from "../assets/blackhero.png";
 import login from "../assets/login.png";
+import { Link } from "react-router-dom";
 
 const Loginpage = () => {
   const [isTyping, setIsTyping] = useState(false);
@@ -57,7 +58,7 @@ const Loginpage = () => {
           </p>
           <div className={`${clicked ? "" : "  hidden"}`}>
             <p className=" text-sm flex justify-center font-semibold pt-8">
-              Verify OTP
+              Enter OTP
             </p>
 
             <div class="mt-2.5 relative flex justify-center text-gray-400 focus-within:text-gray-600">
@@ -86,12 +87,14 @@ const Loginpage = () => {
               <OtpField />
             </div>
             <div className="pt-5 flex justify-center">
-              <button
+            <Link to='/Dashboard'>
+            <button
                 onClick={onsubmit}
                 class="sm:inline-flex  items-center   justify-center  w-72 px-4 py-4 text-base font-semibold  bg-[#25D366] transition-all duration-200 border-1 border-gray-400 rounded-full bg-gradient-to-r focus:outline-none hover:opacity-80 focus:opacity-80"
               >
                 Verify
               </button>
+            </Link>
             </div>
             <img src={heroimg} alt="hrot" className="  sm:hidden opacity-40  relative inset-x-10" />
           </div>

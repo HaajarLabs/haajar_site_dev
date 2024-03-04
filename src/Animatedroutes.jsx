@@ -4,6 +4,7 @@ import { AnimatePresence } from "framer-motion";
 import React from "react";
 import Landingpage from "./pages/Landingpage";
 import Loginpage from "./pages/Loginpage";
+import Dashboard from "./pages/Dashboard";
 
 const Animatedroutes = () => {
     const location=useLocation();
@@ -12,6 +13,7 @@ const Animatedroutes = () => {
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Landingpage />} />
         <Route path="/Login" element={<Loginpage />} />
+        <Route path="/Dashboard" element={<Dashboard />} />
       </Routes>
     </AnimatePresence>
   );

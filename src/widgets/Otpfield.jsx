@@ -1,15 +1,15 @@
-import React, { useRef } from 'react';
+import React, { useRef } from "react";
 
 const OtpField = () => {
   const inputRefs = useRef([]);
 
-  const focusNextInput = index => {
+  const focusNextInput = (index) => {
     if (inputRefs.current[index + 1]) {
       inputRefs.current[index + 1].focus();
     }
   };
 
-  const focusPrevInput = index => {
+  const focusPrevInput = (index) => {
     if (inputRefs.current[index - 1]) {
       inputRefs.current[index - 1].focus();
     }
@@ -25,7 +25,7 @@ const OtpField = () => {
   };
 
   const handleKeyDown = (e, index) => {
-    if (e.key === 'Backspace' && e.target.value === '') {
+    if (e.key === "Backspace" && e.target.value === "") {
       focusPrevInput(index);
     }
   };
@@ -35,12 +35,12 @@ const OtpField = () => {
       {[...Array(4)].map((_, index) => (
         <input
           key={index}
-          ref={el => (inputRefs.current[index] = el)}
+          ref={(el) => (inputRefs.current[index] = el)}
           type="number"
           maxLength={1}
-          className="w-14 h-14 text-center mx-2 rounded border border-gray-400 focus:outline-none"
-          onChange={e => handleChange(e, index)}
-          onKeyDown={e => handleKeyDown(e, index)}
+          className="w-14  appearance-none h-14 text-center mx-2 rounded border border-gray-400 focus:outline-none"
+          onChange={(e) => handleChange(e, index)}
+          onKeyDown={(e) => handleKeyDown(e, index)}
         />
       ))}
     </div>

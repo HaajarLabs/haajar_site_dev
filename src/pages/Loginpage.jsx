@@ -1,11 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import logo1 from "../assets/logo.png";
 import backimage from "../assets/login.jpg";
 import logo from "../assets/logoicon.png";
 
 const Loginpage = () => {
+  const [isTyping, setIsTyping] = useState(false);
 
-
+  const handleChange = (event) => {
+    const newValue = event.target.value;
+    if (newValue !== '') {
+      setIsTyping(true);
+    } else {
+      setIsTyping(false);
+    }
+  };
 
   return (
     // <div className="flex bg-primary p-6">
@@ -22,7 +30,11 @@ const Loginpage = () => {
     // </div>
     <div className="bg-primary">
       <div className="flex  bg-[#121312]">
-        <div className=" bg-login-back w-2/3 grayscale  h-[100vh] bg-cover"></div>
+        <div
+          className={` bg-login-back w-2/3  ${
+            isTyping ? "grayscale-0" : "grayscale"
+          } ease-in-out duration-1000 h-[100vh] bg-cover`}
+        ></div>
         <div className="pt-40 flex-1  text-white  ">
           <div className="flex  justify-center gap-2">
             <img src={logo} alt="logo" width={40} />{" "}
@@ -55,6 +67,7 @@ const Loginpage = () => {
             </div>
             <input
               required=""
+              onChange={handleChange}
               id=""
               placeholder="Enter your whatsapp number"
               class="block w-72 py-3 pl-12 pr-4 md:py-4 lg:py-4  text-sm text-black placeholder-gray-500 transition-all duration-200 border border-gray-300 rounded-full bg-white focus:outline-none focus:border-gray-600 focus:bg-white caret-gray-600"
@@ -63,10 +76,13 @@ const Loginpage = () => {
             />
           </div>
           <div className="pt-5 flex justify-center">
-            <button onClick={onsubmit} class="sm:inline-flex hidden items-center   justify-center  w-72 px-4 py-4 text-base font-semibold  bg-[#25D366] transition-all duration-200 border-1 border-gray-400 rounded-full bg-gradient-to-r focus:outline-none hover:opacity-80 focus:opacity-80">
+            <button
+              onClick={onsubmit}
+              class="sm:inline-flex hidden items-center   justify-center  w-72 px-4 py-4 text-base font-semibold  bg-[#25D366] transition-all duration-200 border-1 border-gray-400 rounded-full bg-gradient-to-r focus:outline-none hover:opacity-80 focus:opacity-80"
+            >
               Verify
             </button>
-            <button  class="inline-flex sm:hidden  items-center justify-center w-72 px-4 py-3 text-base font-semibold text-gray-600 bg-green-100 transition-all duration-200 border-1 border-gray-400 rounded-full bg-gradient-to-r focus:outline-none hover:opacity-80 focus:opacity-80">
+            <button class="inline-flex sm:hidden  items-center justify-center w-72 px-4 py-3 text-base font-semibold text-gray-600 bg-green-100 transition-all duration-200 border-1 border-gray-400 rounded-full bg-gradient-to-r focus:outline-none hover:opacity-80 focus:opacity-80">
               {" "}
               Verify
             </button>
@@ -79,9 +95,7 @@ const Loginpage = () => {
 
 export default Loginpage;
 
-
-const onsubmit = ()=>{
+const onsubmit = () => {
   let url = `https://api.whatsapp.com/send?phone=918921645661&text=Welcome to Haajar your code is 673673 `;
   window.open(url);
-
-}
+};

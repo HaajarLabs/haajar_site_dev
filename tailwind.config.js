@@ -4,6 +4,19 @@ module.exports = {
   mode: "jit",
   theme: {
     extend: {
+      keyframes: {
+        flipbottom: {
+          '0%': {
+            transform: 'rotateX(0)'
+          },
+          '100%': {
+            transform: 'rotateX(-180deg)'
+          }
+        },
+      },
+      animation: {
+        flipbottom: 'flip-bottom 0.5s cubic-bezier(0.455, 0.03, 0.515, 0.955) both'
+      },
       textShadow: {
         sm: '0 1px 2px var(--tw-shadow-color)',
         DEFAULT: '0 2px 4px var(--tw-shadow-color)',
@@ -11,7 +24,7 @@ module.exports = {
       },
       backgroundImage: {
         'hero-pattern': "url('./src/assets/hero.png')",
-        'login-back':"url('./src/assets/login.jpg')"
+        'login-back': "url('./src/assets/login.jpg')"
       },
       colors: {
         primary: "#f1f1f1",

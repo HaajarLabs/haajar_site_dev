@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import logo1 from '../Assets/logofirst1.png'
+import logo1 from '../assets/logofirst1.png'
 import { Link } from "react-router-dom";
-import logo2 from '../Assets/logosecond1.png'
-import logoicon from '../Assets/logoicon.png'
+import logo2 from '../assets/logosecond1.png'
+import logoicon from '../assets/logoicon.png'
 
 const Navbar = () => {
 

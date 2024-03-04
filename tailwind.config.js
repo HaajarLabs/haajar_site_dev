@@ -24,8 +24,8 @@ module.exports = {
       },
       backgroundImage: {
 
-        'hero-pattern': "url('./src/Assets/hero.PNG')",
-        'login-back': "url('./src/Assets/login.PNG')"
+        'hero-pattern': "url('./src/ssets/hero.PNG')",
+        'login-back': "url('./src/assets/login.PNG')"
 
       },
       colors: {

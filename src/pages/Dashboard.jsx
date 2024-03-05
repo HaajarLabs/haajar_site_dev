@@ -4,10 +4,35 @@ import styles from "../style";
 import { FaArrowRight } from "react-icons/fa";
 import Footer from "../components/Footer";
 import FloatingButton from "../widgets/Floatingbutton";
+import Model from "../widgets/Model";
 
 const Dashboard = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [className, setClassName] = useState('');
+  const [file, setFile] = useState(null);
+
+  const handleClassNameChange = (e) => {
+    setClassName(e.target.value);
+  };
+
+  const handleFileChange = (e) => {
+    const uploadedFile = e.target.files[0];
+    setFile(uploadedFile);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // You can handle form submission here
+    console.log('Class Name:', className);
+    console.log('Uploaded File:', file);
+    // Reset form fields
+    setClassName('');
+    setFile(null);
+    setShowModal(false);
+  };
+
 
   const handleMouseEnter = (index) => {
     setIsHovered(true);
@@ -17,6 +42,11 @@ const Dashboard = () => {
   const handleMouseLeave = () => {
     setIsHovered(false);
     setHoveredIndex(null);
+  };
+  const handleButtonClick = (value) => {
+    console.log('Value received from Navbar:', value);
+    value=='clicked'?setShowModal(true):setShowModal(false)
+    // You can do something with the value here
   };
   const classList = [
     {
@@ -53,9 +83,50 @@ const Dashboard = () => {
 
   return (
     <div className="font-poppins w-full bg-primary  text-black overflow-hidden">
+       <Model isvisible={showModal} onClose={async () => setShowModal(false)}>
+       <div className="max-w-md mx-auto ">
+      <form onSubmit={handleSubmit} className=" rounded px-8 pt-6 pb-8 mb-4">
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="class-name">
+            Class Name
+          </label>
+          <input
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="class-name"
+            type="text"
+            placeholder="Enter Class Name"
+            value={className}
+            onChange={handleClassNameChange}
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="file">
+            Upload File
+          </label>
+          <input
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="file"
+            type="file"
+            accept=".pdf,.doc,.docx"
+            onChange={handleFileChange}
+            required
+          />
+        </div>
+        <div className="flex items-center justify-between">
+          <button
+            className="bg-black hover:bg-green-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            type="submit"
+          >
+            Upload
+          </button>
+        </div>
+      </form>
+    </div>
+      </Model>
       <div className={`${styles.paddingX} ${styles.flexCenter}`}>
         <div>
-          <Dashnav />{" "}
+          <Dashnav handleButtonClick={handleButtonClick} />{" "}
         </div>
       </div>
       <h1 className="  text-6xl mt-20  py-12 px-14">Classes</h1>

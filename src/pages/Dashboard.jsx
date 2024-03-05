@@ -7,13 +7,16 @@ import FloatingButton from "../widgets/Floatingbutton";
 
 const Dashboard = () => {
   const [isHovered, setIsHovered] = useState(false);
+  const [hoveredIndex, setHoveredIndex] = useState(null);
 
-  const handleMouseEnter = () => {
+  const handleMouseEnter = (index) => {
     setIsHovered(true);
+    setHoveredIndex(index);
   };
 
   const handleMouseLeave = () => {
     setIsHovered(false);
+    setHoveredIndex(null);
   };
   const classList = [
     {
@@ -62,12 +65,54 @@ const Dashboard = () => {
         
         className=" grid grid-cols-4  gap-4 gap-y-9 mb-44   px-24"
       >
-        {classList.map((classList) => (
-          <li
-            key={classList.classname}
-            className="flex justify-between bg-white drop-shadow-md px-6 gap-x-6 py-8 rounded-3xl"
-          >
-            {/* <div className="flex min-w-0 gap-x-4">
+        {classList.map((classItem, index) => (
+        <li
+          key={classItem.classname}
+          className="flex justify-between bg-white drop-shadow-md px-6 gap-x-6 py-8 rounded-3xl"
+        >
+          <div className="flex" onMouseEnter={() => handleMouseEnter(index)} onMouseLeave={handleMouseLeave}>
+            <form className="">
+              <h1 className="text-2xl font-semibold text-slate-900">
+                {classItem.classname}
+              </h1>
+              <div className="flex space-x-4  my-5 text-xs font-medium">
+                <div className="flex space-x-4">
+                  <button
+                    className="h-10 px-6 font-semibold rounded-md bg-[#121312] text-white"
+                    type="submit"
+                  >
+                    {classItem.pdfUploaded ? "Uploaded" : "Upload"}
+                  </button>
+                  <button
+                    className="h-10 px-6 flex items-center gap-2 font-semibold rounded-md border border-slate-200 text-slate-900"
+                    type="button"
+                  >
+                    Sheet link
+                    <FaArrowRight />
+                  </button>
+                </div>
+              </div>
+              <div className={`bg-red-500 text-xs justify-around w-full flex left-0 p-3 rounded-b-3xl absolute transition-opacity duration-300 ${hoveredIndex === index ? 'opacity-100' : 'opacity-0'}`}>
+                <button className="px-2 py-1 hover:bg-red-400 bg-opacity-35 rounded-full text-white">
+                  Delete
+                </button>
+                <button className="hover:bg-red-400 px-2 py-1 bg-opacity-35 rounded-full text-white">
+                  Re-upload
+                </button>
+              </div>
+            </form>
+          </div>
+        </li>
+      ))}
+      </ul>
+      <FloatingButton />
+      <Footer />
+    </div>
+  );
+};
+
+export default Dashboard;
+  {/* <div className="flex min-w-0 gap-x-4">
             <img className="h-12 w-12 flex-none rounded-full bg-gray-50" src={person.imageUrl} alt="" />
             <div className="min-w-0 flex-auto">
               <p className="text-sm font-semibold leading-6 text-gray-900">{person.name}</p>
@@ -89,47 +134,3 @@ const Dashboard = () => {
               </div>
             )}
           </div> */}
-            <div class="flex" onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}>
-              <form class=" ">
-                <h1 class=" text-2xl font-semibold text-slate-900">
-                  {classList.classname}
-                </h1>
-
-                <div class="flex space-x-4  my-5 text-xs font-medium">
-                  <div class="flex space-x-4">
-                    <button
-                      class="h-10 px-6 font-semibold rounded-md bg-[#121312] text-white"
-                      type="submit"
-                    >
-                      {classList.pdfUploaded ? "Uploaded" : "Upload"}
-                    </button>
-                    <button
-                      class="h-10 px-6 flex items-center gap-2 font-semibold rounded-md border border-slate-200 text-slate-900"
-                      type="button"
-                    >
-                      Sheet link
-                      <FaArrowRight />
-                    </button>
-                  </div>
-                </div>
-                <div className={`bg-red-500 ${isHovered?"":"hidden"} text-xs justify-around w-full flex left-0 p-3 rounded-b-3xl  absolute`} >
-                  <button className=" px-2 py-1 hover:bg-red-400  bg-opacity-35 rounded-full  text-white">
-                    Delete
-                  </button>
-                  <button className="hover:bg-red-400 px-2 py-1  bg-opacity-35 rounded-full  text-white">
-                    Re-upload
-                  </button>
-                </div>
-              </form>
-            </div>
-          </li>
-        ))}
-      </ul>
-      <FloatingButton />
-      <Footer />
-    </div>
-  );
-};
-
-export default Dashboard;

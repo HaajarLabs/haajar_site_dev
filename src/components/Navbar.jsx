@@ -34,7 +34,9 @@ const Navbar = () => {
       <div className=" cursor-pointer bg-gray-300 z-50  hover:bg-[#25D366] ease-in duration-300 px-4 py-2 rounded-3xl hover:text-white text-gray-00 font-semibold">
         <Link to="/Login">Log</Link>
       </div>
+
     </nav>
+ 
   );
 };
 

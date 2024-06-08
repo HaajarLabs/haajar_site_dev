@@ -211,7 +211,25 @@ import React from "react";
 import NavItem from "../components/Navitem";
 import Appointments from "../components/Appointments";
 import logoicon from "../assets/logoicon.png";
+import {  createClient } from "@supabase/supabase-js";
+import { useState,useEffect } from "react";
+
+
 const Dashboard = () => {
+  const supabase = createClient(
+    "https://lgzjqxhqfstjgehntfxi.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnempxeGhxZnN0amdlaG50ZnhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTczMTEyNTYsImV4cCI6MjAzMjg4NzI1Nn0.NvtQFhw375eIDb9Hthuih-gydiCyrqkobq4nfXh2rL0"
+  );
+  const [totLAppointments, setTotalappoinments] = useState(0);
+  useEffect(() => {
+    getData();
+  }, []);
+  async function getData() {
+    const { data, error } = await supabase
+      .from("appointments")
+      .select()
+    setTotalappoinments(data.length)
+  }
   return (
     <div className="grid min-h-screen w-full lg:grid-cols-[280px_1fr]">
       <div className="hidden border-r bg-gray-100/40 lg:block ">
@@ -238,7 +256,7 @@ const Dashboard = () => {
       </div>
       <div className="flex flex-col">
         <header className="flex h-14 lg:h-[60px] items-center gap-4 border-b bg-gray-100/40 px-6 justify-between lg:justify-end">
-          <h1 className="text-lg font-semibold">Total appointments: 10</h1>
+          <h1 className="text-lg font-semibold">Total appointments: {totLAppointments}</h1>
         </header>
         <Appointments />
       </div>

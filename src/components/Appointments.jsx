@@ -7,9 +7,12 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 function Appointments() {
+
+  const apiKey = process.env.SUPABASE_KEY;
+  const apiUrl = process.env.SUPABASE_URL;
   const supabase = createClient(
-    "https://lgzjqxhqfstjgehntfxi.supabase.co",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnempxeGhxZnN0amdlaG50ZnhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTczMTEyNTYsImV4cCI6MjAzMjg4NzI1Nn0.NvtQFhw375eIDb9Hthuih-gydiCyrqkobq4nfXh2rL0"
+    apiUrl,
+    apiKey
   );
   const [appointments, setAppointments] = useState([]);
 
@@ -38,11 +41,16 @@ function Appointments() {
               .from("patients")
               .select("*")
               .eq("pat_id", app_data[index].pat_id);
+              const { data: slot_data } = await supabase
+              .from("slots")
+              .select("*")
+              .eq("slot_id", app_data[index].slot_id);
             newAppointments.push({
-              date: pat_data[0].par_app_dates,
+              date: slot_data[0].slot_start_time,
               name: pat_data[0].pat_name,
               phone: pat_data[0].pat_ph_num,
-              token: app_data[index].appointment_id,
+              token: app_data[index].slot_id,
+              id: app_data[index].appointment_id,
               visit_status: app_data[index].visit_status,
             });
           }
@@ -60,13 +68,18 @@ function Appointments() {
         .select("*")
         .eq("pat_id", app_data[index].pat_id);
       console.log(pat_data);
+      const { data: slot_data } = await supabase
+      .from("slots")
+      .select("*")
+      .eq("slot_id", app_data[index].slot_id);
+    console.log(slot_data);
 
       newAppointments.push({
-        date: pat_data[0].par_app_dates,
-
+        date: slot_data[0].slot_start_time,
         name: pat_data[0].pat_name,
         phone: pat_data[0].pat_ph_num,
-        token: app_data[index].appointment_id,
+        id: app_data[index].appointment_id,
+        token: app_data[index].slot_id,
         visit_status: app_data[index].visit_status,
       });
     }
@@ -88,6 +101,7 @@ function Appointments() {
       theme: "light",
     });
    }
+   console.log(appointment_id);
 const { data, error } = await supabase
   .from('appointments')
   .upsert({ appointment_id: appointment_id, visit_status: visit_status ? false : true })
@@ -145,7 +159,7 @@ console.log(error);
                   
                 </td>
                 <td className="px-6 py-7 whitespace-nowrap">
-                  {appointment.phone}
+                  {appointment.phone.slice(2)} 
                 </td>
                 <td className="px-6 py-7 whitespace-nowrap">
                   {appointment.token}
@@ -153,7 +167,7 @@ console.log(error);
                 <td className="px-6 py-7 whitespace-nowrap">
                   <Checkbox
                     color="success"
-                    onChange={() => handleInputChange(appointment.token, appointment.visit_status, index < appointments.length - 1 ? `, ${appointments[index + 1].name}` : "")}
+                    onChange={() => handleInputChange(appointment.id, appointment.visit_status, index < appointments.length - 1 ? `, ${appointments[index + 1].name}` : "")}
                     checked={appointment.visit_status ? true : false}
                   />
                 </td>

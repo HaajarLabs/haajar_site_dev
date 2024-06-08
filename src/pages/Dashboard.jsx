@@ -216,9 +216,12 @@ import { useState,useEffect } from "react";
 
 
 const Dashboard = () => {
+
+  const apiKey = process.env.SUPABASE_KEY;
+  const apiUrl = process.env.SUPABASE_URL;
   const supabase = createClient(
-    "https://lgzjqxhqfstjgehntfxi.supabase.co",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnempxeGhxZnN0amdlaG50ZnhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTczMTEyNTYsImV4cCI6MjAzMjg4NzI1Nn0.NvtQFhw375eIDb9Hthuih-gydiCyrqkobq4nfXh2rL0"
+    apiUrl,
+    apiKey
   );
   const [totLAppointments, setTotalappoinments] = useState(0);
   useEffect(() => {

@@ -12,7 +12,7 @@ const Hero = () => {
       <div className="flex flex-rowjustify-between  w-full ">
         <div className="">
           <h1 className="flex-1 font-semibold ss:text-[72px] text-[50px]">
-            Effortless Attendance <br className="sm:block hidden" />{" "}
+            Effortless Appointments <br className="sm:block hidden" />{" "}
             <span className="text-gray-700">Simplify, Update,</span> <br />
             <span className="text-gray-500">Excel!</span> <br />
           </h1>

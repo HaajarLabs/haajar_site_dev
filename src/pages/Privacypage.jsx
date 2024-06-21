@@ -2,7 +2,7 @@ import React from "react";
 
 const PrivacyPage = () => {
 return (
-    <div className="py-10 font-poppins bg-primary  px-10">
+    <div className="py-10  font-vilane_Regular bg-primary  px-10">
         <h1
             style={{ color: "black", fontWeight: "bold" }}
             className="flex-1 font-semibold ss:text-[72px] text-[50px]"

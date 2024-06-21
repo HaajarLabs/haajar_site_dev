@@ -1,9 +1,7 @@
-import React, { useState, useRef } from "react";
-import logo1 from "../assets/logo.png";
+import React, { useState } from "react";
 import logo from "../assets/translogoicon.png";
 import OtpField from "../widgets/Otpfield";
 import heroimg from "../assets/blackhero.png";
-import login from "../assets/login.png";
 import { Link } from "react-router-dom";
 
 const Loginpage = () => {

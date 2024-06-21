@@ -1,3 +1,5 @@
+const { BiBorderRadius } = require('react-icons/bi');
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./index.html", "./src/**/*.{js,jsx}"],
@@ -29,13 +31,20 @@ module.exports = {
 
       },
       colors: {
-        primary: "#f1f1f1",
+        primary: "#ffffff",
         secondary: "#00f6ff",
         dimWhite: "rgba(255, 255, 255, 0.7)",
         dimBlue: "rgba(9, 151, 124, 0.1)",
       },
       fontFamily: {
         poppins: ["Poppins", "sans-serif"],
+        vilane_bold: ["Vilane-Bold", "sans-serif"],
+        vilane_Extra_light: ["Vilane-Extra-Light", "sans-serif"],
+        vilane_Light: ["Vilane-Light", "sans-serif"],
+        vilane_Medium: ["Vilane-Medium", "sans-serif"],
+        vilane_Regular: ["Vilane-Regular", "sans-serif"],
+        vilane_Semi_bold: ["Vilane-Semi-Bold", "sans-serif"],
+        vilane_Thin: ["Vilane-Thin", "sans-serif"],
       },
     },
     screens: {
@@ -47,5 +56,7 @@ module.exports = {
       xl: "1700px",
     },
   },
-  plugins: [],
+  plugins: [
+    require('tailwind-scrollbar'), 
+  ],
 };

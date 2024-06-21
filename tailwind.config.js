@@ -48,8 +48,8 @@ module.exports = {
       },
     },
     screens: {
-      xs: "480px",
-      ss: "620px",
+      xs: "320px",
+      ss: "375px",
       sm: "768px",
       md: "1060px",
       lg: "1200px",

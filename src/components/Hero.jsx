@@ -35,11 +35,11 @@ const Hero = () => {
         ></DotLottiePlayer>
       <div className="flex z-50 h-auto md:justify-end md:pt-48 ss:pt-60 pt-40 ">
         <div className=" text-center flex-col  md:text-left leading-8 ">
-          <h1 className="md:text-3xl text-4xl font-vilane_Regular pb-5">
-            Managing <span className=" text-[#ff6b6b] md:text-4xl text-5xl">Appointments</span> made easy!
+          <h1 className="md:text-3xl ss:text-4xl text-3xl font-vilane_Regular pb-5">
+            Managing <span className=" text-[#ff6b6b] md:text-4xl ss:text-5xl text-4xl">Appointments</span> made easy!
           </h1>{" "}
           
-          <span className="font-vilane_Light text-lg md:text-base ">
+          <span className="font-vilane_Light ss:text-lg  md:text-base ">
             Simplifying customer bookings so that you can focus on delivering
             quality.
           </span>

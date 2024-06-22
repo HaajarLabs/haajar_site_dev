@@ -44,7 +44,7 @@ const Hero = () => {
             Simplifying customer bookings so that you can focus on delivering
             quality.
           </span>
-          <div className="pt-3"><button class="bg-rose-500 hover:bg-rose-700 text-white  font-vilane_bold py-1 px-4 rounded">
+          <div className="md:pt-3 ss:pt-6 pt-5"><button class="bg-rose-500 hover:bg-rose-700 text-white  font-vilane_bold py-1 px-4 rounded">
   Book Demo
 </button></div>
         </div>

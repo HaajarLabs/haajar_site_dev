@@ -22,15 +22,15 @@ const supabase = createClient(
 const Loginpage = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [clicked, setClicked] = useState(false);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  supabase.auth.onAuthStateChange(async(event)=>{
-    if (event == "SIGNED_IN") {
-      navigate("/Dashboard")
-    } else {  
-      navigate("/Login")
-    }
-  });
+  // supabase.auth.onAuthStateChange(async(event)=>{
+  //   if (event == "SIGNED_IN") {
+  //     navigate("/Dashboard")
+  //   } else {  
+  //     navigate("/Login")
+  //   }
+  // });
 
   const handleChange = (event) => {
     const newValue = event.target.value;
@@ -66,7 +66,7 @@ const Loginpage = () => {
             isTyping ? "grayscale-0" : "grayscale"
           } ease-in-out duration-1000 h-[100vh] bg-cover`}
         ></div>
-        <div className="pt-32 flex-1  text-[#292F36]   ">
+        <div className="ss:pt-32 pt-12 flex-1  text-[#292F36]   ">
           <div className="flex  justify-center gap-2">
             <img src={logo} alt="logo" width={220} />{" "}
           </div>
@@ -78,7 +78,7 @@ const Loginpage = () => {
             Login
           </p>
 
-          <div className=" px-20 "><Auth  supabaseClient={supabase}  appearance={{ theme: ThemeSupa }} providers={['google']} /></div>
+          <div className=" ss:px-20 px-8 "><Auth redirectTo="/Dashboard" supabaseClient={supabase} view="sign_in"   appearance={{ theme: ThemeSupa }} providers={['google']} /></div>
 
 
 

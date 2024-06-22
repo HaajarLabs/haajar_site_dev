@@ -3,6 +3,7 @@ import { IoIosArrowDown } from "react-icons/io";
 import Getstarted from "./Getstarted";
 import { DotLottiePlayer, Controls } from "@dotlottie/react-player";
 import "@dotlottie/react-player/dist/index.css";
+
 const Hero = () => {
   return (
     <div
@@ -35,21 +36,28 @@ const Hero = () => {
         ></DotLottiePlayer>
       <div className="flex z-50 h-auto md:justify-end md:pt-48 ss:pt-60 pt-40 ">
         <div className=" text-center flex-col  md:text-left leading-8 ">
-          <h1 className="md:text-3xl ss:text-4xl text-3xl font-vilane_Regular pb-5">
-            Managing <span className=" text-[#ff6b6b] md:text-4xl ss:text-5xl text-4xl">Appointments</span> made easy!
+          <h1 className="md:text-4xl text-3xl font-vilane_Regular pb-5">
+            Managing <span className=" text-[#ff6b6b] md:text-5xl text-4xl">Appointments</span> made easy!
           </h1>{" "}
           
-          <span className="font-vilane_Light ss:text-lg  md:text-base ">
+          <span className="font-vilane_Light ss:text-lg  md:text-xl ">
             Simplifying customer bookings so that you can focus on delivering
             quality.
           </span>
+          <div className="pt-3"><button class="bg-rose-500 hover:bg-rose-700 text-white  font-vilane_bold py-1 px-4 rounded">
+  Book Demo
+</button></div>
         </div>
+       
       </div>
+
+     
 
      <div className=" md:hidden text-gray-500 flex justify-center">
       <IoIosArrowDown size={50} className="mt-52" />
     
      </div>
+
     </div>
   );
 };

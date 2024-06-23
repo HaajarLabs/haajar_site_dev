@@ -105,7 +105,7 @@ if (data) {
                 id=""
                 placeholder="Enter your verified Email address"
                 class="block w-72 py-3 pl-12 pr-4 md:py-4 lg:py-4  text-sm text-black placeholder-gray-500 transition-all duration-200 border border-gray-300 rounded-full bg-white focus:outline-none focus:border-gray-600 focus:bg-white caret-gray-600"
-                type="tel"
+                type="email"
                 name=""
 
               />

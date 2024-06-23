@@ -23,14 +23,15 @@ const Loginpage = () => {
   const navigate = useNavigate();
 useEffect(() => {
   var accessTokenObj = JSON.parse(localStorage.getItem("sb-lgzjqxhqfstjgehntfxi-auth-token"));
-  if(accessTokenObj['user']['aud']=="authenticated"){
-    navigate("/Dashboard")
+  console.log(accessTokenObj)
+  if(accessTokenObj !=null ){
+    if (accessTokenObj['user']['aud']=="authenticated") {
+      navigate("/Dashboard")
     navigate(0)
+    }
     
-    console.log("Signed in")
   } else {
     navigate("/Login")
-    navigate(0)
   }
 }, []);
 

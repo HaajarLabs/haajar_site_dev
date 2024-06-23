@@ -238,15 +238,17 @@ const Dashboard = () => {
     //   }
     // });
 
-    var accessTokenObj = JSON.parse(localStorage.getItem("sb-lgzjqxhqfstjgehntfxi-auth-token"));
-    if(accessTokenObj['user']['aud']=="authenticated"){
-      navigate("/Dashboard")
-     getData(accessTokenObj['user']['id']);
-      
-     
+    var accessTokenObj = JSON.parse(
+      localStorage.getItem("sb-lgzjqxhqfstjgehntfxi-auth-token")
+    );
+    if (accessTokenObj != null) {
+      if (accessTokenObj["user"]["aud"] == "authenticated") {
+        navigate("/Dashboard");
+        getData(accessTokenObj["user"]["id"]);
+      }
     } else {
-      navigate("/")
-      navigate(0)
+      navigate("/");
+      navigate(0);
     }
   }, []);
 
@@ -260,7 +262,10 @@ const Dashboard = () => {
   };
 
   async function getData(id) {
-    const { data, error } = await supabase.from("appointments").select("*").eq("client_id", id);
+    const { data, error } = await supabase
+      .from("appointments")
+      .select("*")
+      .eq("client_id", id);
     console.log(id);
     setTotalappoinments(data.length);
   }
@@ -268,35 +273,33 @@ const Dashboard = () => {
     <div className="grid min-h-screen w-full lg:grid-cols-[280px_1fr]">
       <div className="hidden border-r bg-gray-100/40 lg:block ">
         <div className="flex h-full max-h-screen justify-between flex-col gap-2">
-         <div>
-         <div className="flex h-[60px] items-center border-b px-5">
-            <div className="flex items-center gap-2 font-semibold">
-              <Link to='/Haajar'>
-              <img
-                src={logoicon}
-                className="w-36 animate-flipbottom transition-opacity duration-1000"
-                alt="logo"
-              />
-              </Link>
-              
-            </div>
-          </div>
-           
-            <nav className="grid px-4 py-3 items-start text-sm font-medium">
-             
-             <NavItem to="/Dashboard" label="Appointments" />
-              <NavItem to="/Dashboard/History" label="History" />
-              <NavItem to="/Dashboard/Settings" label="Settings" />
-       
-                
-            </nav>
-         </div>
-            <div className="px-4 py-3 ">
-              <button onClick={signOut} className="bg-rose-400 w-full hover:bg-rose-500 text-white font-vilane_bold py-2 px-4 rounded">
-                Sign Out
-              </button>
+          <div>
+            <div className="flex h-[60px] items-center border-b px-5">
+              <div className="flex items-center gap-2 font-semibold">
+                <Link to="/Haajar">
+                  <img
+                    src={logoicon}
+                    className="w-36 animate-flipbottom transition-opacity duration-1000"
+                    alt="logo"
+                  />
+                </Link>
+              </div>
             </div>
 
+            <nav className="grid px-4 py-3 items-start text-sm font-medium">
+              <NavItem to="/Dashboard" label="Appointments" />
+              <NavItem to="/Dashboard/History" label="History" />
+              <NavItem to="/Dashboard/Settings" label="Settings" />
+            </nav>
+          </div>
+          <div className="px-4 py-3 ">
+            <button
+              onClick={signOut}
+              className="bg-rose-400 w-full hover:bg-rose-500 text-white font-vilane_bold py-2 px-4 rounded"
+            >
+              Sign Out
+            </button>
+          </div>
         </div>
       </div>
       <div className="flex flex-col">

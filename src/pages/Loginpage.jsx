@@ -1,16 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import logo from "../assets/logofirst1.png";
-import OtpField from "../widgets/Otpfield";
-import heroimg from "../assets/blackhero.png";
-import { Link } from "react-router-dom";
-import {
-  // Import predefined theme
-  ThemeSupa,
-} from '@supabase/auth-ui-shared'
-import { useNavigate } from "react-router-dom";
 import { createClient } from "@supabase/supabase-js";
-import {Auth} from"@supabase/auth-ui-react";
-import { Google } from "@mui/icons-material";
+
+import { useNavigate } from "react-router-dom";
+
+
+
+
 
 const apiKey = process.env.SUPABASE_KEY;
 const apiUrl = process.env.SUPABASE_URL;
@@ -22,28 +18,51 @@ const supabase = createClient(
 const Loginpage = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [clicked, setClicked] = useState(false);
-  // const navigate = useNavigate();
-
-  // supabase.auth.onAuthStateChange(async(event)=>{
-  //   if (event == "SIGNED_IN") {
-  //     navigate("/Dashboard")
-  //   } else {  
-  //     navigate("/Login")
-  //   }
-  // });
+  const [success, setSuccess] = useState(false);
+  const [newValue, setNewValue] = useState("");
+  const navigate = useNavigate();
+useEffect(() => {
+  var accessTokenObj = JSON.parse(localStorage.getItem("sb-lgzjqxhqfstjgehntfxi-auth-token"));
+  if(accessTokenObj['user']['aud']=="authenticated"){
+    navigate("/Dashboard")
+    navigate(0)
+    
+    console.log("Signed in")
+  } else {
+    navigate("/Login")
+    navigate(0)
+  }
+}, []);
 
   const handleChange = (event) => {
     const newValue = event.target.value;
     if (newValue !== "") {
       setIsTyping(true);
+      setNewValue(newValue);
     } else {
       setIsTyping(false);
     }
   };
-  const onsubmit = () => {
+  const onsubmit = async ()  => {
     setClicked(true);
     // let url = `https://api.whatsapp.com/send?phone=918921645661&text=Welcome to Haajar your code is 673673 `;
     // window.open(url);
+    try {
+      const { data, error } = await supabase.auth.signInWithOtp({
+        email: newValue,
+  
+        options: {
+          // set this to false if you do not want the user to be automatically signed up
+          shouldCreateUser: false,
+        },
+      })
+if (data) {
+  setSuccess(true);
+}
+
+    } catch (error) {
+      print(error.message)
+    }
   };
 
   return (
@@ -62,11 +81,11 @@ const Loginpage = () => {
     <div className="bg-primary  overflow-hidden">
       <div className="flex  bg-primary h-screen w-screen   ">
         <div
-          className={` bg-[url('/login.png')] w-2/3 hidden md:block  ${
+          className={` bg-[url('/login.jpg')] w-2/3 hidden md:block  ${
             isTyping ? "grayscale-0" : "grayscale"
           } ease-in-out duration-1000 h-[100vh] bg-cover`}
         ></div>
-        <div className="ss:pt-32 pt-12 flex-1  text-[#292F36]   ">
+        <div className=" m-auto text-[#292F36]   ">
           <div className="flex  justify-center gap-2">
             <img src={logo} alt="logo" width={220} />{" "}
           </div>
@@ -74,11 +93,32 @@ const Loginpage = () => {
           <h1 className=" text-xl pt-6 flex justify-center  font-vilane_Regular">
             Welcome 
           </h1>
-          <p className="flex justify-center text-gray-400 pt-2">
+          <p className="flex justify-center text-gray-400 pt-4">
             Login
           </p>
 
-          <div className=" ss:px-20 px-8 "><Auth redirectTo="/Dashboard" supabaseClient={supabase} view="sign_in"   appearance={{ theme: ThemeSupa }} providers={['google']} /></div>
+          <div className="  ss:py-6  ">
+           <input
+                required=""
+                onChange={handleChange}
+                id=""
+                placeholder="Enter your verified Email address"
+                class="block w-72 py-3 pl-12 pr-4 md:py-4 lg:py-4  text-sm text-black placeholder-gray-500 transition-all duration-200 border border-gray-300 rounded-full bg-white focus:outline-none focus:border-gray-600 focus:bg-white caret-gray-600"
+                type="tel"
+                name=""
+
+              />
+               
+             
+            <button
+                onClick={onsubmit}
+                disabled={clicked}
+                class="sm:inline-flex  items-center text-white mt-2   justify-center  w-72 px-4 md:py-4 lg:py-4 py-3 text-base font-semibold  bg-[#ff6b6b] transition-all duration-200 border-1 border-gray-400 rounded-full bg-gradient-to-r focus:outline-none hover:opacity-80 focus:opacity-80"
+              >
+                {clicked ? "Sending Email..." : "Log In"}
+              </button>
+         {success && <p className=" xs:text-xs flex justify-center font-vilane_Thin pt-5">An email has been sent to {newValue} </p>}
+          </div>
 
 
 

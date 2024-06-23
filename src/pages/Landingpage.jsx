@@ -2,11 +2,42 @@ import * as React from "react";
 import styles from "../style.js";
 import Navbar from "../components/Navbar.jsx";
 import Hero from "../components/Hero.jsx";
-import Stats from "../components/Stats.jsx";
 import Footer from "../components/Footer.jsx";
-import { Link } from "react-router-dom";
-
+import { createClient } from "@supabase/supabase-js";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+const apiKey = process.env.SUPABASE_KEY;
+const apiUrl = process.env.SUPABASE_URL;
+const supabase = createClient(
+  apiUrl,
+  apiKey
+);
 const Landingpage = () => {
+
+
+  const navigate = useNavigate();
+useEffect(() => async () =>{
+  var accessTokenObj = JSON.parse(localStorage.getItem("sb-lgzjqxhqfstjgehntfxi-auth-token"));
+if(accessTokenObj['user']['aud']=="authenticated"){
+  navigate("/Dashboard")
+  navigate(0)
+  
+ 
+} else {
+  navigate("/")
+  navigate(0)
+}
+// supabase.auth.onAuthStateChange(async(event)=>{
+//   if (event == "SIGNED_IN") {
+//     navigate("/Dashboard")
+//     console.log("Signed in")
+//   } else {  
+//     console.log("Not signed in")
+//     navigate("/")
+//   }
+// });
+},[]);
+  
   return (
     <div className=" w-full  text-black overflow-hidden scrollbar-thin scrollbar-webkit">
       <div className={`${styles.paddingX} ${styles.flexCenter}`}>

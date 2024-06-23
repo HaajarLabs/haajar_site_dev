@@ -7,6 +7,7 @@ import Loginpage from "./pages/Loginpage";
 import Dashboard from "./pages/Dashboard";
 import Privacypage from "./pages/Privacypage";
 import Aboutpage from "./pages/Aboutpage";
+import Homepage from "./pages/HomePage";
 
 const Animatedroutes = () => {
     const location=useLocation();
@@ -14,7 +15,8 @@ const Animatedroutes = () => {
     <AnimatePresence>
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Landingpage />} />
-        {/* <Route path="/Login" element={<Loginpage />} /> */}
+        <Route path="/Haajar" element={<Homepage />} />
+        <Route path="/Login" element={<Loginpage />} />
         <Route path="/Dashboard" element={<Dashboard />} />
         <Route path="/Privacy-policy" element={<Privacypage/>} />
         <Route path="/About-us" element={<Aboutpage/>} />

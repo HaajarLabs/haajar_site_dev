@@ -210,60 +210,103 @@
 import React from "react";
 import NavItem from "../components/Navitem";
 import Appointments from "../components/Appointments";
-import logoicon from "../assets/logoicon.png";
-import {  createClient } from "@supabase/supabase-js";
-import { useState,useEffect } from "react";
-
+import logoicon from "../assets/logofirst1.png";
+import { createClient } from "@supabase/supabase-js";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
-
   const apiKey = process.env.SUPABASE_KEY;
   const apiUrl = process.env.SUPABASE_URL;
-  const supabase = createClient(
-    apiUrl,
-    apiKey
-  );
+  const supabase = createClient(apiUrl, apiKey);
   const [totLAppointments, setTotalappoinments] = useState(0);
+  const navigate = useNavigate();
+  // const [client_id, setClient_id] = useState("");
   useEffect(() => {
-    getData();
+    // supabase.auth.getUser().then((user) => {
+    //   // console.log(user)
+    //   if (user.error.status == 400) {
+    //     navigate("/Login");
+    //   }else{
+    //     if (user.data.user.aud == "authenticated") {
+    //       navigate("/Dashboard");
+    //       getData(user.data.user.id);
+    //     } else {
+    //       navigate("/Login");
+    //     }
+    //   }
+    // });
+
+    var accessTokenObj = JSON.parse(localStorage.getItem("sb-lgzjqxhqfstjgehntfxi-auth-token"));
+    if(accessTokenObj['user']['aud']=="authenticated"){
+      navigate("/Dashboard")
+     getData(accessTokenObj['user']['id']);
+      
+     
+    } else {
+      navigate("/")
+      navigate(0)
+    }
   }, []);
-  async function getData() {
-    const { data, error } = await supabase
-      .from("appointments")
-      .select()
-    setTotalappoinments(data.length)
+
+  const signOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.log("Error logging out:", error.message);
+    } else {
+      navigate("/");
+    }
+  };
+
+  async function getData(id) {
+    const { data, error } = await supabase.from("appointments").select("*").eq("client_id", id);
+    console.log(id);
+    setTotalappoinments(data.length);
   }
   return (
     <div className="grid min-h-screen w-full lg:grid-cols-[280px_1fr]">
       <div className="hidden border-r bg-gray-100/40 lg:block ">
-        <div className="flex h-full max-h-screen flex-col gap-2">
-          <div className="flex h-[60px] items-center border-b px-5">
+        <div className="flex h-full max-h-screen justify-between flex-col gap-2">
+         <div>
+         <div className="flex h-[60px] items-center border-b px-5">
             <div className="flex items-center gap-2 font-semibold">
-            <img
-          src={logoicon}
-          className="w-9 animate-flipbottom transition-opacity duration-1000"
-          alt="logo"
-        />
-              <span className=" font-semibold text-lg ">Haajar</span>
+              <Link to='/Haajar'>
+              <img
+                src={logoicon}
+                className="w-36 animate-flipbottom transition-opacity duration-1000"
+                alt="logo"
+              />
+              </Link>
+              
             </div>
           </div>
-          <div className="flex-1 overflow-auto py-2">
-            <nav className="grid items-start px-4 text-sm font-medium">
+           
+            <nav className="grid px-4 py-3 items-start text-sm font-medium">
              
-              <NavItem to="/Dashboard" label="Appointments" />
+             <NavItem to="/Dashboard" label="Appointments" />
               <NavItem to="/Dashboard/History" label="History" />
               <NavItem to="/Dashboard/Settings" label="Settings" />
+       
+                
             </nav>
-          </div>
+         </div>
+            <div className="px-4 py-3 ">
+              <button onClick={signOut} className="bg-rose-400 w-full hover:bg-rose-500 text-white font-vilane_bold py-2 px-4 rounded">
+                Sign Out
+              </button>
+            </div>
+
         </div>
       </div>
       <div className="flex flex-col">
         <header className="flex h-14 lg:h-[60px] items-center gap-4 border-b bg-gray-100/40 px-6 justify-between lg:justify-end">
-          <h1 className="text-lg font-semibold">Total appointments: {totLAppointments}</h1>
+          <h1 className="text-lg font-semibold">
+            Total appointments: {totLAppointments}
+          </h1>
         </header>
         <Appointments />
       </div>
-     
     </div>
   );
 };

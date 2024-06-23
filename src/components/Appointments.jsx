@@ -18,10 +18,12 @@ function Appointments() {
 
   // Fetch appointments data here
   useEffect(() => {
-    getData();
+    supabase.auth.getUser().then((user) => {
+      getData(user.data.user.id);
+    });
   }, []);
 
-  async function getData() {
+  async function getData(id) {
     const channel = supabase
       .channel("schema-db-changes")
       .on(
@@ -33,8 +35,9 @@ function Appointments() {
         },
 
         async (payload) => {
-          const { data } = await supabase.from("appointments").select();
+          const { data } = await supabase.from("appointments").select("*").eq("client_id", id);
           const app_data = data;
+          
           const newAppointments = [];
           for (let index = 0; index < app_data.length; index++) {
             const { data: pat_data } = await supabase
@@ -59,20 +62,19 @@ function Appointments() {
         }
       )
       .subscribe();
-    const { data } = await supabase.from("appointments").select();
+    const { data } = await supabase.from("appointments").select("*").eq("client_id", id);
     const app_data = data;
+ 
     const newAppointments = [];
     for (let index = 0; index < app_data.length; index++) {
       const { data: pat_data } = await supabase
         .from("patients")
         .select("*")
         .eq("pat_id", app_data[index].pat_id);
-      console.log(pat_data);
       const { data: slot_data } = await supabase
       .from("slots")
       .select("*")
       .eq("slot_id", app_data[index].slot_id);
-    console.log(slot_data);
 
       newAppointments.push({
         date: slot_data[0].slot_start_time,
@@ -101,7 +103,6 @@ function Appointments() {
       theme: "light",
     });
    }
-   console.log(appointment_id);
 const { data, error } = await supabase
   .from('appointments')
   .upsert({ appointment_id: appointment_id, visit_status: visit_status ? false : true })
@@ -110,7 +111,7 @@ console.log(error);
   };
 
   return (
-    <div className="m-4  overflow-hidden ">
+    <div className="m-4   overflow-hidden ">
       <ToastContainer
         position="top-right"
         autoClose={5000}

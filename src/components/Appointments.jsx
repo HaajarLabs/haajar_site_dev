@@ -22,8 +22,8 @@ function Appointments() {
   const year = date.getFullYear();
   const today = year + "-" +"0"+ month + "-" + day;
   const [selectedOption, setSelectedOption] = useState(today);
-  const tomorrow = year + "-" + month + "-" + (day + 1);
-  const dayAfterTomorrow = year + "-" + month + "-" + (day + 2);
+  const tomorrow = year + "-"+"0" + month + "-" + (day + 1);
+  const dayAfterTomorrow = year + "-"+"0" + month + "-" + (day + 2);
   const options = [today, tomorrow, dayAfterTomorrow];
   // Fetch appointments data here
   useEffect(() => {

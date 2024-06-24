@@ -1,23 +1,33 @@
 import React, { useEffect, useState } from "react";
 import Checkbox from "@mui/material/Checkbox";
-import {  createClient } from "@supabase/supabase-js";
-
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
+import { createClient } from "@supabase/supabase-js";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Dropdown from "./Dropdown.jsx";
+import { IoIosArrowDown } from "react-icons/io";
 
 function Appointments() {
-
   const apiKey = process.env.SUPABASE_KEY;
   const apiUrl = process.env.SUPABASE_URL;
-  const supabase = createClient(
-    apiUrl,
-    apiKey
-  );
+  const supabase = createClient(apiUrl, apiKey);
   const [appointments, setAppointments] = useState([]);
+  const [selectedOption, setSelectedOption] = useState();
+  const handleSelect = (option) => {
+  
+    setSelectedOption(option);
+  };
 
+  const date = new Date();
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+  const today = year + "-" + month + "-" + day;
+  const tomorrow = year + "-" + month + "-" + (day + 1);
+  const dayAfterTomorrow = year + "-" + month + "-" + (day + 2);
+  const options = [today, tomorrow, dayAfterTomorrow];
   // Fetch appointments data here
   useEffect(() => {
+    console.log(options); 
     supabase.auth.getUser().then((user) => {
       getData(user.data.user.id);
     });
@@ -35,16 +45,19 @@ function Appointments() {
         },
 
         async (payload) => {
-          const { data } = await supabase.from("appointments").select("*").eq("client_id", id);
+          const { data } = await supabase
+            .from("appointments")
+            .select("*")
+            .eq("client_id", id);
           const app_data = data;
-          
+
           const newAppointments = [];
           for (let index = 0; index < app_data.length; index++) {
             const { data: pat_data } = await supabase
               .from("patients")
               .select("*")
               .eq("pat_id", app_data[index].pat_id);
-              const { data: slot_data } = await supabase
+            const { data: slot_data } = await supabase
               .from("slots")
               .select("*")
               .eq("slot_id", app_data[index].slot_id);
@@ -58,26 +71,29 @@ function Appointments() {
             });
           }
           setAppointments(newAppointments);
-
         }
       )
       .subscribe();
-    const { data } = await supabase.from("appointments").select("*").eq("client_id", id);
+    const { data } = await supabase
+      .from("appointments")
+      .select("*")
+      .eq("client_id", id);
     const app_data = data;
- 
+
     const newAppointments = [];
     for (let index = 0; index < app_data.length; index++) {
       const { data: pat_data } = await supabase
         .from("patients")
         .select("*")
         .eq("pat_id", app_data[index].pat_id);
+       
       const { data: slot_data } = await supabase
-      .from("slots")
-      .select("*")
-      .eq("slot_id", app_data[index].slot_id);
-
+        .from("slots")
+        .select("*")
+        .eq("slot_id", app_data[index].slot_id);
       newAppointments.push({
-        date: slot_data[0].slot_start_time,
+        date: slot_data[0].slot_date,
+        app_time: slot_data[0].slot_start_time,
         name: pat_data[0].pat_name,
         phone: pat_data[0].pat_ph_num,
         id: app_data[index].appointment_id,
@@ -88,30 +104,31 @@ function Appointments() {
     setAppointments(newAppointments);
   }
 
-
-
-  const handleInputChange = async (appointment_id,visit_status,name) => {
-   if (!visit_status) {
-    toast.success(`Message Sent to ${name}`, {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
-   }
-const { data, error } = await supabase
-  .from('appointments')
-  .upsert({ appointment_id: appointment_id, visit_status: visit_status ? false : true })
-  .select();
-console.log(error);
+  const handleInputChange = async (appointment_id, visit_status, name) => {
+    if (!visit_status) {
+      toast.success(`Message Sent to ${name}`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    }
+    const { data, error } = await supabase
+      .from("appointments")
+      .upsert({
+        appointment_id: appointment_id,
+        visit_status: visit_status ? false : true,
+      })
+      .select();
+    console.log(error);
   };
 
   return (
-    <div className="m-4   overflow-hidden ">
+    <div className="m-4   font-poppins   overflow-hidden ">
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -123,10 +140,13 @@ console.log(error);
         draggable
         pauseOnHover
         theme="light"
-   
       />
 
-      <h1 className="text-2xl font-semibold mb-4 pl-2">Appointments</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold mb-4 pl-2">Appointments</h1>
+
+        <Dropdown options={options} onSelect={handleSelect} />
+      </div>
       <table className=" min-w-full border-2 rounded-lg border-gray-100 px-10 divide-y divide-gray-200">
         <thead className="">
           <tr>
@@ -148,35 +168,43 @@ console.log(error);
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {appointments
-            .sort((a, b) => a.token - b.token) // Sort appointments in ascending order of token
-            .map((appointment, index) => (
-              <tr key={appointment.token}>
-                <td className="px-6 py-7 whitespace-nowrap font-semibold">
-                  {appointment.date}
-                </td>
-                <td className="px-6 py-7 whitespace-nowrap font-semibold">
-                  {appointment.name}
-                  
-                </td>
-                <td className="px-6 py-7 whitespace-nowrap">
-                  {appointment.phone.slice(2)} 
-                </td>
-                <td className="px-6 py-7 whitespace-nowrap">
-                  {appointment.token}
-                </td>
-                <td className="px-6 py-7 whitespace-nowrap">
-                  <Checkbox
-                    color="success"
-                    onChange={() => handleInputChange(appointment.id, appointment.visit_status, index < appointments.length - 1 ? `, ${appointments[index + 1].name}` : "")}
-                    checked={appointment.visit_status ? true : false}
-                  />
-                </td>
-              </tr>
-            ))}
+        {appointments
+  .filter(appointment => appointment.date === selectedOption)
+  .sort((a, b) => a.token - b.token) // Sort appointments in ascending order of token
+  .map((appointment, index) => (
+    <tr key={appointment.token}>
+      <td className="px-6 py-7 whitespace-nowrap font-semibold">
+        {appointment.app_time}
+      </td>
+      <td className="px-6 py-7 whitespace-nowrap font-semibold">
+        {appointment.name}
+      </td>
+      <td className="px-6 py-7 whitespace-nowrap">
+        {appointment.phone.slice(2)}
+      </td>
+      <td className="px-6 py-7 whitespace-nowrap">
+        {appointment.token}
+      </td>
+      <td className="px-6 py-7 whitespace-nowrap">
+        <Checkbox
+          color="success"
+          onChange={() =>
+            handleInputChange(
+              appointment.id,
+              appointment.visit_status,
+              index < appointments.length - 1
+                ? `, ${appointments[index + 1].name}`
+                : ""
+            )
+          }
+          checked={appointment.visit_status ? true : false}
+        />
+      </td>
+    </tr>
+  ))}
+
         </tbody>
       </table>
-      
     </div>
   );
 }

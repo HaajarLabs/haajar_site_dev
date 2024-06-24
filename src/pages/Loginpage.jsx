@@ -56,7 +56,7 @@ useEffect(() => {
           shouldCreateUser: false,
         },
       })
-      console.log(data)
+      console.log(error)
 if (data) {
   setSuccess(true);
 }

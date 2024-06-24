@@ -16,7 +16,7 @@
     "@mui/icons-material": "^5.15.10",
     "@mui/material": "^5.15.10",
     "@supabase/auth-ui-react": "^0.4.7",
-    "@supabase/supabase-js": "^2.43.4",
+    "@supabase/supabase-js": "^2.43.5",
     "dotenv": "^16.4.5",
     "framer-motion": "^11.0.5",
     "react": "^18.2.0",

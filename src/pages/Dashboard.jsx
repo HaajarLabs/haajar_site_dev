@@ -266,7 +266,7 @@ const Dashboard = () => {
       .from("appointments")
       .select("*")
       .eq("client_id", id);
-    console.log(id);
+    // console.log(id);
     setTotalappoinments(data.length);
   }
   return (

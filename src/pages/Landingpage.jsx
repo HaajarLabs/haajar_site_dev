@@ -8,36 +8,92 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 const apiKey = process.env.SUPABASE_KEY;
 const apiUrl = process.env.SUPABASE_URL;
-const supabase = createClient(
-  apiUrl,
-  apiKey
-);
+const supabase = createClient(apiUrl, apiKey);
 const Landingpage = () => {
-
-
   const navigate = useNavigate();
-useEffect(() => async () =>{
-  var accessTokenObj = JSON.parse(localStorage.getItem("sb-lgzjqxhqfstjgehntfxi-auth-token"));
-if(accessTokenObj['user']['aud']=="authenticated"){
-  navigate("/Dashboard")
-  navigate(0)
+  // useEffect(() => async () =>{
+
+  //  supabase.auth.getUser().then((user) => {
+  //       console.log(user)
+  //       // if (user.error.status == 400) {
+  //       //   navigate("/Login");
+  //       // }else{
+  //       //   if (user.data.user.aud == "authenticated") {
+  //       //     navigate("/Dashboard");
+  //       //     getData(user.data.user.id);
+  //       //   } else {
+  //       //     navigate("/Login");
+  //       //   }
+  //       // }
+  //     });
+
   
- 
-} else {
-  navigate("/")
-  navigate(0)
+  // // supabase.auth.onAuthStateChange(async(event)=>{
+  // //   if (event == "SIGNED_IN") {
+  // //     navigate("/Dashboard")
+  // //     console.log("Signed in")
+  // //   } else {
+  // //     console.log("Not signed in")
+  // //     navigate("/")
+  // //   }
+  // // });
+  // },[]);
+
+  useEffect(() => {
+      var accessTokenObj = JSON.parse(localStorage.getItem("sb-lgzjqxhqfstjgehntfxi-auth-token"));
+if (accessTokenObj==null) {
+  const searchParams = new URLSearchParams(location.search);
+  const token_hash = searchParams.get("token_hash");
+  const type = searchParams.get("type");
+
+  const verifyOtp = async () => {
+    if (token_hash && type) {
+      const { error } = await supabase.auth.verifyOtp({ type, token_hash });
+      if (!error) {
+        console.log("OTP verified successfully");
+        supabase.auth.getUser().then((user) => {
+          if ((user.error == null)) {
+            if (user.data.user.aud == "authenticated") {
+              navigate("/Dashboard");
+              console.log("Signed in");
+              getData(user.data.user.id);
+            } else {
+              navigate("/Login");
+              console.log("Not signed in");
+            }
+          } else {
+            console.log("Error verifying OTP:", error.message);
+          }
+        });
+      } else {
+        console.log("Error verifying OTP:", error.message);
+      }
+    } else {
+      console.log("No token_hash or type found in URL");
+    }
+  };
+  verifyOtp();
+}else{
+  if(accessTokenObj['user']['aud']=="authenticated"){
+    navigate("/Dashboard")
+    navigate(0)
+
+  } else {
+    navigate("/")
+    navigate(0)
+  }
+   
 }
-// supabase.auth.onAuthStateChange(async(event)=>{
-//   if (event == "SIGNED_IN") {
-//     navigate("/Dashboard")
-//     console.log("Signed in")
-//   } else {  
-//     console.log("Not signed in")
-//     navigate("/")
-//   }
-// });
-},[]);
-  
+
+
+
+
+ 
+   
+
+ 
+  }, [location.search, navigate]);
+
   return (
     <div className=" w-full  text-black overflow-hidden scrollbar-thin scrollbar-webkit">
       <div className={`${styles.paddingX} ${styles.flexCenter}`}>
@@ -45,18 +101,12 @@ if(accessTokenObj['user']['aud']=="authenticated"){
           <Navbar />{" "}
         </div>
       </div>
-
-       
-          
-            <Hero />{" "}
-      
-   
-        {/* <div className={` ${styles.paddingX}`}>
+      <Hero />{" "}
+      {/* <div className={` ${styles.paddingX}`}>
           <div className={`${styles.boxWidth}`}>
             <Stats />{" "}
           </div>
         </div> */}
- 
       <Footer />
     </div>
   );

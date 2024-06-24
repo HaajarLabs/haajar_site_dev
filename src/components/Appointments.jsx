@@ -11,7 +11,6 @@ function Appointments() {
   const apiUrl = process.env.SUPABASE_URL;
   const supabase = createClient(apiUrl, apiKey);
   const [appointments, setAppointments] = useState([]);
-  const [selectedOption, setSelectedOption] = useState();
   const handleSelect = (option) => {
   
     setSelectedOption(option);
@@ -21,13 +20,14 @@ function Appointments() {
   const day = date.getDate();
   const month = date.getMonth() + 1;
   const year = date.getFullYear();
-  const today = year + "-" + month + "-" + day;
+  const today = year + "-" +"0"+ month + "-" + day;
+  const [selectedOption, setSelectedOption] = useState(today);
   const tomorrow = year + "-" + month + "-" + (day + 1);
   const dayAfterTomorrow = year + "-" + month + "-" + (day + 2);
   const options = [today, tomorrow, dayAfterTomorrow];
   // Fetch appointments data here
   useEffect(() => {
-    console.log(options); 
+  
     supabase.auth.getUser().then((user) => {
       getData(user.data.user.id);
     });
@@ -101,8 +101,12 @@ function Appointments() {
         visit_status: app_data[index].visit_status,
       });
     }
+    
     setAppointments(newAppointments);
+
+  
   }
+ 
 
   const handleInputChange = async (appointment_id, visit_status, name) => {
     if (!visit_status) {
@@ -168,41 +172,40 @@ function Appointments() {
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-        {appointments
-  .filter(appointment => appointment.date === selectedOption)
-  .sort((a, b) => a.token - b.token) // Sort appointments in ascending order of token
-  .map((appointment, index) => (
-    <tr key={appointment.token}>
-      <td className="px-6 py-7 whitespace-nowrap font-semibold">
-        {appointment.app_time}
-      </td>
-      <td className="px-6 py-7 whitespace-nowrap font-semibold">
-        {appointment.name}
-      </td>
-      <td className="px-6 py-7 whitespace-nowrap">
-        {appointment.phone.slice(2)}
-      </td>
-      <td className="px-6 py-7 whitespace-nowrap">
-        {appointment.token}
-      </td>
-      <td className="px-6 py-7 whitespace-nowrap">
-        <Checkbox
-          color="success"
-          onChange={() =>
-            handleInputChange(
-              appointment.id,
-              appointment.visit_status,
-              index < appointments.length - 1
-                ? `, ${appointments[index + 1].name}`
-                : ""
-            )
-          }
-          checked={appointment.visit_status ? true : false}
-        />
-      </td>
-    </tr>
-  ))}
-
+          {appointments
+            .filter(appointment => appointment.date === selectedOption)
+            .sort((a, b) => a.token - b.token) // Sort appointments in ascending order of token
+            .map((appointment, index) => (
+              <tr key={appointment.token}>
+                <td className="px-6 py-7 whitespace-nowrap font-semibold">
+                  {appointment.app_time}
+                </td>
+                <td className="px-6 py-7 whitespace-nowrap font-semibold">
+                  {appointment.name}
+                </td>
+                <td className="px-6 py-7 whitespace-nowrap">
+                  {appointment.phone.slice(2)}
+                </td>
+                <td className="px-6 py-7 whitespace-nowrap">
+                  {appointment.token}
+                </td>
+                <td className="px-6 py-7 whitespace-nowrap">
+                  <Checkbox
+                    color="success"
+                    onChange={() =>
+                      handleInputChange(
+                        appointment.id,
+                        appointment.visit_status,
+                        index < appointments.length - 1
+                          ? `, ${appointments[index + 1].name}`
+                          : ""
+                      )
+                    }
+                    checked={appointment.visit_status ? true : false}
+                  />
+                </td>
+              </tr>
+            ))}
         </tbody>
       </table>
     </div>

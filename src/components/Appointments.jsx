@@ -121,7 +121,7 @@ function Appointments() {
   ) => {
 
    if (visit_status==false) {
-    let text = "Press a button!\nEither OK or Cancel."
+    let text = "Press ok to sent message to "+name+" for appointment reminder.";
     if (confirm(text) == true) {
      console.log("You pressed OK!");
      const messageData = {

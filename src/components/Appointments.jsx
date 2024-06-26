@@ -25,6 +25,7 @@ function Appointments() {
   const tomorrow = year + "-"+"0" + month + "-" + (day + 1);
   const dayAfterTomorrow = year + "-"+"0"+ month + "-" + (day + 2);
   const options = [today, tomorrow, dayAfterTomorrow];
+  const [doc_name,setDocName] = useState("Dr. Haajar");
   // Fetch appointments data here
   useEffect(() => {
   
@@ -34,6 +35,8 @@ function Appointments() {
   }, []);
 
   async function getData(id) {
+   const {data:drData} = await supabase.from("profiles").select("*").eq("id", id);
+   setDocName(drData[0].full_name);
     const channel = supabase
       .channel("schema-db-changes")
       .on(
@@ -114,29 +117,59 @@ function Appointments() {
   }
  
 
-  const handleInputChange = async (appointment_id, visit_status, name) => {
-    if (!visit_status) {
-      toast.success(`Message Sent to ${name}`, {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
+  const handleInputChange = async (appointment_id, visit_status, name,number,) => {
+    
+const messageData = {
+"rec_num": number,
+"doctor_nam": doc_name,
+"reci_nam":name
+};
+console.log(messageData);
+    try {
+      const response = await fetch('https://haajar-client.azurewebsites.net/send_message', {
+       
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Add any additional headers if required
+        },
+        body: JSON.stringify(messageData), // Convert messageData to JSON string
       });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      const responseData = await response.json(); // Assuming response is JSON
+  
+      console.log('Message sent successfully:', responseData);
+      if (!visit_status) {
+        toast.success(`Message Sent to ${name}`, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      }
+      const user = (await supabase.auth.getUser()).data.user;
+      const { data, error } = await supabase
+        .from("appointments")
+        .upsert({
+          appointment_id: appointment_id,
+          visit_status: visit_status ? false : true,
+          client_id: user.id,
+        })
+        .select();
+      console.log(error);
+    } catch (error) {
+      console.error('Error sending message:', error.message);
+      throw error; // Throw error to handle in calling function
     }
-    const user = (await supabase.auth.getUser()).data.user;
-    const { data, error } = await supabase
-      .from("appointments")
-      .upsert({
-        appointment_id: appointment_id,
-        visit_status: visit_status ? false : true,
-        client_id: user.id,
-      })
-      .select();
-    console.log(error);
+   
   };
 
   return (
@@ -185,6 +218,7 @@ function Appointments() {
   .sort((a, b) => a.token - b.token) // Sort appointments in ascending order of token
   .map((appointment, index, array) => {
     const nextAppointment = index < array.length - 1 ? array[index + 1].name : "";
+    const nextAppointmentPh = index < array.length - 1 ? array[index + 1].phone : "";
     return (
       <tr key={appointment.token}>
         <td className="px-6 py-7 whitespace-nowrap font-semibold">
@@ -206,7 +240,8 @@ function Appointments() {
               handleInputChange(
                 appointment.id,
                 appointment.visit_status,
-                nextAppointment
+                nextAppointment,
+                nextAppointmentPh
               )
             }
             checked={appointment.visit_status ? true : false}

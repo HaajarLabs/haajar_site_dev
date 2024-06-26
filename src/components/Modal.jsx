@@ -243,12 +243,15 @@ const Modal = ({ onClose }) => {
               Phone Number
             </label>
             <input
-              type="text"
+              type="tel"
               id="phone"
               value={phone}
+              maxLength={10} // Restrict input to maximum 10 characters
+              pattern="[0-9]{10}" // Use pattern to allow only digits and exactly 10 characters
+              title="Please enter a 10-digit phone number"
+              required
               onChange={(e) => setPhone(e.target.value)}
               className="mt-1 block w-full h-10 border-green-300 px-2 border-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
             />
           </div>
           <label htmlFor="phone" className="block mt-1 mb-2 text-sm font-medium text-gray-700">

@@ -242,6 +242,8 @@ const Dashboard = () => {
     }
   }, []);
 
+
+
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
@@ -275,9 +277,10 @@ const Dashboard = () => {
       }
       // console.log(data);
       setAppDatas(data);
+
       const whatsappAppointments = data.filter(appointment => appointment.book_medium == 'whatsapp').length;
-      const upcomingAppointments =  data.filter(appointment => appointment.visit_status == true).length;
-      const pastAppointments = data.filter(appointment => appointment.visit_status == false).length;
+      const upcomingAppointments =  data.filter(appointment => appointment.visit_status == false).length;
+      const pastAppointments = data.filter(appointment => appointment.visit_status == true).length;
   
       setMetrics({ past: pastAppointments, upcoming: upcomingAppointments, whatsapp: whatsappAppointments });
       setTotalappoinments(data.length);
@@ -296,10 +299,12 @@ const Dashboard = () => {
       return;
     }
     // console.log(data);
+    // console.log(todayAppointments);
     setAppDatas(data);
+
     const whatsappAppointments = data.filter(appointment => appointment.book_medium == 'whatsapp').length;
-    const upcomingAppointments =  data.filter(appointment => appointment.visit_status == true).length;
-    const pastAppointments = data.filter(appointment => appointment.visit_status == false).length;
+    const upcomingAppointments =  data.filter(appointment => appointment.visit_status == false).length;
+    const pastAppointments = data.filter(appointment => appointment.visit_status == true).length;
 
     setMetrics({ past: pastAppointments, upcoming: upcomingAppointments, whatsapp: whatsappAppointments });
     setTotalappoinments(data.length);
@@ -343,7 +348,7 @@ const Dashboard = () => {
         </header>
         <main className="flex-1 overflow-y-auto p-6">
         <Metrics metrics={metrics}  />
-          <Appointments />
+          <Appointments  />
         </main>
         <FloatingButton data={app_datas} />  
       </div>

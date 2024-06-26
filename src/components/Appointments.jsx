@@ -119,7 +119,12 @@ function Appointments() {
     name,
     number
   ) => {
-    const messageData = {
+
+   if (visit_status==false) {
+    let text = "Press a button!\nEither OK or Cancel."
+    if (confirm(text) == true) {
+     console.log("You pressed OK!");
+     const messageData = {
       rec_num: number,
       doctor_nam: doc_name,
       reci_nam: name,
@@ -171,6 +176,22 @@ function Appointments() {
       console.error("Error sending message:", error.message);
       throw error; // Throw error to handle in calling function
     }
+    } else {
+     console.log("You pressed Cancel!");
+    }
+   
+   }else{
+    const user = (await supabase.auth.getUser()).data.user;
+      const { data, error } = await supabase
+        .from("appointments")
+        .upsert({
+          appointment_id: appointment_id,
+          visit_status: visit_status ? false : true,
+          client_id: user.id,
+        })
+        .select();
+      console.log(error);
+   }
   };
 
   return (

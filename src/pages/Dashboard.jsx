@@ -207,14 +207,16 @@
           </div> */
 }
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import NavItem from "../components/Navitem";
 import Appointments from "../components/Appointments";
 import logoicon from "../assets/logofirst1.png";
 import { createClient } from "@supabase/supabase-js";
-import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import Metrics from "../components/Metrics";
+import FloatingButton from "../components/Floatingbutton";
+
 
 const Dashboard = () => {
   const apiKey = process.env.SUPABASE_KEY;
@@ -222,33 +224,21 @@ const Dashboard = () => {
   const supabase = createClient(apiUrl, apiKey);
   const [totLAppointments, setTotalappoinments] = useState(0);
   const navigate = useNavigate();
-  // const [client_id, setClient_id] = useState("");
-  useEffect(() => {
-    // supabase.auth.getUser().then((user) => {
-    //   // console.log(user)
-    //   if (user.error.status == 400) {
-    //     navigate("/Login");
-    //   }else{
-    //     if (user.data.user.aud == "authenticated") {
-    //       navigate("/Dashboard");
-    //       getData(user.data.user.id);
-    //     } else {
-    //       navigate("/Login");
-    //     }
-    //   }
-    // });
+  const [metrics, setMetrics] = useState({ past: 0, upcoming: 0, whatsapp: 0 });
+  const [app_datas, setAppDatas] = useState();
 
+  useEffect(() => {
     var accessTokenObj = JSON.parse(
       localStorage.getItem("sb-lgzjqxhqfstjgehntfxi-auth-token")
     );
     if (accessTokenObj != null) {
-      if (accessTokenObj["user"]["aud"] == "authenticated") {
-        navigate("/Dashboard");
+      if (accessTokenObj["user"]["aud"] === "authenticated") {
         getData(accessTokenObj["user"]["id"]);
+      } else {
+        navigate("/");
       }
     } else {
       navigate("/");
-      navigate(0);
     }
   }, []);
 
@@ -262,53 +252,100 @@ const Dashboard = () => {
   };
 
   async function getData(id) {
+
+    const channel = supabase
+    .channel("schema-db-changes")
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "appointments",
+      },
+
+      async (payload) => {
+       
+        const { data, error } = await supabase
+        .from("appointments")
+        .select("*")
+        .eq("client_id", id);
+      if (error) {
+        console.error("Error fetching data:", error.message);
+        return;
+      }
+      // console.log(data);
+      setAppDatas(data);
+      const whatsappAppointments = data.filter(appointment => appointment.book_medium == 'whatsapp').length;
+      const upcomingAppointments =  data.filter(appointment => appointment.visit_status == true).length;
+      const pastAppointments = data.filter(appointment => appointment.visit_status == false).length;
+  
+      setMetrics({ past: pastAppointments, upcoming: upcomingAppointments, whatsapp: whatsappAppointments });
+      setTotalappoinments(data.length);
+      }
+    )
+    .subscribe();
+
+
+
     const { data, error } = await supabase
       .from("appointments")
       .select("*")
       .eq("client_id", id);
-    // console.log(id);
+    if (error) {
+      console.error("Error fetching data:", error.message);
+      return;
+    }
+    // console.log(data);
+    setAppDatas(data);
+    const whatsappAppointments = data.filter(appointment => appointment.book_medium == 'whatsapp').length;
+    const upcomingAppointments =  data.filter(appointment => appointment.visit_status == true).length;
+    const pastAppointments = data.filter(appointment => appointment.visit_status == false).length;
+
+    setMetrics({ past: pastAppointments, upcoming: upcomingAppointments, whatsapp: whatsappAppointments });
     setTotalappoinments(data.length);
   }
-  return (
-    <div className="grid min-h-screen w-full lg:grid-cols-[280px_1fr]">
-      <div className="hidden border-r bg-gray-100/40 lg:block ">
-        <div className="flex h-full max-h-screen justify-between flex-col gap-2">
-          <div>
-            <div className="flex h-[60px] items-center border-b px-5">
-              <div className="flex items-center gap-2 font-semibold">
-                <Link to="/Haajar">
-                  <img
-                    src={logoicon}
-                    className="w-36 animate-flipbottom transition-opacity duration-1000"
-                    alt="logo"
-                  />
-                </Link>
-              </div>
-            </div>
 
-            <nav className="grid px-4 py-3 items-start text-sm font-medium">
+  return (
+    <div className="flex h-screen">
+      <div className="hidden lg:flex flex-col bg-gray-100/40 border-r w-64">
+        <div className="flex flex-col h-full justify-between">
+          <div>
+            <div className="flex items-center h-[60px] border-b px-5">
+              <Link to="/Haajar">
+                <img
+                  src={logoicon}
+                  className="w-36 animate-flipbottom transition-opacity duration-1000"
+                  alt="logo"
+                />
+              </Link>
+            </div>
+            <nav className="flex flex-col px-4 py-3 text-sm font-medium">
               <NavItem to="/Dashboard" label="Appointments" />
               <NavItem to="/Dashboard/History" label="History" />
               <NavItem to="/Dashboard/Settings" label="Settings" />
             </nav>
           </div>
-          <div className="px-4 py-3 ">
+          <div className="px-4 py-3">
             <button
               onClick={signOut}
-              className="bg-rose-400 w-full hover:bg-rose-500 text-white font-vilane_bold py-2 px-4 rounded"
+              className="w-full bg-rose-400 hover:bg-rose-500 text-white font-bold py-2 px-4 rounded"
             >
               Sign Out
             </button>
           </div>
         </div>
       </div>
-      <div className="flex flex-col">
-        <header className="flex h-14 lg:h-[60px] items-center gap-4 border-b bg-gray-100/40 px-6 justify-between lg:justify-end">
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <header className="flex  justify-end items-center h-[60px]  bg-gray-100/40 border-b px-6">
           <h1 className="text-lg font-semibold">
             Total appointments: {totLAppointments}
           </h1>
         </header>
-        <Appointments />
+        <main className="flex-1 overflow-y-auto p-6">
+        <Metrics metrics={metrics}  />
+          <Appointments />
+        </main>
+        <FloatingButton data={app_datas} />  
       </div>
     </div>
   );

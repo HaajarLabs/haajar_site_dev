@@ -20,13 +20,18 @@ const Dropdown = ({ options, onSelect }) => {
   }, [])
   
 
+  const convertDateFormat = (dateString) => {
+    const [year, month, day] = dateString.split('-');
+    return `${day}-${month}-${year}`;
+  };
+
   return (
-    <div className="relative inline-block">
+    <div className="relative inline-block ">
       <button
-        className="bg-blue-500 text-white py-2 px-4 rounded inline-flex items-center"
+        className="border-blue-200 border-2 bg-blue-100 text-blue-400 font-poppins font-bold py-2 px-4 rounded inline-flex items-center"
         onClick={toggleDropdown}
       >
-        <span>{selectedOption}</span>
+        <span>{selectedOption ? convertDateFormat(selectedOption) :selectedOption}</span>
         <svg
           className="fill-current h-4 w-4 ml-2"
           xmlns="http://www.w3.org/2000/svg"
@@ -45,7 +50,7 @@ const Dropdown = ({ options, onSelect }) => {
                 className="block px-4 py-2 text-gray-800 cursor-pointer hover:bg-gray-200"
                 onClick={() => handleOptionClick(option)}
               >
-                {option}
+                {convertDateFormat(option)}
               </div>
             ))}
         </div>

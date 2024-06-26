@@ -23,7 +23,7 @@ function Appointments() {
   const today = year + "-" +"0"+ month + "-" + day;
   const [selectedOption, setSelectedOption] = useState(today);
   const tomorrow = year + "-"+"0" + month + "-" + (day + 1);
-  const dayAfterTomorrow = year + "-"+"0" + month + "-" + (day + 2);
+  const dayAfterTomorrow = year + "-"+"0"+ month + "-" + (day + 2);
   const options = [today, tomorrow, dayAfterTomorrow];
   // Fetch appointments data here
   useEffect(() => {
@@ -46,34 +46,40 @@ function Appointments() {
 
         async (payload) => {
           const { data } = await supabase
-            .from("appointments")
+          .from("appointments")
+          .select("*")
+          .eq("client_id", id);
+        const app_data = data;
+    
+        const newAppointments = [];
+        for (let index = 0; index < app_data.length; index++) {
+          const { data: pat_data } = await supabase
+            .from("patients")
             .select("*")
-            .eq("client_id", id);
-          const app_data = data;
-
-          const newAppointments = [];
-          for (let index = 0; index < app_data.length; index++) {
-            const { data: pat_data } = await supabase
-              .from("patients")
-              .select("*")
-              .eq("pat_id", app_data[index].pat_id);
-            const { data: slot_data } = await supabase
-              .from("slots")
-              .select("*")
-              .eq("slot_id", app_data[index].slot_id);
-            newAppointments.push({
-              date: slot_data[0].slot_start_time,
-              name: pat_data[0].pat_name,
-              phone: pat_data[0].pat_ph_num,
-              token: app_data[index].slot_id,
-              id: app_data[index].appointment_id,
-              visit_status: app_data[index].visit_status,
-            });
-          }
-          setAppointments(newAppointments);
+            .eq("pat_id", app_data[index].pat_id);
+           
+          const { data: slot_data } = await supabase
+            .from("slots")
+            .select("*")
+            .eq("slot_id", app_data[index].slot_id);
+          newAppointments.push({
+            date: slot_data[0].slot_date,
+            app_time: slot_data[0].slot_start_time,
+            name: pat_data[0].pat_name,
+            phone: pat_data[0].pat_ph_num,
+            id: app_data[index].appointment_id,
+            token: app_data[index].slot_id,
+            visit_status: app_data[index].visit_status,
+          });
+        }
+        
+        setAppointments(newAppointments);
+    
         }
       )
       .subscribe();
+
+
     const { data } = await supabase
       .from("appointments")
       .select("*")
@@ -121,11 +127,13 @@ function Appointments() {
         theme: "light",
       });
     }
+    const user = (await supabase.auth.getUser()).data.user;
     const { data, error } = await supabase
       .from("appointments")
       .upsert({
         appointment_id: appointment_id,
         visit_status: visit_status ? false : true,
+        client_id: user.id,
       })
       .select();
     console.log(error);
@@ -146,8 +154,8 @@ function Appointments() {
         theme="light"
       />
 
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold mb-4 pl-2">Appointments</h1>
+      <div className="flex items-center mb-1 justify-between">
+        <h1 className="text-2xl font-semibold  pl-2">Appointments</h1>
 
         <Dropdown options={options} onSelect={handleSelect} />
       </div>
@@ -172,40 +180,42 @@ function Appointments() {
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {appointments
-            .filter(appointment => appointment.date === selectedOption)
-            .sort((a, b) => a.token - b.token) // Sort appointments in ascending order of token
-            .map((appointment, index) => (
-              <tr key={appointment.token}>
-                <td className="px-6 py-7 whitespace-nowrap font-semibold">
-                  {appointment.app_time}
-                </td>
-                <td className="px-6 py-7 whitespace-nowrap font-semibold">
-                  {appointment.name}
-                </td>
-                <td className="px-6 py-7 whitespace-nowrap">
-                  {appointment.phone.slice(2)}
-                </td>
-                <td className="px-6 py-7 whitespace-nowrap">
-                  {appointment.token}
-                </td>
-                <td className="px-6 py-7 whitespace-nowrap">
-                  <Checkbox
-                    color="success"
-                    onChange={() =>
-                      handleInputChange(
-                        appointment.id,
-                        appointment.visit_status,
-                        index < appointments.length - 1
-                          ? `, ${appointments[index + 1].name}`
-                          : ""
-                      )
-                    }
-                    checked={appointment.visit_status ? true : false}
-                  />
-                </td>
-              </tr>
-            ))}
+        {appointments
+  .filter(appointment => appointment.date === selectedOption)
+  .sort((a, b) => a.token - b.token) // Sort appointments in ascending order of token
+  .map((appointment, index, array) => {
+    const nextAppointment = index < array.length - 1 ? array[index + 1].name : "";
+    return (
+      <tr key={appointment.token}>
+        <td className="px-6 py-7 whitespace-nowrap font-semibold">
+          {appointment.app_time}
+        </td>
+        <td className="px-6 py-7 whitespace-nowrap font-semibold">
+          {appointment.name}
+        </td>
+        <td className="px-6 py-7 whitespace-nowrap">
+          {appointment.phone.slice(2)}
+        </td>
+        <td className="px-6 py-7 whitespace-nowrap">
+          {appointment.token}
+        </td>
+        <td className="px-6 py-7 whitespace-nowrap">
+          <Checkbox
+            color="success"
+            onChange={() =>
+              handleInputChange(
+                appointment.id,
+                appointment.visit_status,
+                nextAppointment
+              )
+            }
+            checked={appointment.visit_status ? true : false}
+          />
+        </td>
+      </tr>
+    );
+  })}
+
         </tbody>
       </table>
     </div>

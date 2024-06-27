@@ -27,7 +27,9 @@ module.exports = {
       backgroundImage: {
 
         'hero-pattern': "url('./src/ssets/hero.PNG')",
-        'login-back': "url('./src/assets/login.PNG')"
+        'login-back': "url('./src/assets/login.PNG')",
+        'pattern': "url('./src/assets/about_bg.svg')",
+
 
       },
       colors: {
@@ -57,6 +59,6 @@ module.exports = {
     },
   },
   plugins: [
-    require('tailwind-scrollbar'), 
+    require('tailwind-scrollbar')({ nocompatible: true }),
   ],
 };

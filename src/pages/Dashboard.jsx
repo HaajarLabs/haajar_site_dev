@@ -350,7 +350,7 @@ const Dashboard = () => {
         <Metrics metrics={metrics}  />
           <Appointments  />
         </main>
-        <FloatingButton data={app_datas} />  
+        <FloatingButton />  
       </div>
     </div>
   );

@@ -23,7 +23,7 @@ const Footer = () => {
             Effortless Appointment Management.
           </p>
           <p className="pl-20 tracking-wider text-lg font-vilane_Regular flex gap-2 items-center">
-            <CiMail size={30} /> haajar.team@gmail.com
+            <CiMail size={30} /> <a href="mailto:haajar.team@gmail.com" >haajar.team@gmail.com</a>
           </p>
         </div>
         <div className="flex gap-5">

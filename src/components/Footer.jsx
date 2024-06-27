@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo2.png";
 import { CiMail } from "react-icons/ci";
-import { FaFacebook } from "react-icons/fa";
+import { FaFacebookSquare } from "react-icons/fa";
 import { FaInstagramSquare } from "react-icons/fa";
 import { FaSquareXTwitter } from "react-icons/fa6";
 const Footer = () => {
@@ -71,7 +71,7 @@ const Footer = () => {
               {" "}
               <Link to="https://www.facebook.com/profile.php?id=61561222053552">
                 <p className="flex gap-1 justify-center items-center hover:text-gray-300 ease-in-out transition text-gray-500 text-left">
-                  <FaFacebook size={20} /> Facebook
+                  <FaFacebookSquare size={20} /> Facebook
                 </p>
               </Link>
             </li>

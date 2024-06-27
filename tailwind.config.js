@@ -28,7 +28,7 @@ module.exports = {
 
         'hero-pattern': "url('./src/ssets/hero.PNG')",
         'login-back': "url('./src/assets/login.PNG')",
-        'pattern': "url('./src/assets/about_bg.svg')",
+        'pattern': "url('/about_bg.svg')",
 
 
       },

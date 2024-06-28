@@ -16,7 +16,7 @@ const Aboutpage = () => {
      <div>
         <div className='relative flex-col font-vilane_bold  text-white'>
           <h1 className='text-6xl'>About</h1>
-          <h1 className='text-8xl'>Haajar.in</h1>
+          <h1 className='text-8xl'>Haajar</h1>
         </div>
         <div className='relative mt-5  font-vilane_Extra_light text-white  tracking-wide text-lg'>
           <p>Welcome to Haajar, your go-to SaaS solution for effortless appointment management. We specialize in streamlining the scheduling process, making it seamless and stress-free. Whether you’re a small business owner, a busy professional, or running a large organization, Haajar is here to simplify your appointment booking, saving you time and enhancing your productivity. Join us and experience the future of appointment management today!</p>

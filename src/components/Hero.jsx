@@ -6,10 +6,7 @@ import "@dotlottie/react-player/dist/index.css";
 
 const Hero = () => {
   return (
-    <div
-      id="home"
-      className="h-screen px-7 md:px-32 md:py-7 "
-    >
+    <div id="home" className="h-screen px-7 md:px-32 md:py-7 xs:flex xs:flex-col xs:justify-center xs:flex-1 xs:-mt-8 ">
       {/* <div className="flex flex-rowjustify-between  w-full ">
         <div className="">
           <h1 className="flex-1 font-semibold ss:text-[72px] text-[50px]">
@@ -27,37 +24,37 @@ const Hero = () => {
           src="https://lottie.host/b7f5aa87-af57-4d69-bcaf-5ee11ccf1b9b/CRVZemj3UF.json"
         ></DotLottiePlayer>
       </div> */}
-        <DotLottiePlayer
-          speed={0.1}
-          autoplay
-          className=" absolute opacity-20 md:left-[-600px] md:scale-100 scale-150 left-[-250px] top-[-10px] md:top-[100px] -z-50"
-          loop
-          src="https://lottie.host/1628171c-8c70-4038-a4d9-fbefbbe3c62a/kV416BwwZG.json"
-        ></DotLottiePlayer>
-      <div className="flex z-50 h-auto md:justify-end md:pt-48 ss:pt-60 pt-40 ">
+      <DotLottiePlayer
+        speed={0.1}
+        autoplay
+        className=" absolute opacity-20 md:left-[-600px] md:scale-100 scale-150 left-[-250px] top-[-10px] md:top-[100px] -z-50"
+        loop
+        src="https://lottie.host/1628171c-8c70-4038-a4d9-fbefbbe3c62a/kV416BwwZG.json"
+      ></DotLottiePlayer>
+      <div className="flex z-50 h-auto md:justify-end md:pt-48   ">
         <div className=" text-center flex-col  md:text-left leading-8 ">
           <h1 className="md:text-4xl text-3xl font-vilane_Regular pb-5">
-            Managing <span className=" text-[#ff6b6b] md:text-5xl text-4xl">Appointments</span> made easy!
+            Managing{" "}
+            <span className=" text-[#ff6b6b] md:text-5xl text-4xl">
+              Appointments
+            </span>{" "}
+            made easy!
           </h1>{" "}
-          
           <span className="font-vilane_Light ss:text-lg  md:text-xl ">
             Simplifying customer bookings so that you can focus on delivering
             quality.
           </span>
-          <div className="md:pt-3 ss:pt-6 pt-5"><button class="bg-rose-500 hover:bg-rose-700 text-white  font-vilane_bold py-1 px-4 rounded">
-  Book Demo
-</button></div>
+          <div className="md:pt-3 ss:pt-6 pt-5">
+            <button class="bg-rose-500 hover:bg-rose-700 text-white  font-vilane_bold py-1 px-4 rounded">
+              Book Demo
+            </button>
+          </div>
         </div>
-       
+       </div>
+
+        <div className=" md:hidden text-gray-500 flex justify-center">
+        <IoIosArrowDown size={50} className=" absolute inline-block  bottom-2 " />
       </div>
-
-     
-
-     <div className=" md:hidden text-gray-500 flex justify-center">
-      <IoIosArrowDown size={50} className="mt-52" />
-    
-     </div>
-
     </div>
   );
 };

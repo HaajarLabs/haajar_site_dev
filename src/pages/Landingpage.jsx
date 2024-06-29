@@ -95,7 +95,7 @@ if (accessTokenObj==null) {
   }, [location.search, navigate]);
 
   return (
-    <div className=" w-full  text-black overflow-hidden scrollbar-thin scrollbar-webkit">
+    <div className=" w-full  text-black overflow-hidden ">
       <div className={`${styles.paddingX} ${styles.flexCenter}`}>
         <div className={`${styles.boxWidth}`}>
           <Navbar />{" "}

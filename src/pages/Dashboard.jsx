@@ -216,7 +216,8 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Metrics from "../components/Metrics";
 import FloatingButton from "../components/Floatingbutton";
-
+import { BsThreeDots } from "react-icons/bs";
+import { FaChevronLeft } from "react-icons/fa6";
 
 const Dashboard = () => {
   const apiKey = process.env.SUPABASE_KEY;
@@ -226,6 +227,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [metrics, setMetrics] = useState({ past: 0, upcoming: 0, whatsapp: 0 });
   const [app_datas, setAppDatas] = useState();
+  const [navclicked, setNavclicked] = useState(false);
 
   useEffect(() => {
     var accessTokenObj = JSON.parse(
@@ -242,8 +244,6 @@ const Dashboard = () => {
     }
   }, []);
 
-
-
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
@@ -254,41 +254,47 @@ const Dashboard = () => {
   };
 
   async function getData(id) {
-
     const channel = supabase
-    .channel("schema-db-changes")
-    .on(
-      "postgres_changes",
-      {
-        event: "*",
-        schema: "public",
-        table: "appointments",
-      },
+      .channel("schema-db-changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "appointments",
+        },
 
-      async (payload) => {
-       
-        const { data, error } = await supabase
-        .from("appointments")
-        .select("*")
-        .eq("client_id", id);
-      if (error) {
-        console.error("Error fetching data:", error.message);
-        return;
-      }
-      // console.log(data);
-      setAppDatas(data);
+        async (payload) => {
+          const { data, error } = await supabase
+            .from("appointments")
+            .select("*")
+            .eq("client_id", id);
+          if (error) {
+            console.error("Error fetching data:", error.message);
+            return;
+          }
+          // console.log(data);
+          setAppDatas(data);
 
-      const whatsappAppointments = data.filter(appointment => appointment.book_medium == 'whatsapp').length;
-      const upcomingAppointments =  data.filter(appointment => appointment.visit_status == false).length;
-      const pastAppointments = data.filter(appointment => appointment.visit_status == true).length;
-  
-      setMetrics({ past: pastAppointments, upcoming: upcomingAppointments, whatsapp: whatsappAppointments });
-      setTotalappoinments(data.length);
-      }
-    )
-    .subscribe();
+          const whatsappAppointments = data.filter(
+            (appointment) => appointment.book_medium == "whatsapp"
+          ).length;
+          const upcomingAppointments = data.filter(
+            (appointment) => appointment.visit_status == false
+          ).length;
+          const pastAppointments = data.filter(
+            (appointment) => appointment.visit_status == true
+          ).length;
 
-
+          setMetrics({
+            past: pastAppointments,
+            upcoming: upcomingAppointments,
+            whatsapp: whatsappAppointments,
+          });
+          setTotalappoinments(data.length);
+        }
+      )
+      .subscribe();
 
     const { data, error } = await supabase
       .from("appointments")
@@ -302,20 +308,36 @@ const Dashboard = () => {
     // console.log(todayAppointments);
     setAppDatas(data);
 
-    const whatsappAppointments = data.filter(appointment => appointment.book_medium == 'whatsapp').length;
-    const upcomingAppointments =  data.filter(appointment => appointment.visit_status == false).length;
-    const pastAppointments = data.filter(appointment => appointment.visit_status == true).length;
+    const whatsappAppointments = data.filter(
+      (appointment) => appointment.book_medium == "whatsapp"
+    ).length;
+    const upcomingAppointments = data.filter(
+      (appointment) => appointment.visit_status == false
+    ).length;
+    const pastAppointments = data.filter(
+      (appointment) => appointment.visit_status == true
+    ).length;
 
-    setMetrics({ past: pastAppointments, upcoming: upcomingAppointments, whatsapp: whatsappAppointments });
+    setMetrics({
+      past: pastAppointments,
+      upcoming: upcomingAppointments,
+      whatsapp: whatsappAppointments,
+    });
     setTotalappoinments(data.length);
   }
+  const handleButtonClick = (value) => {
+    setNavclicked(navclicked ? false : true);
+  };
 
   return (
     <div className="flex h-screen">
-      <div className="hidden lg:flex flex-col bg-gray-100/40 border-r w-64">
+     <div
+  className={`xs:absolute xs:z-50 xs:bg-white xs:h-screen ${navclicked ? "xs:translate-x-0" : "xs:-translate-x-full"} md:relative md:translate-x-0 transition-transform duration-500 ease-in-out lg:flex flex-col md:bg-gray-100/40 border-r w-64`}
+>
+
         <div className="flex flex-col h-full justify-between">
           <div>
-            <div className="flex items-center h-[60px] border-b px-5">
+            <div className="flex items-center justify-between h-[60px] border-b px-5">
               <Link to="/Haajar">
                 <img
                   src={logoicon}
@@ -323,6 +345,12 @@ const Dashboard = () => {
                   alt="logo"
                 />
               </Link>
+              <button
+                onClick={handleButtonClick}
+                className="bg-gray-300 p-2 md:hidden rounded-full"
+              >
+                <FaChevronLeft />
+              </button>
             </div>
             <nav className="flex flex-col px-4 py-3 text-sm font-medium">
               <NavItem to="/Dashboard" label="Appointments" />
@@ -340,17 +368,21 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="flex  justify-end items-center h-[60px]  bg-gray-100/40 border-b px-6">
+        <header className="flex  xs:justify-between md:justify-end items-center h-[60px]  bg-gray-100/40 border-b px-6">
+          <button onClick={handleButtonClick} className="md:hidden">
+            <BsThreeDots />
+          </button>
           <h1 className="text-lg font-semibold">
             Total appointments: {totLAppointments}
           </h1>
         </header>
         <main className="flex-1 overflow-y-auto p-6">
-        <Metrics metrics={metrics}  />
-          <Appointments  />
+          <Metrics metrics={metrics} />
+          <Appointments />
         </main>
-        <FloatingButton />  
+        <FloatingButton />
       </div>
     </div>
   );

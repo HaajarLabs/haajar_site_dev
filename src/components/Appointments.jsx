@@ -25,12 +25,12 @@ function Appointments() {
   const daytom = date.getDate();
   const monthtom = date.getMonth() + 1;
   const yeartom = date.getFullYear();
-  const tomorrow = yeartom + "-" + "0" + monthtom + "-" + daytom ;
+  const tomorrow = yeartom + "-" + "0" + monthtom + "-" + daytom;
   date.setDate(date.getDate() + 1);
   const daybf = date.getDate();
   const monthbf = date.getMonth() + 1;
   const yearbf = date.getFullYear();
-  const dayAfterTomorrow = yearbf + "-" + "0" + monthbf + "-" + daybf ;
+  const dayAfterTomorrow = yearbf + "-" + "0" + monthbf + "-" + daybf;
   const options = [today, tomorrow, dayAfterTomorrow];
   const [doc_name, setDocName] = useState("Dr. Haajar");
   // Fetch appointments data here
@@ -127,49 +127,67 @@ function Appointments() {
     name,
     number
   ) => {
+    if (visit_status == false) {
+      let text =
+        "Press ok to sent message to " + name + " for appointment reminder.";
+      if (confirm(text) == true) {
+        console.log("You pressed OK!");
+        const messageData = {
+          rec_num: number,
+          doctor_nam: doc_name,
+          reci_nam: name,
+        };
+        console.log(messageData);
+        try {
+          const response = await fetch(
+            "https://haajar-client.azurewebsites.net/send_message",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                // Add any additional headers if required
+              },
+              body: JSON.stringify(messageData), // Convert messageData to JSON string
+            }
+          );
 
-   if (visit_status==false) {
-    let text = "Press ok to sent message to "+name+" for appointment reminder.";
-    if (confirm(text) == true) {
-     console.log("You pressed OK!");
-     const messageData = {
-      rec_num: number,
-      doctor_nam: doc_name,
-      reci_nam: name,
-    };
-    console.log(messageData);
-    try {
-      const response = await fetch(
-        "https://haajar-client.azurewebsites.net/send_message",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            // Add any additional headers if required
-          },
-          body: JSON.stringify(messageData), // Convert messageData to JSON string
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+
+          const responseData = await response; // Assuming response is JSON
+
+          console.log("Message sent successfully:", responseData);
+          if (!visit_status) {
+            toast.success(`Message Sent to ${name}`, {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+            });
+          }
+          const user = (await supabase.auth.getUser()).data.user;
+          const { data, error } = await supabase
+            .from("appointments")
+            .upsert({
+              appointment_id: appointment_id,
+              visit_status: visit_status ? false : true,
+              client_id: user.id,
+            })
+            .select();
+          console.log(error);
+        } catch (error) {
+          console.error("Error sending message:", error.message);
+          throw error; // Throw error to handle in calling function
         }
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+      } else {
+        console.log("You pressed Cancel!");
       }
-
-      const responseData = await response; // Assuming response is JSON
-
-      console.log("Message sent successfully:", responseData);
-      if (!visit_status) {
-        toast.success(`Message Sent to ${name}`, {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
-      }
+    } else {
       const user = (await supabase.auth.getUser()).data.user;
       const { data, error } = await supabase
         .from("appointments")
@@ -180,26 +198,7 @@ function Appointments() {
         })
         .select();
       console.log(error);
-    } catch (error) {
-      console.error("Error sending message:", error.message);
-      throw error; // Throw error to handle in calling function
     }
-    } else {
-     console.log("You pressed Cancel!");
-    }
-   
-   }else{
-    const user = (await supabase.auth.getUser()).data.user;
-      const { data, error } = await supabase
-        .from("appointments")
-        .upsert({
-          appointment_id: appointment_id,
-          visit_status: visit_status ? false : true,
-          client_id: user.id,
-        })
-        .select();
-      console.log(error);
-   }
   };
 
   return (
@@ -218,23 +217,23 @@ function Appointments() {
       />
 
       <div className="flex items-center mb-1 justify-between">
-        <h1 className="text-2xl font-semibold  pl-2">Appointments</h1>
+        <h1 className="md:text-2xl text-xl font-semibold   pl-2">Appointments</h1>
 
         <Dropdown options={options} onSelect={handleSelect} />
       </div>
       <table className=" min-w-full border-2 rounded-lg border-gray-100 px-10 divide-y divide-gray-200">
         <thead className="">
           <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6 py-3 hidden md:block text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Slot Time
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Name
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6 hidden md:block py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Phone No
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6 py-3 hidden md:block text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Token No
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -242,7 +241,7 @@ function Appointments() {
             </th>
           </tr>
         </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
+        <tbody className="bg-white divide-y xs:text-xs md:text-base divide-gray-200">
           {appointments
             .filter((appointment) => appointment.date === selectedOption)
             .sort((a, b) => a.token - b.token) // Sort appointments in ascending order of token
@@ -253,16 +252,16 @@ function Appointments() {
                 index < array.length - 1 ? array[index + 1].phone : "";
               return (
                 <tr key={appointment.token}>
-                  <td className="px-6 py-7 whitespace-nowrap font-semibold">
+                  <td className="px-6 hidden md:block py-7 whitespace-nowrap font-semibold ">
                     {appointment.app_time}
                   </td>
                   <td className="px-6 py-7 whitespace-nowrap font-semibold">
                     {appointment.name}
                   </td>
-                  <td className="px-6 py-7 whitespace-nowrap">
+                  <td className="px-6 hidden md:block py-7 whitespace-nowrap">
                     {appointment.phone.slice(2)}
                   </td>
-                  <td className="px-6 py-7 whitespace-nowrap">
+                  <td className="px-6 py-7 hidden md:block whitespace-nowrap">
                     {appointment.token}
                   </td>
                   <td className="px-6 py-7 whitespace-nowrap">

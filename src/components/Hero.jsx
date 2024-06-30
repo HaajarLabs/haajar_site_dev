@@ -31,7 +31,7 @@ const Hero = () => {
         loop
         src="https://lottie.host/1628171c-8c70-4038-a4d9-fbefbbe3c62a/kV416BwwZG.json"
       ></DotLottiePlayer>
-      <div className="flex z-50 h-auto md:justify-end md:pt-48   ">
+      <div className="flex z-50 h-auto md:justify-end   ">
         <div className=" text-center flex-col  md:text-left leading-8 ">
           <h1 className="md:text-4xl text-3xl font-vilane_Regular pb-5">
             Managing{" "}

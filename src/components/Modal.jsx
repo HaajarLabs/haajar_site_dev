@@ -230,7 +230,7 @@ const Modal = ({ onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-filter backdrop-blur-lg bg-slate-300 bg-opacity-30">
+    <div className="fixed inset-0 z-50 flex xs:mx-3 items-center justify-center backdrop-filter backdrop-blur-lg bg-slate-300 bg-opacity-30">
       <div className="bg-white w-full max-w-md p-6 rounded-lg shadow-lg">
         <h2 className="text-xl font-semibold mb-4">Add New Appointment</h2>
         <form onSubmit={handleSubmit}>

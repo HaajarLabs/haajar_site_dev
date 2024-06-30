@@ -335,7 +335,7 @@ const Dashboard = () => {
   className={`xs:absolute xs:z-50 xs:bg-white xs:h-screen ${navclicked ? "xs:translate-x-0" : "xs:-translate-x-full"} md:relative md:translate-x-0 transition-transform duration-500 ease-in-out lg:flex flex-col md:bg-gray-100/40 border-r w-64`}
 >
 
-        <div className="flex flex-col h-full justify-between">
+        <div className="flex flex-col h-screen justify-between">
           <div>
             <div className="flex items-center justify-between h-[60px] border-b px-5">
               <Link to="/Haajar">
@@ -347,7 +347,7 @@ const Dashboard = () => {
               </Link>
               <button
                 onClick={handleButtonClick}
-                className="bg-gray-300 p-2 md:hidden rounded-full"
+                className="bg-gray-200 p-2 md:hidden rounded-full"
               >
                 <FaChevronLeft />
               </button>

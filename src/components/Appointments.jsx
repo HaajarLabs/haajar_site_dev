@@ -245,7 +245,15 @@ function Appointments() {
           </tr>
         </thead>
         <tbody className="bg-white divide-y xs:text-xs md:text-base divide-gray-200">
-          {appointments
+          {
+          appointments.filter((appointment) => appointment.date === selectedOption).length === 0 ?
+            <tr>
+              <td colSpan="5" className="text-center py-7">
+                No appointments found
+              </td>
+            </tr>
+          :
+          appointments
             .filter((appointment) => appointment.date === selectedOption)
             .sort((a, b) => a.token - b.token) // Sort appointments in ascending order of token
             .map((appointment, index, array) => {

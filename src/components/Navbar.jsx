@@ -19,7 +19,7 @@ const Navbar = () => {
         />
       </div>
     </Link>
-      <div className=" cursor-pointer  border-black border-[1.5px] text-[#292f36] hover:border-[#4ecdc4] z-50  hover:bg-[#4ecdc4] ease-in duration-300 px-4 py-2 rounded-3xl hover:text-white text-gray-00 ">
+      <div className=" cursor-pointer  border-black border-[1.5px] text-[#292f36] hover:border-green-400 z-50  hover:bg-green-400 ease-in duration-300 px-4 py-2 rounded-3xl hover:text-white text-gray-00 ">
         <Link to='/Login'>Log In</Link>
       </div>
 

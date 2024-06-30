@@ -9,7 +9,7 @@ const Footer = () => {
   return (
     <div className="flex flex-col  justify-center align-bottom bg-[#121312] text-white  ">
       <div className=" md:flex md:justify-between md:flex-1 ">
-        <div className="h-20 flex flex-col md:gap-3 ss:gap-5 ">
+        <div className="h-20 flex flex-col md:gap-3 xs:gap-5 ">
           <Link to="/" className="  w-fit">
             <img
               src={logo}

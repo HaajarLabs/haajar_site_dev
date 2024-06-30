@@ -202,7 +202,7 @@ function Appointments() {
   };
 
   return (
-    <div className="m-4   font-poppins   overflow-hidden ">
+    <div className="md:p-4    font-poppins   overflow-hidden ">
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -217,28 +217,31 @@ function Appointments() {
       />
 
       <div className="flex items-center mb-1 justify-between">
-        <h1 className="md:text-2xl text-xl font-semibold   pl-2">Appointments</h1>
+        <h1 className="md:text-2xl ss:text-xl font-semibold xs:text-md   pl-2">Appointments</h1>
 
         <Dropdown options={options} onSelect={handleSelect} />
       </div>
-      <table className=" min-w-full border-2 rounded-lg border-gray-100 px-10 divide-y divide-gray-200">
+      <table className=" min-w-full xs:mt-4 border-2 rounded-lg border-gray-100 px-10 divide-y divide-gray-200">
         <thead className="">
           <tr>
             <th className="px-6 py-3 hidden md:block text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Slot Time
             </th>
+            
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Name
             </th>
-            <th className="px-6 hidden md:block py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        
+            <th className="px-6 hidden md:flex py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Phone No
             </th>
-            <th className="px-6 py-3 hidden md:block text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Token No
-            </th>
+           
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Arrived
             </th>
+            <th className="px-6 hidden ss:block py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Token No
+            </th> 
           </tr>
         </thead>
         <tbody className="bg-white divide-y xs:text-xs md:text-base divide-gray-200">
@@ -252,18 +255,16 @@ function Appointments() {
                 index < array.length - 1 ? array[index + 1].phone : "";
               return (
                 <tr key={appointment.token}>
-                  <td className="px-6 hidden md:block py-7 whitespace-nowrap font-semibold ">
+                  <td className="px-6 hidden md:flex py-7 whitespace-nowrap font-semibold ">
                     {appointment.app_time}
                   </td>
                   <td className="px-6 py-7 whitespace-nowrap font-semibold">
                     {appointment.name}
                   </td>
-                  <td className="px-6 hidden md:block py-7 whitespace-nowrap">
+                  <td className="px-6 hidden md:flex py-7 whitespace-nowrap">
                     {appointment.phone.slice(2)}
                   </td>
-                  <td className="px-6 py-7 hidden md:block whitespace-nowrap">
-                    {appointment.token}
-                  </td>
+                  
                   <td className="px-6 py-7 whitespace-nowrap">
                     <Checkbox
                       color="success"
@@ -277,6 +278,9 @@ function Appointments() {
                       }
                       checked={appointment.visit_status ? true : false}
                     />
+                  </td>
+                  <td className="px-6 py-7 hidden ss:flex   whitespace-nowrap">
+                    {appointment.token}
                   </td>
                 </tr>
               );

@@ -46,7 +46,7 @@ const Hero = () => {
           </span>
           <div className="md:pt-3 ss:pt-6 pt-5">
             <button class="bg-rose-500 hover:bg-rose-700 text-white  font-vilane_bold py-1 px-4 rounded">
-              Book Demo
+             <a href="https://api.whatsapp.com/send?phone=919400244505&text=Hi,can we talk about Haajar? I would like to learn more about its key features, pricing, and any available demos."> Book Demo</a>
             </button>
           </div>
         </div>

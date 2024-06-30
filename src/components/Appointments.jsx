@@ -22,18 +22,18 @@ function Appointments() {
   const day = date.getDate();
   const month = date.getMonth() + 1;
   const year = date.getFullYear();
-  const today = year + "-" + "0" + month + "-" + formatNumber(day);
+  const today = year + "-" + formatNumber(month) + "-" + formatNumber(day);
   const [selectedOption, setSelectedOption] = useState(today);
   date.setDate(date.getDate() + 1);
   const daytom = date.getDate();
   const monthtom = date.getMonth() + 1;
   const yeartom = date.getFullYear();
-  const tomorrow = yeartom + "-" + "0" + monthtom + "-" + formatNumber(daytom);
+  const tomorrow = yeartom + "-" + formatNumber(monthtom)+ "-" + formatNumber(daytom);
   date.setDate(date.getDate() + 1);
   const daybf = date.getDate();
   const monthbf = date.getMonth() + 1;
   const yearbf = date.getFullYear();
-  const dayAfterTomorrow = yearbf + "-" + "0" + monthbf + "-" + formatNumber(daybf);
+  const dayAfterTomorrow = yearbf + "-" +formatNumber(monthbf)+ "-" + formatNumber(daybf);
   const options = [today, tomorrow, dayAfterTomorrow];
   const [doc_name, setDocName] = useState("Dr. Haajar");
   // Fetch appointments data here

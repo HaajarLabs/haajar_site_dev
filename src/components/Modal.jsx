@@ -11,23 +11,24 @@ const Modal = ({ onClose }) => {
   const [slot_id, setSlotId] = useState();
   const [slot_data, setSlotData] = useState();
   const [loading, setLoading] = useState(false); // State to track loading
-
+  const formatNumber = (number) => {
+    return number.toString().padStart(2, '0');
+  };
   const date = new Date();
   const day = date.getDate();
   const month = date.getMonth() + 1;
   const year = date.getFullYear();
-  const today = year + "-" + "0" + month + "-" + day;
-  const [selectedOption, setSelectedOption] = useState(today);
+  const today = year + "-" + formatNumber(month) + "-" + formatNumber(day);
   date.setDate(date.getDate() + 1);
   const daytom = date.getDate();
   const monthtom = date.getMonth() + 1;
   const yeartom = date.getFullYear();
-  const tomorrow = yeartom + "-" + "0" + monthtom + "-" + daytom ;
+  const tomorrow = yeartom + "-" + formatNumber(monthtom)+ "-" + formatNumber(daytom);
   date.setDate(date.getDate() + 1);
   const daybf = date.getDate();
   const monthbf = date.getMonth() + 1;
   const yearbf = date.getFullYear();
-  const dayAfterTomorrow = yearbf + "-" + "0" + monthbf + "-" + daybf ;
+  const dayAfterTomorrow = yearbf + "-" +formatNumber(monthbf)+ "-" + formatNumber(daybf);
   const availableDates = [today, tomorrow, dayAfterTomorrow];
   const [selectedDate, setSelectedDate] = useState(availableDates[0]);
   const apiKey = process.env.SUPABASE_KEY;

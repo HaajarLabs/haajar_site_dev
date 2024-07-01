@@ -23,9 +23,7 @@ const Homepage = () => {
   return (
     <div className=" w-full  text-black overflow-hidden scrollbar-thin scrollbar-webkit">
       <div className={`${styles.paddingX} ${styles.flexCenter}`}>
-        <div className={`${styles.boxWidth}`}>
-          <Navbar />{" "}
-        </div>
+      <Navbar />{" "}
       </div>
 
        

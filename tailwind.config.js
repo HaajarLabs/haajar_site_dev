@@ -29,6 +29,7 @@ module.exports = {
         'hero-pattern': "url('./src/ssets/hero.PNG')",
         'login-back': "url('./src/assets/login.PNG')",
         'pattern': "url('/about_bg.svg')",
+        'texture': "url('/noise.png')",
 
 
       },

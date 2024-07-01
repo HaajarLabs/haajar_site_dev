@@ -40,7 +40,7 @@ const Hero = () => {
         speed={0.1}
         
         autoplay
-        className=" absolute opacity-70 md:left-[-600px] md:scale-100 scale-150 left-[-250px] top-[-10px] md:top-[100px] -z-10"
+        className=" absolute sm:opacity-70 opacity-25 md:left-[-600px] md:scale-100 scale-150 left-[-250px] top-[-10px] md:top-[100px] -z-10"
         loop
         src="https://lottie.host/1628171c-8c70-4038-a4d9-fbefbbe3c62a/kV416BwwZG.json"
       ></DotLottiePlayer>

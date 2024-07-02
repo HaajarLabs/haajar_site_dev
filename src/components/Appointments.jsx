@@ -15,7 +15,7 @@ function Appointments() {
     setSelectedOption(option);
   };
   const formatNumber = (number) => {
-    return number.toString().padStart(2, '0');
+    return number.toString().padStart(2, "0");
   };
 
   const date = new Date();
@@ -28,12 +28,14 @@ function Appointments() {
   const daytom = date.getDate();
   const monthtom = date.getMonth() + 1;
   const yeartom = date.getFullYear();
-  const tomorrow = yeartom + "-" + formatNumber(monthtom)+ "-" + formatNumber(daytom);
+  const tomorrow =
+    yeartom + "-" + formatNumber(monthtom) + "-" + formatNumber(daytom);
   date.setDate(date.getDate() + 1);
   const daybf = date.getDate();
   const monthbf = date.getMonth() + 1;
   const yearbf = date.getFullYear();
-  const dayAfterTomorrow = yearbf + "-" +formatNumber(monthbf)+ "-" + formatNumber(daybf);
+  const dayAfterTomorrow =
+    yearbf + "-" + formatNumber(monthbf) + "-" + formatNumber(daybf);
   const options = [today, tomorrow, dayAfterTomorrow];
   const [doc_name, setDocName] = useState("Dr. Haajar");
   // Fetch appointments data here
@@ -41,6 +43,26 @@ function Appointments() {
     supabase.auth.getUser().then((user) => {
       getData(user.data.user.id);
     });
+  }, []);
+
+ 
+
+  const [start, setStart] = useState(false);
+  useEffect(() => {
+    const checkMidnight = () => {
+      const now = new Date();
+      if (
+        now.getHours() === 0 &&
+        now.getMinutes() === 0 &&
+        now.getSeconds() === 0
+      ) {
+        setStart((prevState) => (prevState ? false : prevState));
+      }
+    };
+
+    const interval = setInterval(checkMidnight, 1000);
+
+    return () => clearInterval(interval);
   }, []);
 
   async function getData(id) {
@@ -204,6 +226,11 @@ function Appointments() {
     }
   };
 
+  const handlestart = async () => {
+    setStart(true);
+    console.log(true);
+  };
+
   return (
     <div className="md:p-4    font-poppins   overflow-hidden ">
       <ToastContainer
@@ -220,13 +247,25 @@ function Appointments() {
       />
 
       <div className="flex items-center mb-1 justify-between">
-        <h1 className="md:text-2xl ss:text-xl font-semibold xs:text-md   pl-2">Appointments</h1>
+        <h1 className="md:text-2xl ss:text-xl font-semibold xs:text-md   pl-2">
+          Appointments
+        </h1>
 
-        <div>
-          <button className=" bg-rose-500 text-white p-2 mr-2 rounded">
-            Start now
-          </button>
-        <Dropdown options={options} onSelect={handleSelect} />
+        <div className="flex items-center">
+          <div className="group">
+            <button
+              disabled={start}
+              onClick={handlestart}
+              className={` ${start?"bg-rose-300":"bg-rose-500"} group-hover:bg-rose-300 text-white p-2 mr-2 rounded`}
+            >
+              Start now
+            </button>
+            <span class="absolute  top-60 right-48 duration-500  scale-0 transition-all rounded bg-slate-800 p-2 text-xs text-white group-hover:scale-100">
+              Pressing this button will start the next patient's appointment and
+              send reminders.⌛
+            </span>
+          </div>
+          <Dropdown options={options} onSelect={handleSelect} />
         </div>
       </div>
       <table className=" min-w-full xs:mt-4 border-2 rounded-lg border-gray-100 px-10 divide-y divide-gray-200">
@@ -235,15 +274,15 @@ function Appointments() {
             <th className="px-6 py-3 hidden sm:block text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Slot Time
             </th>
-            
+
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Name
             </th>
-        
+
             <th className="px-6 hidden sm:flex py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Phone No
             </th>
-           
+
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Arrived
             </th>
@@ -252,61 +291,63 @@ function Appointments() {
             </th>
             <th className="px-6 hidden md:block py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Token No
-            </th> 
+            </th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y  xs:text-xs md:text-base divide-gray-200">
-          {
-          appointments.filter((appointment) => appointment.date === selectedOption).length === 0 ?
+          {appointments.filter(
+            (appointment) => appointment.date === selectedOption
+          ).length === 0 ? (
             <tr>
               <td colSpan="5" className="text-center py-7">
                 No appointments found
               </td>
             </tr>
-          :
-          appointments
-            .filter((appointment) => appointment.date === selectedOption)
-            .sort((a, b) => a.token - b.token) // Sort appointments in ascending order of token
-            .map((appointment, index, array) => {
-              const nextAppointment =
-                index < array.length - 1 ? array[index + 1].name : "";
-              const nextAppointmentPh =
-                index < array.length - 1 ? array[index + 1].phone : "";
-              return (
-                <tr key={appointment.token} >
-                  <td className="px-6 hidden sm:block py-7 whitespace-nowrap font-semibold ">
-                    {appointment.app_time}
-                  </td>
-                  <td className="px-6 py-7 whitespace-nowrap font-semibold">
-                    {appointment.name}
-                  </td>
-                  <td className="px-6 hidden sm:block py-7 whitespace-nowrap">
-                    {appointment.phone.slice(2)}
-                  </td>
-                  
-                  <td className="px-6 py-7 whitespace-nowrap">
-                    <Checkbox
-                      color="success"
-                      onChange={() =>
-                        handleInputChange(
-                          appointment.id,
-                          appointment.visit_status,
-                          nextAppointment,
-                          nextAppointmentPh
-                        )
-                      }
-                      checked={appointment.visit_status ? true : false}
-                    />
-                  </td>
-                  <td className="px-6  xs:block sm:hidden py-7 whitespace-nowrap font-semibold ">
-                    {appointment.app_time}
-                  </td>
-                  <td className="px-6 py-7 hidden md:flex   whitespace-nowrap">
-                    {appointment.token}
-                  </td>
-                </tr>
-              );
-            })}
+          ) : (
+            appointments
+              .filter((appointment) => appointment.date === selectedOption)
+              .sort((a, b) => a.token - b.token) // Sort appointments in ascending order of token
+              .map((appointment, index, array) => {
+                const nextAppointment =
+                  index < array.length - 1 ? array[index + 1].name : "";
+                const nextAppointmentPh =
+                  index < array.length - 1 ? array[index + 1].phone : "";
+                return (
+                  <tr key={appointment.token}>
+                    <td className="px-6 hidden sm:block py-7 whitespace-nowrap font-semibold ">
+                      {appointment.app_time}
+                    </td>
+                    <td className="px-6 py-7 whitespace-nowrap font-semibold">
+                      {appointment.name}
+                    </td>
+                    <td className="px-6 hidden sm:block py-7 whitespace-nowrap">
+                      {appointment.phone.slice(2)}
+                    </td>
+
+                    <td className="px-6 py-7 whitespace-nowrap">
+                      <Checkbox
+                        color="success"
+                        onChange={() =>
+                          handleInputChange(
+                            appointment.id,
+                            appointment.visit_status,
+                            nextAppointment,
+                            nextAppointmentPh
+                          )
+                        }
+                        checked={appointment.visit_status ? true : false}
+                      />
+                    </td>
+                    <td className="px-6  xs:block sm:hidden py-7 whitespace-nowrap font-semibold ">
+                      {appointment.app_time}
+                    </td>
+                    <td className="px-6 py-7 hidden md:flex   whitespace-nowrap">
+                      {appointment.token}
+                    </td>
+                  </tr>
+                );
+              })
+          )}
         </tbody>
       </table>
     </div>

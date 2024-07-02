@@ -222,7 +222,12 @@ function Appointments() {
       <div className="flex items-center mb-1 justify-between">
         <h1 className="md:text-2xl ss:text-xl font-semibold xs:text-md   pl-2">Appointments</h1>
 
+        <div>
+          <button className=" bg-rose-500 text-white p-2 mr-2 rounded">
+            Start now
+          </button>
         <Dropdown options={options} onSelect={handleSelect} />
+        </div>
       </div>
       <table className=" min-w-full xs:mt-4 border-2 rounded-lg border-gray-100 px-10 divide-y divide-gray-200">
         <thead className="">

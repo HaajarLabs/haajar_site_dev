@@ -100,6 +100,7 @@ function Appointments() {
             newAppointments.push({
               date: slot_data[0].slot_date,
               app_time: slot_data[0].slot_start_time,
+              end_time: slot_data[0].slot_end_time,
               name: pat_data[0].pat_name,
               phone: pat_data[0].pat_ph_num,
               id: app_data[index].appointment_id,
@@ -133,6 +134,7 @@ function Appointments() {
       newAppointments.push({
         date: slot_data[0].slot_date,
         app_time: slot_data[0].slot_start_time,
+        end_time: slot_data[0].slot_end_time,
         name: pat_data[0].pat_name,
         phone: pat_data[0].pat_ph_num,
         id: app_data[index].appointment_id,
@@ -382,7 +384,7 @@ function Appointments() {
                             appointment.id,
                             appointment.visit_status,
                             nextAppointment,
-                            appointment.app_time
+                            appointment.end_time
                           )
                         }
                         checked={appointment.visit_status ? true : false}

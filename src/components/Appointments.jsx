@@ -158,6 +158,7 @@ function Appointments() {
         const currentDate = new Date(); // Get current date
         const currentTime = `${currentDate.getHours()}:${currentDate.getMinutes()}:${currentDate.getSeconds()}`;
         const timeDifference = await compareTimes(currentTime, start_time);
+        console.log("timedf",timeDifference);
         const messageData = {
           delay_change: timeDifference,
         };
@@ -217,6 +218,7 @@ function Appointments() {
     const currentDate = new Date(); // Get current date
     const currentTime = `${currentDate.getHours()}:${currentDate.getMinutes()}:${currentDate.getSeconds()}`;
     const timeDifference = await compareTimes(currentTime, start_time);
+    console.log("startdf",timeDifference);
     const user = (await supabase.auth.getUser()).data.user;
     const messageData = {
       client_id: user.id,

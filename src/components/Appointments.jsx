@@ -184,6 +184,16 @@ function Appointments() {
         } catch (error) {
           console.error("Error sending message:", error.message);
         }
+        const user = (await supabase.auth.getUser()).data.user;
+      const { data, error } = await supabase
+        .from("appointments")
+        .upsert({
+          appointment_id: appointment_id,
+          visit_status: visit_status ? false : true,
+          client_id: user.id,
+        })
+        .select();
+      console.log(error);
       } else {
         console.log("You pressed Cancel!");
       }

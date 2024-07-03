@@ -45,8 +45,6 @@ function Appointments() {
     });
   }, []);
 
- 
-
   const [start, setStart] = useState(false);
   useEffect(() => {
     const checkMidnight = () => {
@@ -150,22 +148,22 @@ function Appointments() {
     appointment_id,
     visit_status,
     name,
-    number
+    start_time
   ) => {
     if (visit_status == false) {
       let text =
         "Press ok to sent message to " + name + " for appointment reminder.";
       if (confirm(text) == true) {
         console.log("You pressed OK!");
+        const currentDate = new Date(); // Get current date
+        const currentTime = `${currentDate.getHours()}:${currentDate.getMinutes()}:${currentDate.getSeconds()}`;
+        const timeDifference = await compareTimes(currentTime, start_time);
         const messageData = {
-          rec_num: number,
-          doctor_nam: doc_name,
-          reci_nam: name,
+          delay_change: timeDifference,
         };
-        console.log(messageData);
         try {
           const response = await fetch(
-            "https://haajar-client.azurewebsites.net/send_message",
+            "https://message-send.azurewebsites.net/update_check_slots",
             {
               method: "POST",
               headers: {
@@ -180,34 +178,11 @@ function Appointments() {
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
 
-          const responseData = await response; // Assuming response is JSON
+          const responseData = await response;
 
           console.log("Message sent successfully:", responseData);
-          if (!visit_status) {
-            toast.success(`Message Sent to ${name}`, {
-              position: "top-right",
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light",
-            });
-          }
-          const user = (await supabase.auth.getUser()).data.user;
-          const { data, error } = await supabase
-            .from("appointments")
-            .upsert({
-              appointment_id: appointment_id,
-              visit_status: visit_status ? false : true,
-              client_id: user.id,
-            })
-            .select();
-          console.log(error);
         } catch (error) {
           console.error("Error sending message:", error.message);
-          throw error; // Throw error to handle in calling function
         }
       } else {
         console.log("You pressed Cancel!");
@@ -226,10 +201,63 @@ function Appointments() {
     }
   };
 
-  const handlestart = async () => {
+  const handlestart = async (start_time) => {
     setStart(true);
     console.log(true);
+    const currentDate = new Date(); // Get current date
+    const currentTime = `${currentDate.getHours()}:${currentDate.getMinutes()}:${currentDate.getSeconds()}`;
+    const timeDifference = await compareTimes(currentTime, start_time);
+    const user = (await supabase.auth.getUser()).data.user;
+    const messageData = {
+      client_id: user.id,
+      slot_date: today,
+      delay: timeDifference,
+    };
+    try {
+      const response = await fetch(
+        "https://message-send.azurewebsites.net/start_find_check_slots",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            // Add any additional headers if required
+          },
+          body: JSON.stringify(messageData), // Convert messageData to JSON string
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const responseData = await response;
+
+      console.log("Message sent successfully:", responseData);
+    } catch (error) {
+      console.error("Error sending message:", error.message);
+    }
   };
+
+  function compareTimes(time1, time2) {
+    const [hours1, minutes1] = time1.split(":").map(Number).slice(0, 2);
+    const [hours2, minutes2] = time2.split(":").map(Number).slice(0, 2);
+
+    // Convert both times to total minutes
+    const totalMinutes1 = hours1 * 60 + minutes1;
+    const totalMinutes2 = hours2 * 60 + minutes2;
+
+    // Calculate the difference in minutes
+    const difference = totalMinutes2 - totalMinutes1;
+
+    // Determine if time2 is delayed or early
+    if (difference > 0) {
+      return difference;
+    } else if (difference < 0) {
+      return difference;
+    } else {
+      return "On time";
+    }
+  }
 
   return (
     <div className="md:p-4    font-poppins   overflow-hidden ">
@@ -255,8 +283,18 @@ function Appointments() {
           <div className="group">
             <button
               disabled={start}
-              onClick={handlestart}
-              className={` ${start?"bg-rose-300":"bg-rose-500"} group-hover:bg-rose-300 text-white p-2 mr-2 rounded`}
+              onClick={() =>
+                handlestart(
+                  appointments.length > 0
+                    ? appointments[0].app_time
+                    : "00:00:00"
+                )
+              }
+              className={`${
+                start ? "bg-rose-300" : "bg-rose-500"
+              } group-hover:bg-rose-300 text-white p-2 mr-2 rounded ${
+                appointments.length > 0 ? "" : "hidden"
+              }`}
             >
               Start now
             </button>
@@ -332,7 +370,7 @@ function Appointments() {
                             appointment.id,
                             appointment.visit_status,
                             nextAppointment,
-                            nextAppointmentPh
+                            appointment.app_time
                           )
                         }
                         checked={appointment.visit_status ? true : false}

@@ -218,8 +218,10 @@ function Appointments() {
   const handlestart = async (start_time) => {
     setStart(true);
     console.log(true);
+    console.log("starttime",start_time);
     const currentDate = new Date(); // Get current date
     const currentTime = `${currentDate.getHours()}:${currentDate.getMinutes()}:${currentDate.getSeconds()}`;
+    console.log("current",currentTime)
     const timeDifference = await compareTimes(currentTime, start_time);
     console.log("startdf",timeDifference);
     const user = (await supabase.auth.getUser()).data.user;

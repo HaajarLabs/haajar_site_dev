@@ -303,7 +303,9 @@ function Appointments() {
               onClick={() =>
                 handlestart(
                   appointments.length > 0
-                    ? appointments[0].app_time
+                    ?  appointments
+                    .filter((appointment) => appointment.date === selectedOption)
+                    .sort((a, b) => a.token - b.token).at(0).app_time // Sort appointments in ascending order of token
                     : "00:00:00"
                 )
               }

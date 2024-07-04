@@ -150,7 +150,7 @@ function Appointments() {
     appointment_id,
     visit_status,
     name,
-    start_time
+    start_time,token
   ) => {
     if (visit_status == false) {
       let text =
@@ -163,6 +163,7 @@ function Appointments() {
         console.log("timedf",timeDifference);
         const messageData = {
           delay_change: timeDifference,
+          slot_id: token,
         };
         try {
           const response = await fetch(
@@ -384,7 +385,8 @@ function Appointments() {
                             appointment.id,
                             appointment.visit_status,
                             nextAppointment,
-                            appointment.end_time
+                            appointment.end_time,
+                            appointment.token
                           )
                         }
                         checked={appointment.visit_status ? true : false}

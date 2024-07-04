@@ -5,6 +5,7 @@ import Hero from "../components/Hero.jsx";
 import Footer from "../components/Footer.jsx";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import Features from "../components/Festures.jsx";
 const Homepage = () => {
 
 
@@ -31,11 +32,9 @@ const Homepage = () => {
             <Hero />{" "}
       
    
-        {/* <div className={` ${styles.paddingX}`}>
-          <div className={`${styles.boxWidth}`}>
-            <Stats />{" "}
-          </div>
-        </div> */}
+            <div className={`${styles.paddingX} ${styles.flexCenter}`}>
+      <Features />{" "}
+      </div>
  
       <Footer />
     </div>

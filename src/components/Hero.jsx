@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { IoIosArrowDown } from "react-icons/io";
-import Getstarted from "./Getstarted";
 import Aos from "aos";
 import "aos/dist/aos.css";
 import { DotLottiePlayer, Controls } from "@dotlottie/react-player";
@@ -9,13 +8,14 @@ import "@dotlottie/react-player/dist/index.css";
 const Hero = () => {
   useEffect(() => {
     Aos.init({
-      offset: 50,
+      duration: 200,
+      offset: 0,
     });
+    Aos.refresh();
   }, []);
   return (
     <div
       id="home"
-     
       className="h-screen sm:px-32 px-7  md:py-7 xs:flex xs:flex-col xs:justify-center xs:flex-1 xs:-mt-8 "
     >
       {/* <div className="flex flex-rowjustify-between  w-full ">
@@ -35,10 +35,9 @@ const Hero = () => {
           src="https://lottie.host/b7f5aa87-af57-4d69-bcaf-5ee11ccf1b9b/CRVZemj3UF.json"
         ></DotLottiePlayer>
       </div> */}
-      
+
       <DotLottiePlayer
         speed={0.1}
-        
         autoplay
         className=" absolute sm:opacity-70 opacity-25 md:left-[-600px] md:scale-100 scale-150 left-[-250px] top-[-10px] md:top-[100px] -z-10"
         loop
@@ -46,9 +45,13 @@ const Hero = () => {
       ></DotLottiePlayer>
       <div className="flex z-50 h-auto md:justify-end">
         <div className=" flex  flex-col justify-center gap-5 items-center md:pl-44  md:text-left leading-8 ">
-          <h1 className="md:text-6xl  xl:text-8xl text-3xl tracking-wide  text-center font-vilane_Regular pb-5">
-            <h1  data-aos="zoom-in-up"   >Managing</h1>
-            <div data-aos="zoom-in-up" data-aos-delay="200" className=" sm:underline  decoration-2 underline-offset-8  text-rose-500 md:text-7xl xl:text-8xl text-4xl">
+          <div className="md:text-6xl  xl:text-8xl text-3xl tracking-wide  text-center font-vilane_Regular pb-5">
+            <h1 data-aos="zoom-in-up">Managing</h1>
+            <div
+              data-aos="zoom-in-up"
+              data-aos-delay="200"
+              className=" sm:underline  decoration-2 underline-offset-8  text-rose-500 md:text-7xl xl:text-8xl text-4xl"
+            >
               L<span className="  text-xl xl:text-2xl">O</span>
               <span className=" text-2xl xl:text-3xl">O</span>
               <span className=" text-3xl xl:text-4xl">O</span>
@@ -56,15 +59,25 @@ const Hero = () => {
               <span className=" text-5xl xl:text-6xl">O</span>
               <span className=" text-6xl xl:text-7xl">O</span>NG
             </div>{" "}
-<div  data-aos="zoom-in-up" data-aos-delay="400" > Queue's made easy!</div>
-           
-          </h1>{" "}
-          <div data-aos="fade-left" data-aos-delay="900"  className="sm:font-vilane_Light text-center  ss:text-lg font-vilane_Extra_light text-xs  md:text-xl  xl:text-3xl">
+            <div data-aos="zoom-in-up" data-aos-delay="400">
+              {" "}
+              Queue's made easy!
+            </div>
+          </div>{" "}
+          <div
+            data-aos="fade-left"
+            data-aos-delay="900"
+            className="sm:font-vilane_Light text-center  ss:text-lg font-vilane_Extra_light text-xs  md:text-xl  xl:text-3xl"
+          >
             Simplifying customer bookings so that you can focus on delivering
             quality.
           </div>
-          <div data-aos="zoom-out-up"  data-aos-delay="700"   className="md:pt-3 ss:pt-6 pt-5">
-            <button class="bg-rose-500 hover:bg-rose-700 text-white  font-vilane_bold py-1 px-4 rounded">
+          <div
+            data-aos="zoom-out-up"
+            data-aos-delay="700"
+            className="md:pt-3 ss:pt-6 pt-5"
+          >
+            <button class="bg-rose-500 hover:bg-rose-700 hover:ease-in-out transition duration-400 text-white  font-vilane_bold py-1 px-4 rounded">
               <a href="https://api.whatsapp.com/send?phone=919400244505&text=Hi,can we talk about Haajar? I would like to learn more about its key features, pricing, and any available demos.">
                 {" "}
                 Book Demo

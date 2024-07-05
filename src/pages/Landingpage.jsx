@@ -104,7 +104,11 @@ if (accessTokenObj==null) {
         </div>
       </div>
       <Hero />{" "}
-  <Features />{" "}
+      <div className={`${styles.paddingX} ${styles.flexCenter}`}>
+        <div className={`${styles.boxWidth}`}>
+          <Features />{" "}
+        </div>
+      </div>
       <Footer />
     </div>
   );

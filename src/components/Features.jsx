@@ -5,13 +5,32 @@ import token from "../assets/token.png";
 const Features = () => {
   return (
     <div className=" px-16 flex flex-col justify-center h-screen">
-      <h1 className="flex justify-center font-vilane_Semi_bold text-[#F43F5E] text-4xl mb-16  ">
+      <h1
+        data-aos="fade-left"
+        data-aos-once="true"
+        data-aos-delay="1200"
+        className="flex justify-center font-vilane_Semi_bold text-[#F43F5E] text-4xl mb-16  "
+      >
         Power Up Your Bookings with Haajar
       </h1>
       <div className="flex justify-around">
         <div className="flex flex-col items-center w-96">
-          <img src={booking} width={400} alt="Haajar" className="mb-4" />
-          <div className="pl-3 text-center">
+          <img
+            data-aos="zoom-out"
+            data-aos-once="true"
+            data-aos-duration="600"
+            src={booking}
+            width={400}
+            alt="Haajar"
+            className="mb-4"
+          />
+          <div
+            data-aos="zoom-in"
+            data-aos-once="true"
+            data-aos-delay="1400"
+            data-aos-duration="600"
+            className="pl-3 text-center"
+          >
             <h1 className="font-vilane_Semi_bold text-xl mb-4">
               WhatsApp Booking Management
             </h1>
@@ -22,8 +41,23 @@ const Features = () => {
           </div>
         </div>
         <div className="flex flex-col items-center w-96">
-          <img src={appoint} width={400} alt="Haajar" className="mb-4" />
-          <div className="pl-3 text-center">
+          <img
+            data-aos="zoom-out"
+            data-aos-once="true"
+            data-aos-delay="400"
+            data-aos-duration="600"
+            src={appoint}
+            width={400}
+            alt="Haajar"
+            className="mb-4"
+          />
+          <div
+            data-aos="zoom-in"
+            data-aos-once="true"
+            data-aos-delay="1600"
+            data-aos-duration="600"
+            className="pl-3 text-center"
+          >
             <h1 className="font-vilane_Semi_bold text-xl mb-4">
               Appointment Analytics
             </h1>
@@ -34,8 +68,23 @@ const Features = () => {
           </div>
         </div>
         <div className="flex flex-col items-center w-96">
-          <img src={token} width={400} alt="Haajar" className="mb-4" />
-          <div className="pl-3 text-center">
+          <img
+            data-aos="zoom-out"
+            data-aos-once="true"
+            data-aos-delay="800"
+            data-aos-duration="600"
+            src={token}
+            width={400}
+            alt="Haajar"
+            className="mb-4"
+          />
+          <div
+            data-aos="zoom-in"
+            data-aos-once="true"
+            data-aos-delay="1600"
+            data-aos-duration="600"
+            className="pl-3 text-center"
+          >
             <h1 className="font-vilane_Semi_bold text-xl mb-4">
               Live Token System via WhatsApp
             </h1>

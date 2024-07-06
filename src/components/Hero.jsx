@@ -1,18 +1,10 @@
 import React, { useEffect } from "react";
 import { IoIosArrowDown } from "react-icons/io";
-import Aos from "aos";
-import "aos/dist/aos.css";
 import { DotLottiePlayer, Controls } from "@dotlottie/react-player";
 import "@dotlottie/react-player/dist/index.css";
 
 const Hero = () => {
-  useEffect(() => {
-    Aos.init({
-      duration: 200,
-      offset: 0,
-    });
-    Aos.refresh();
-  }, []);
+ 
   return (
     <div
       id="home"

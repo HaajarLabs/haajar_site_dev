@@ -5,7 +5,10 @@ import Hero from "../components/Hero.jsx";
 import Footer from "../components/Footer.jsx";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import Features from "../components/intro.jsx";
+import Intro from "../components/intro.jsx";
+import Haajar from "../components/Haajar.jsx";
+import Features from "../components/Features.jsx";
+import Callout from "../components/Callout.jsx";
 const Homepage = () => {
 
 
@@ -31,10 +34,11 @@ const Homepage = () => {
           
             <Hero />{" "}
       
-   
-            <div className={`${styles.paddingX} ${styles.flexCenter}`}>
-      <Features />{" "}
-      </div>
+ 
+            <Intro />{" "}
+          <Haajar />
+          <Features />
+          <Callout />
  
       <Footer />
     </div>

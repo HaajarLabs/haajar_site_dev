@@ -9,6 +9,10 @@ module.exports = {
       dropShadow: {
         neumorphism: '0px 19px 15px #bebebe',
       },
+      boxShadow: {
+        'overlay-top': '0 -10px 20px -5px rgba(0, 0, 0, 0.5)',
+        'overlay-bottom': '0 10px 20px -5px rgba(0, 0, 0, 0.5)',
+      },
       keyframes: {
         flipbottom: {
           '0%': {

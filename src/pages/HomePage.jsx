@@ -5,7 +5,7 @@ import Hero from "../components/Hero.jsx";
 import Footer from "../components/Footer.jsx";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import Features from "../components/Features.jsx";
+import Features from "../components/intro.jsx";
 const Homepage = () => {
 
 

@@ -6,6 +6,9 @@ module.exports = {
   mode: "jit",
   theme: {
     extend: {
+      dropShadow: {
+        neumorphism: '0px 19px 15px #bebebe',
+      },
       keyframes: {
         flipbottom: {
           '0%': {

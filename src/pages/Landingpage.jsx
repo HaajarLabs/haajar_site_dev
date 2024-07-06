@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar.jsx";
 import Hero from "../components/Hero.jsx";
 import Footer from "../components/Footer.jsx";
 
-import Features from "../components/Festures.jsx";
+import Features from "../components/Features.jsx";
 import { createClient } from "@supabase/supabase-js";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
@@ -104,11 +104,8 @@ if (accessTokenObj==null) {
         </div>
       </div>
       <Hero />{" "}
-      <div className={`${styles.paddingX} ${styles.flexCenter}`}>
-        <div className={`${styles.boxWidth}`}>
+    
           <Features />{" "}
-        </div>
-      </div>
       <Footer />
     </div>
   );

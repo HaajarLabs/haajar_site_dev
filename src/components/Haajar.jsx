@@ -24,7 +24,7 @@ const Haajar = () => {
           data-aos-duration="1000"
           className="text-5xl font-bold mb-6 font-vilane_Regular text-white"
         >
-          Why Haajar ?
+          Why Haajar?
         </h1>
         <p
           data-aos="flip-left"

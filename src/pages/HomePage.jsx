@@ -10,36 +10,24 @@ import Haajar from "../components/Haajar.jsx";
 import Features from "../components/Features.jsx";
 import Callout from "../components/Callout.jsx";
 const Homepage = () => {
+  // supabase.auth.onAuthStateChange(async(event)=>{
+  //   if (event == "SIGNED_IN") {
+  //     navigate("/Dashboard")
+  //     console.log("Signed in")
+  //   } else {
+  //     console.log("Not signed in")
+  //     navigate("/")
+  //   }
+  // });
 
-
-
-// supabase.auth.onAuthStateChange(async(event)=>{
-//   if (event == "SIGNED_IN") {
-//     navigate("/Dashboard")
-//     console.log("Signed in")
-//   } else {  
-//     console.log("Not signed in")
-//     navigate("/")
-//   }
-// });
-
-  
   return (
     <div className=" w-full  text-black overflow-hidden scrollbar-thin scrollbar-webkit">
       <div className={`${styles.paddingX} ${styles.flexCenter}`}>
-      <Navbar />{" "}
+        <Navbar />{" "}
       </div>
-
-       
-          
-            <Hero />{" "}
-      
- 
-            <Intro />{" "}
-          <Haajar />
-          <Features />
-          <Callout />
- 
+      <Hero /> <Intro /> <Haajar />
+      <Features />
+      <Callout />
       <Footer />
     </div>
   );

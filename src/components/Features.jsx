@@ -4,17 +4,17 @@ import appoint from "../assets/appoint.png";
 import token from "../assets/token.png";
 const Features = () => {
   return (
-    <div className="lg:px-16  py-8 flex flex-col justify-center lg:h-screen ">
+    <div className="lg:px-16   py-8 flex flex-col justify-center lg:h-screen ">
       <h1
         data-aos="fade-left"
         data-aos-once="true"
         data-aos-delay="1200"
-        className="flex justify-center font-vilane_Semi_bold px-3 text-center text-[#F43F5E] text-4xl lg:mb-16 mb-10  "
+        className="flex justify-center font-vilane_Semi_bold px-3 text-center text-[#F43F5E] ss:text-4xl xs:text-3xl lg:mb-16 mb-10  "
       >
         Power Up Your Bookings with Haajar
       </h1>
-      <div className="flex md:justify-around md:flex-row md:gap-0 xs:flex-col xs:justify-around xs:items-center xs:gap-3  ">
-        <div className="flex flex-col items-center w-96">
+      <div className="flex px-5 md:justify-around md:flex-row md:gap-0 xs:flex-col xs:justify-around xs:items-center xs:gap-3   ">
+        <div className="flex flex-col items-center ss:w-96 xs:w-full">
           <img
             data-aos="zoom-out"
             data-aos-once="true"
@@ -40,7 +40,7 @@ const Features = () => {
             </p>
           </div>
         </div>
-        <div className="flex flex-col items-center w-96">
+        <div className="flex flex-col items-center ss:w-96 xs:w-full">
           <img
             data-aos="zoom-out"
             data-aos-once="true"
@@ -67,7 +67,7 @@ const Features = () => {
             </p>
           </div>
         </div>
-        <div className="flex flex-col items-center w-96">
+        <div className="flex flex-col items-center ss:w-96 xs:w-full">
           <img
             data-aos="zoom-out"
             data-aos-once="true"

@@ -23,7 +23,7 @@ const Callout = () => {
           data-aos="fade-down"
           data-aos-once="true"
           data-aos-duration="600"
-          className="lg:text-6xl text-5xl  font-vilane_Semi_bold mb-6  lg:leading-normal xs:leading-normal  text-white"
+          className="lg:text-6xl ss:text-5xl xs:text-4xl  font-vilane_Semi_bold mb-6  lg:leading-normal xs:leading-normal  text-white"
         >
           Cut the wait, boost efficiency—book smarter with Haajar today!
         </h1>
@@ -32,7 +32,7 @@ const Callout = () => {
           data-aos-once="true"
           data-aos-delay="200"
           data-aos-duration="600"
-          className=" font-vilane_Semi_bold bg-white lg:p-4 p-3 rounded hover:bg-rose-600 hover:text-white"
+          className=" font-vilane_Semi_bold bg-white lg:p-4 ss:p-3 p-2 rounded xs:text-sm hover:bg-rose-600 hover:text-white"
         >
           <a href="https://api.whatsapp.com/send?phone=919400244505&text=Hi,can we talk about Haajar? I would like to learn more about its key features, pricing, and any available demos.">
             {" "}
@@ -58,7 +58,7 @@ const Callout = () => {
           data-aos-duration="600"
           src={mascot_small}
           alt="image"
-          className=" rounded-xl shadow-lg"
+          className=" rounded-xl shadow-lg "
         />
       </div>
     </div>

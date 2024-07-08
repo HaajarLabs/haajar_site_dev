@@ -7,7 +7,7 @@ const Features = () => {
         data-aos="fade-up"
         data-aos-once="true"
         data-aos-duration="1000"
-        className="pt-3 lg:text-4xl  xs:text-2xl font-vilane_Semi_bold "
+        className="pt-3 lg:text-4xl  ss:text-2xl xs:text-xl font-vilane_Semi_bold "
       >
         Introducing
       </h1>
@@ -16,7 +16,7 @@ const Features = () => {
         data-aos-once="true"
         data-aos-delay="400"
         data-aos-duration="1000"
-        className="lg:text-[400px] xs:text-8xl tracking-widest font-vilane_bold lg:-mt-16  xs:-mt-0 text-[#F43F5E] drop-shadow-neumorphism"
+        className="lg:text-[400px] xs:text-8xl  tracking-widest font-vilane_bold lg:-mt-16  xs:-mt-0 text-[#F43F5E] drop-shadow-neumorphism"
       >
         Haajar
       </p>
@@ -26,7 +26,7 @@ const Features = () => {
         data-aos-once="true"
         data-aos-delay="800"
         data-aos-duration="1000"
-        className=" absolute  lg:mt-60 xs:mt-28   w-4/6"
+        className=" absolute  lg:mt-60 xs:mt-28  xs:w-5/6 ss:w-4/6"
         src={mockup}
         alt="mockup"
       />

@@ -8,7 +8,7 @@ const Features = () => {
       <h1
         data-aos="fade-left"
         data-aos-once="true"
-        data-aos-delay="1200"
+        data-aos-delay="800"
         className="flex justify-center font-vilane_Semi_bold px-3 text-center text-[#F43F5E] ss:text-4xl xs:text-3xl lg:mb-16 mb-10  "
       >
         Power Up Your Bookings with Haajar
@@ -27,7 +27,7 @@ const Features = () => {
           <div
             data-aos="zoom-in"
             data-aos-once="true"
-            data-aos-delay="1400"
+            data-aos-delay="1000"
             data-aos-duration="600"
             className="pl-3 text-center"
           >
@@ -54,7 +54,7 @@ const Features = () => {
           <div
             data-aos="zoom-in"
             data-aos-once="true"
-            data-aos-delay="1000"
+            data-aos-delay="1200"
             data-aos-duration="600"
             className="pl-3 text-center"
           >

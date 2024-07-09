@@ -54,7 +54,7 @@ const Features = () => {
           <div
             data-aos="zoom-in"
             data-aos-once="true"
-            data-aos-delay="1600"
+            data-aos-delay="1000"
             data-aos-duration="600"
             className="pl-3 text-center"
           >
@@ -71,7 +71,7 @@ const Features = () => {
           <img
             data-aos="zoom-out"
             data-aos-once="true"
-            data-aos-delay="800"
+            data-aos-delay="600"
             data-aos-duration="600"
             src={token}
             width={400}
@@ -81,7 +81,7 @@ const Features = () => {
           <div
             data-aos="zoom-in"
             data-aos-once="true"
-            data-aos-delay="1600"
+            data-aos-delay="1200"
             data-aos-duration="600"
             className="pl-3 text-center"
           >

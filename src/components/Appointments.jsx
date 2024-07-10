@@ -167,7 +167,7 @@ function Appointments() {
         };
         try {
           const response = await fetch(
-            "https://message-send.azurewebsites.net/update_check_slots",
+            "https://5313-103-166-245-187.ngrok-free.app/update_check_slots",
             {
               method: "POST",
               headers: {
@@ -226,13 +226,13 @@ function Appointments() {
     console.log("startdf",timeDifference);
     const user = (await supabase.auth.getUser()).data.user;
     const messageData = {
-      client_id: user.id,
+      // client_id: user.id,
       slot_date: today,
       delay: timeDifference,
     };
     try {
       const response = await fetch(
-        "https://message-send.azurewebsites.net/start_find_check_slots",
+        "https://5313-103-166-245-187.ngrok-free.app/start_find_check_slots",
         {
           method: "POST",
           headers: {

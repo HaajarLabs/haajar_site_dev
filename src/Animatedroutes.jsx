@@ -17,7 +17,7 @@ const Animatedroutes = () => {
         <Route path="/" element={<Landingpage />} />
         <Route path="/Haajar" element={<Homepage />} />
         <Route path="/Login" element={<Loginpage />} />
-        <Route path="/Dashboard" element={<Dashboard />} />
+        <Route path="/Dashboard/*" element={<Dashboard />} />
         <Route path="/Privacy-policy" element={<Privacypage/>} />
         <Route path="/About-us" element={<Aboutpage/>} />
       </Routes>

@@ -212,37 +212,91 @@ import NavItem from "../components/Navitem";
 import Appointments from "../components/Appointments";
 import logoicon from "../assets/logofirst1.png";
 import { createClient } from "@supabase/supabase-js";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useNavigate, Routes, Route, Link } from "react-router-dom";
 import Metrics from "../components/Metrics";
 import FloatingButton from "../components/Floatingbutton";
 import { BsThreeDots } from "react-icons/bs";
 import { FaChevronLeft } from "react-icons/fa6";
-
+import Settings from "../components/Settings";
 const Dashboard = () => {
   const apiKey = process.env.SUPABASE_KEY;
   const apiUrl = process.env.SUPABASE_URL;
   const supabase = createClient(apiUrl, apiKey);
   const [totLAppointments, setTotalappoinments] = useState(0);
   const navigate = useNavigate();
-  const [metrics, setMetrics] = useState({ past: 0, upcoming: 0, whatsapp: 0 });
-  const [app_datas, setAppDatas] = useState();
+  const [metrics, setMetrics] = useState({
+    past: 0,
+    upcoming: 0,
+    whatsapp: 0,
+  });
+  const [appDatas, setAppDatas] = useState([]);
   const [navclicked, setNavclicked] = useState(false);
 
   useEffect(() => {
-    var accessTokenObj = JSON.parse(
+    const accessTokenObj = JSON.parse(
       localStorage.getItem("sb-lgzjqxhqfstjgehntfxi-auth-token")
     );
-    if (accessTokenObj != null) {
-      if (accessTokenObj["user"]["aud"] === "authenticated") {
-        getData(accessTokenObj["user"]["id"]);
-      } else {
-        navigate("/");
-      }
+    if (accessTokenObj != null && accessTokenObj.user.aud === "authenticated") {
+      getData(accessTokenObj.user.id);
     } else {
       navigate("/");
     }
+  }, [navigate]);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("schema-db-changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "appointments",
+        },
+        async (payload) => {
+          await getData(payload.new.client_id);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      channel.unsubscribe();
+    };
   }, []);
+
+  async function getData(id) {
+    const { data, error } = await supabase
+      .from("appointments")
+      .select("*")
+      .eq("client_id", id);
+
+    if (error) {
+      console.error("Error fetching data:", error.message);
+      return;
+    }
+
+    const whatsappAppointments = data.filter(
+      (appointment) => appointment.book_medium === "whatsapp"
+    ).length;
+    const upcomingAppointments = data.filter(
+      (appointment) => !appointment.visit_status
+    ).length;
+    const pastAppointments = data.filter(
+      (appointment) => appointment.visit_status
+    ).length;
+
+    setAppDatas(data);
+    setMetrics({
+      past: pastAppointments,
+      upcoming: upcomingAppointments,
+      whatsapp: whatsappAppointments,
+    });
+    setTotalappoinments(data.length);
+  }
+
+  const handleButtonClick = () => {
+    setNavclicked(!navclicked);
+  };
 
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
@@ -253,94 +307,16 @@ const Dashboard = () => {
     }
   };
 
-  async function getData(id) {
-    const channel = supabase
-      .channel("schema-db-changes")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "appointments",
-        },
-
-        async (payload) => {
-          const { data, error } = await supabase
-            .from("appointments")
-            .select("*")
-            .eq("client_id", id);
-          if (error) {
-            console.error("Error fetching data:", error.message);
-            return;
-          }
-          // console.log(data);
-          setAppDatas(data);
-
-          const whatsappAppointments = data.filter(
-            (appointment) => appointment.book_medium == "whatsapp"
-          ).length;
-          const upcomingAppointments = data.filter(
-            (appointment) => appointment.visit_status == false
-          ).length;
-          const pastAppointments = data.filter(
-            (appointment) => appointment.visit_status == true
-          ).length;
-
-          setMetrics({
-            past: pastAppointments,
-            upcoming: upcomingAppointments,
-            whatsapp: whatsappAppointments,
-          });
-          setTotalappoinments(data.length);
-        }
-      )
-      .subscribe();
-
-    const { data, error } = await supabase
-      .from("appointments")
-      .select("*")
-      .eq("client_id", id);
-    if (error) {
-      console.error("Error fetching data:", error.message);
-      return;
-    }
-    // console.log(data);
-    // console.log(todayAppointments);
-    setAppDatas(data);
-
-    const whatsappAppointments = data.filter(
-      (appointment) => appointment.book_medium == "whatsapp"
-    ).length;
-    const upcomingAppointments = data.filter(
-      (appointment) => appointment.visit_status == false
-    ).length;
-    const pastAppointments = data.filter(
-      (appointment) => appointment.visit_status == true
-    ).length;
-
-    setMetrics({
-      past: pastAppointments,
-      upcoming: upcomingAppointments,
-      whatsapp: whatsappAppointments,
-    });
-    setTotalappoinments(data.length);
-  }
-  const handleButtonClick = (value) => {
-    setNavclicked(navclicked ? false : true);
-  };
-
- 
-
   return (
     <div className="flex h-screen">
       <div
-        className={`xs:absolute xs:z-50 xs:bg-white xs:h-screen ${
-          navclicked ? "xs:translate-x-0" : "xs:-translate-x-full"
+        className={`absolute z-50 bg-white h-screen ${
+          navclicked ? "translate-x-0" : "-translate-x-full"
         } md:relative md:translate-x-0 transition-transform duration-500 ease-in-out lg:flex flex-col md:bg-gray-100/40 border-r w-64`}
       >
         <div className="flex flex-col h-screen justify-between">
           <div>
-            <div className="flex items-center justify-between h-[60px] border-b px-5">
+            <div className="flex items-center justify-between h-16 border-b px-5">
               <Link to="/Haajar">
                 <img
                   src={logoicon}
@@ -357,8 +333,7 @@ const Dashboard = () => {
             </div>
             <nav className="flex flex-col px-4 py-3 text-sm font-medium">
               <NavItem to="/Dashboard" label="Appointments" />
-              {/* <NavItem to="/Dashboard/History" label="History" />
-              <NavItem to="/Dashboard/Settings" label="Settings" /> */}
+              <NavItem to="/Dashboard/Settings" label="Settings" />
             </nav>
           </div>
           <div className="px-4 py-3">
@@ -373,7 +348,7 @@ const Dashboard = () => {
       </div>
 
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="flex  xs:justify-between md:justify-end items-center h-[60px]  bg-gray-100/40 border-b px-6">
+        <header className="flex  xs:justify-between md:justify-end items-center h-[64px]  bg-gray-100/40 border-b px-6">
           <button onClick={handleButtonClick} className="md:hidden">
             <BsThreeDots />
           </button>
@@ -381,9 +356,19 @@ const Dashboard = () => {
             Total appointments: {totLAppointments}
           </h1>
         </header>
-        <main className="flex-1 overflow-y-auto p-6">
-          <Metrics metrics={metrics} />
-          <Appointments />
+        <main className="p-4">
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <>
+                  <Metrics metrics={metrics} />
+                  <Appointments />
+                </>
+              }
+            />
+            <Route path="/Settings" element={<Settings />} />
+          </Routes>
         </main>
         <FloatingButton />
       </div>

@@ -150,7 +150,8 @@ function Appointments() {
     appointment_id,
     visit_status,
     name,
-    start_time,token
+    start_time,
+    token
   ) => {
     if (visit_status == false) {
       let text =
@@ -160,14 +161,14 @@ function Appointments() {
         const currentDate = new Date(); // Get current date
         const currentTime = `${currentDate.getHours()}:${currentDate.getMinutes()}:${currentDate.getSeconds()}`;
         const timeDifference = await compareTimes(start_time, currentTime);
-        console.log("timedf",timeDifference);
+        console.log("timedf", timeDifference);
         const messageData = {
           delay_change: timeDifference,
           slot_id: token,
         };
         try {
           const response = await fetch(
-            "https://5313-103-166-245-187.ngrok-free.app/update_check_slots",
+            "https://message-send.azurewebsites.net/update_check_slots",
             {
               method: "POST",
               headers: {
@@ -189,15 +190,15 @@ function Appointments() {
           console.error("Error sending message:", error.message);
         }
         const user = (await supabase.auth.getUser()).data.user;
-      const { data, error } = await supabase
-        .from("appointments")
-        .upsert({
-          appointment_id: appointment_id,
-          visit_status: visit_status ? false : true,
-          client_id: user.id,
-        })
-        .select();
-      console.log(error);
+        const { data, error } = await supabase
+          .from("appointments")
+          .upsert({
+            appointment_id: appointment_id,
+            visit_status: visit_status ? false : true,
+            client_id: user.id,
+          })
+          .select();
+        console.log(error);
       } else {
         console.log("You pressed Cancel!");
       }
@@ -218,12 +219,12 @@ function Appointments() {
   const handlestart = async (start_time) => {
     setStart(true);
     console.log(true);
-    console.log("starttime",start_time);
+    console.log("starttime", start_time);
     const currentDate = new Date(); // Get current date
     const currentTime = `${currentDate.getHours()}:${currentDate.getMinutes()}:${currentDate.getSeconds()}`;
-    console.log("current",currentTime)
+    console.log("current", currentTime);
     const timeDifference = await compareTimes(start_time, currentTime);
-    console.log("startdf",timeDifference);
+    console.log("startdf", timeDifference);
     const user = (await supabase.auth.getUser()).data.user;
     const messageData = {
       // client_id: user.id,
@@ -232,7 +233,7 @@ function Appointments() {
     };
     try {
       const response = await fetch(
-        "https://5313-103-166-245-187.ngrok-free.app/start_find_check_slots",
+        "https://message-send.azurewebsites.net/start_find_check_slots",
         {
           method: "POST",
           headers: {
@@ -303,9 +304,12 @@ function Appointments() {
               onClick={() =>
                 handlestart(
                   appointments.length > 0
-                    ?  appointments
-                    .filter((appointment) => appointment.date === selectedOption)
-                    .sort((a, b) => a.token - b.token).at(0).app_time // Sort appointments in ascending order of token
+                    ? appointments
+                        .filter(
+                          (appointment) => appointment.date === selectedOption
+                        )
+                        .sort((a, b) => a.token - b.token)
+                        .at(0).app_time // Sort appointments in ascending order of token
                     : "00:00:00"
                 )
               }

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import DateSelector from '../widgets/DateSelector';
 import SlotSelector from '../widgets/SlotSelector';
+import WeekCalendar from '../widgets/Datepicker';
 const Settings = () => {
    
     const [selectedDate, setSelectedDate] = useState("");
@@ -17,10 +18,10 @@ const Settings = () => {
   ];
 
   return (
-    <div className="max-w-4xl mx-auto py-8 font-poppins">
-        <h1>Select </h1>
-      <h1 className="text-2xl font-bold mb-4">Select a Date</h1>
-      <DateSelector
+    <div className=" mx-auto py-4 font-poppins flex flex-col justify-between px-24  items-start">
+        <h1 className=' text-2xl mb-4'>Slot Settings </h1>
+      <WeekCalendar />
+      {/* <DateSelector
         dates={dates}
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
@@ -47,7 +48,7 @@ const Settings = () => {
         >
           Confirm Booking
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };

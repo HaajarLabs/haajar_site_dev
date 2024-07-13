@@ -121,6 +121,7 @@ const Modal = ({ onClose }) => {
       .from("slots")
       .update({ slot_available: false })
       .eq("slot_id", slot_id)
+      .eq("client_id", user.id)
       .select();
 
     if (error) {

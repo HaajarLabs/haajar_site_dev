@@ -339,7 +339,7 @@ const Dashboard = () => {
           <div className="px-4 py-3">
             <button
               onClick={signOut}
-              className="w-full bg-rose-400 hover:bg-rose-500 text-white font-bold py-2 px-4 rounded"
+              className="w-full bg-rose-400 hover:bg-rose-500 text-white font-vilane_bold py-2 px-4 rounded"
             >
               Sign Out
             </button>

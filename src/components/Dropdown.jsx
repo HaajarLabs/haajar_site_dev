@@ -28,7 +28,7 @@ const Dropdown = ({ options, onSelect }) => {
   return (
     <div className="relative inline-block ">
       <button
-        className="border-blue-200 border-2  bg-blue-100 text-blue-400 font-poppins font-bold md:py-2 md:px-4 xs:py-1 xs:px-2  rounded inline-flex items-center"
+        className="border-blue-200 border-2  bg-blue-100 text-blue-400 font-poppins font-bold  md:px-4 xs:py-2  xs:px-2  rounded inline-flex items-center"
         onClick={toggleDropdown}
       >
         <span className=' xs:text-xs  ss:text-base'>{selectedOption ? convertDateFormat(selectedOption) :selectedOption}</span>

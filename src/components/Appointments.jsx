@@ -317,7 +317,7 @@ function Appointments() {
                 start ? "bg-rose-300" : "bg-rose-500"
               } group-hover:bg-rose-300 text-white p-2 mr-2 rounded ${
                 appointments.length > 0 ? "" : "hidden"
-              }xs:w-12 xs:h-10 xs:text-xs  xs:p-1 xs:rounded   xs:mr-2 xs:ml-2 xs:text-white xs:font-semibold xs:tracking-wider xs:leading-3 xs:uppercase`}
+              }xs:w-12 ss:h-10 xs:h-9 xs:text-xs  xs:p-1 xs:rounded   xs:mr-2 xs:ml-2 xs:text-white xs:font-semibold xs:tracking-wider xs:leading-3 xs:uppercase`}
             >
               Start now
             </button>

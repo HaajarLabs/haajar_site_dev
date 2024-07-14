@@ -29,7 +29,7 @@ const FloatingButton = () => {
  <button
   type="button"
   onClick={toggleModal}
-  class="bg-white text-center md:w-50 xs:w-30 md:right-32 xs:right-16 hover:-translate-x-20 rounded transition-transform duration-500 ease-in-out h-14 fixed font-sans text-black text-xl  bottom-2  font-semibold group"
+  class="bg-white text-center md:w-50 xs:w-32  md:right-32 xs:right-12 hover:-translate-x-20 md:rounded xs:rounded-full  transition-transform duration-500 ease-in-out h-14 fixed font-sans text-black text-xl  bottom-2  font-semibold group"
 >
   <div
   

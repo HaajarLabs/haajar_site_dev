@@ -182,11 +182,11 @@ const WeekCalendar = () => {
 
   return (
     <>
-      <div className="flex w-full justify-between p-4 rounded-lg font-poppins ">
+      <div className="flex w-full xs:gap-2 lg:gap-0 overflow-x-auto scrollbar-none justify-between p-4 rounded-lg font-poppins ">
         {dates.map((date, index) => (
           <div
             key={index}
-            className={`flex flex-col items-center p-5  ${
+            className={`flex flex-col items-center lg:p-5 p-2  ${
               isSelected(date.getDate()) ? "drop-shadow-xl" : ""
             } rounded-lg cursor-pointer transition-colors border ${
               isActive(date) && isSelected(date.getDate())
@@ -220,14 +220,14 @@ const WeekCalendar = () => {
         ))}
       </div>
 
-      <div className=" flex flex-col items-start h-96 justify-between  w-full">
-        <h1 className=" text-2xl mb-6">Time slots</h1>
-        <div className="flex justify-between flex-1 ml-4 gap-4">
+      <div className=" flex flex-col items-start lg:h-96 justify-between  w-full">
+        <h1 className=" lg:text-2xl lg:mb-6 text-lg mb-1">Time slots</h1>
+        <div className="flex flex-wrap justify-between lg:flex-1 ml-4 lg:gap-4 gap-2  ">
           {availableTimeSlots.length > 0 ? (
             availableTimeSlots.map((slot, index) => (
               <div key={slot} className="">
                 <label
-                  className={`flex p-4   border-2 items-center rounded-lg overflow-hidden ${
+                  className={`flex lg:p-4    border-2 items-center rounded-lg overflow-hidden ${
                     !availabletimedata[index]
                       ? "bg-gray-100 border-gray-200  cursor-not-allowed"
                       : "bg-white  hover:border-rose-300  cursor-pointer"
@@ -246,7 +246,7 @@ const WeekCalendar = () => {
                     onChange={() => setSelectedSlot(slot)}
                     className="sr-only"
                   />
-                  <div className={`flex-1 py-2 px-4 text-xl font-poppins ${
+                  <div className={`lg:py-2  lg:px-4  p-2 lg:text-xl font-poppins ${
                     !availabletimedata[index]
                       ? "text-gray-400"
                       : "text-gray-800"
@@ -257,7 +257,7 @@ const WeekCalendar = () => {
               </div>
             ))
           ) : (
-            <div className="text-red-400   font-semibold font-poppins  text-3xl ">
+            <div className="text-red-400   font-semibold font-poppins  lg:text-3xl ">
               No slots available
             </div>
           )}
@@ -265,7 +265,7 @@ const WeekCalendar = () => {
         <button
           type="submit"
           onClick={handleSubmit}
-          className={` absolute bottom-32 right-0 p-4   px-7 text-2xl ${
+          className={` absolute bottom-32 right-0 lg:p-4 p-2  px-7 lg:text-2xl ${
             selectedSlot
               ? "bg-green-500 hover:bg-green-600 text-white"
               : "bg-gray-300 text-gray-600 cursor-not-allowed"

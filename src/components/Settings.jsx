@@ -18,8 +18,8 @@ const Settings = () => {
   ];
 
   return (
-    <div className=" mx-auto py-4 font-poppins flex flex-col justify-between px-24  items-start">
-        <h1 className=' text-2xl mb-4'>Slot Settings </h1>
+    <div className=" mx-auto py-4 font-poppins flex flex-col justify-between lg:px-24  items-start">
+        <h1 className=' lg:text-2xl text-lg lg:mb-4'>Slot Settings </h1>
       <WeekCalendar />
       {/* <DateSelector
         dates={dates}

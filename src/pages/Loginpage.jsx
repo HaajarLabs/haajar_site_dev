@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import logo from "../assets/logofirst1.png";
 import { createClient } from "@supabase/supabase-js";
-
+import { toast,ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 const apiKey = process.env.SUPABASE_KEY;
@@ -51,8 +51,21 @@ const Loginpage = () => {
         },
       });
       console.log(error);
-      if (data) {
+      if (error==null) {
         setSuccess(true);
+      }
+      else{
+        setClicked(false);
+        toast.error('Your Email is not verified! Please verify your email ', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          });
       }
     } catch (error) {
       print(error.message);
@@ -72,7 +85,20 @@ const Loginpage = () => {
     //     </div> */}
     //   </div>
     // </div>
+    
     <div className="bg-primary  overflow-hidden">
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <div className="flex  bg-primary h-screen w-screen   ">
         <div
           className={` bg-[url('/login.jpg')] w-2/3 hidden md:block  ${

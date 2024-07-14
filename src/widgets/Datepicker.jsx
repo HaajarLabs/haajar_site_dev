@@ -231,7 +231,7 @@ const WeekCalendar = () => {
                     !availabletimedata[index]
                       ? "bg-gray-100 border-gray-200  cursor-not-allowed"
                       : "bg-white  hover:border-rose-300  cursor-pointer"
-                  } ${
+                  } ${ 
                      selectedSlot === slot
                       ? "bg-rose-400 border-rose-500  cursor-not-allowed"
                       : " "

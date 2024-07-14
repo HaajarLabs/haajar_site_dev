@@ -53,7 +53,7 @@ const Hero = () => {
             </div>{" "}
             <div data-aos="zoom-in-up" data-aos-delay="400">
               {" "}
-              Queue's made easy!
+              Queues made easy!
             </div>
           </div>{" "}
           <div

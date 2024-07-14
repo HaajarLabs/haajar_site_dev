@@ -221,7 +221,7 @@ const WeekCalendar = () => {
       </div>
 
       <div className=" flex flex-col items-start lg:h-96 justify-between  w-full">
-        <h1 className=" lg:text-2xl lg:mb-6 text-lg mb-1">Time slots</h1>
+        <h1 className=" lg:text-2xl lg:mb-6 xs:mb-2 text-lg mb-1">Time slots</h1>
         <div className="flex flex-wrap justify-between lg:flex-1 ml-4 lg:gap-4 gap-2  ">
           {availableTimeSlots.length > 0 ? (
             availableTimeSlots.map((slot, index) => (

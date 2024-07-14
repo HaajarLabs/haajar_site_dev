@@ -228,7 +228,7 @@ function Appointments() {
     const user = (await supabase.auth.getUser()).data.user;
     const messageData = {
       // client_id: user.id,
-      slot_date: today,
+      slot_date: selectedOption,
       delay: timeDifference,
     };
     try {

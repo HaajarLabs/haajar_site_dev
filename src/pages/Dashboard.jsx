@@ -356,7 +356,7 @@ const Dashboard = () => {
             Total appointments: {totLAppointments}
           </h1>
         </header>
-        <main className="p-4">
+        <main className="p-4 overflow-y-auto">
           <Routes>
             <Route
               path="/"

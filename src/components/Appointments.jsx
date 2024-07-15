@@ -281,7 +281,7 @@ function Appointments() {
   }
 
   return (
-    <div className="md:p-4    font-poppins   overflow-hidden ">
+    <div className="md:p-4    font-poppins   ">
       <ToastContainer
         position="top-right"
         autoClose={5000}

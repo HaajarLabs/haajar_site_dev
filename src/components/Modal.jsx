@@ -136,7 +136,7 @@ const Modal = ({ onClose }) => {
       .order("pat_id", { ascending: false })
       .limit(1)
       .single();
-
+console.log(patient_data);
     if (patient_error) {
       console.error("pat_id_error", patient_error);
       setLoading(false); // Stop loading if error
@@ -144,6 +144,7 @@ const Modal = ({ onClose }) => {
     }
 
     const newPatId = patient_data ? patient_data.pat_id + 1 : 1;
+
 
     const { error: insert_error } = await supabase
       .from("patients")
@@ -172,13 +173,14 @@ const Modal = ({ onClose }) => {
       .single();
 
     if (app_err) {
-      console.error("pat_error", app_err);
+      console.log("pat_error", app_err);
       setLoading(false); // Stop loading if error
-      return;
+      const newAppId = 400;
+      console.log(newAppId);
     }
-
-    const newAppId = app_data ? app_data.appointment_id + 1 : 400;
-
+    const newAppId = app_data!=null ? app_data.appointment_id + 1 : 400;
+      console.log(newAppId);
+  
     const { error: app_error } = await supabase
       .from("appointments")
       .insert([

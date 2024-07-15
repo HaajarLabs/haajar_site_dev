@@ -231,7 +231,7 @@ function Appointments() {
 
     const messageData = {
       // client_id: user.id,
-      slot_date: selectedOption,
+      slot_date: today,
       delay: timeDifference,
     };
     try {

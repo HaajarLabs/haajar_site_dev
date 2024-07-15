@@ -348,7 +348,7 @@ const Dashboard = () => {
       </div>
 
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="flex  xs:justify-between md:justify-end items-center h-[64px]  bg-gray-100/40 border-b px-6">
+        <header className="flex  xs:justify-between md:justify-end items-center  py-4 bg-gray-100/40 border-b px-6">
           <button onClick={handleButtonClick} className="md:hidden">
             <BsThreeDots />
           </button>

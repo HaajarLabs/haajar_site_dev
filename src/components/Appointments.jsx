@@ -206,9 +206,11 @@ function Appointments() {
   };
 
   const handlestart = async (start_time) => {
-    const user = (await supabase.auth.getUser()).data.user;
-    setCanStart(true);
+    setCanStart(false);
     setStart(true);
+    console.log("start", can_start);
+    const user = (await supabase.auth.getUser()).data.user;
+    
 
     const { data, error } = await supabase
       .from("profiles")

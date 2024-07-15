@@ -177,7 +177,7 @@ const Modal = ({ onClose }) => {
       return;
     }
 
-    const newAppId = app_data ? app_data.appointment_id + 1 : 1;
+    const newAppId = app_data ? app_data.appointment_id + 1 : 400;
 
     const { error: app_error } = await supabase
       .from("appointments")

@@ -37,7 +37,6 @@ function Appointments() {
   const dayAfterTomorrow =
     yearbf + "-" + formatNumber(monthbf) + "-" + formatNumber(daybf);
   const options = [today, tomorrow, dayAfterTomorrow];
-  const [doc_name, setDocName] = useState("Dr. Haajar");
   // Fetch appointments data here
   useEffect(() => {
     supabase.auth.getUser().then((user) => {
@@ -46,29 +45,19 @@ function Appointments() {
   }, []);
 
   const [start, setStart] = useState(false);
-  useEffect(() => {
-    const checkMidnight = () => {
-      const now = new Date();
-      if (
-        now.getHours() === 0 &&
-        now.getMinutes() === 0 &&
-        now.getSeconds() === 0
-      ) {
-        setStart((prevState) => (prevState ? false : prevState));
-      }
-    };
-
-    const interval = setInterval(checkMidnight, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
+  const [can_start, setCanStart] = useState(false);
   async function getData(id) {
-    const { data: drData } = await supabase
+    const { data: canstartData } = await supabase
       .from("profiles")
-      .select("*")
+      .select("can_start")
       .eq("id", id);
-    setDocName(drData[0].full_name);
+    setCanStart(canstartData[0].can_start);
+    const { data: startData } = await supabase
+      .from("profiles")
+      .select("start_status")
+      .eq("id", id);
+    setStart(startData[0].start_status);
+
     const channel = supabase
       .channel("schema-db-changes")
       .on(
@@ -217,7 +206,21 @@ function Appointments() {
   };
 
   const handlestart = async (start_time) => {
+    const user = (await supabase.auth.getUser()).data.user;
+    setCanStart(true);
     setStart(true);
+
+    const { data, error } = await supabase
+      .from("profiles")
+      .update({ can_start: false })
+      .eq("id", user.id)
+      .select();
+    const { data: strt, error: strterr } = await supabase
+      .from("profiles")
+      .update({ start_status: true })
+      .eq("id", user.id)
+      .select();
+
     console.log(true);
     console.log("starttime", start_time);
     const currentDate = new Date(); // Get current date
@@ -225,7 +228,7 @@ function Appointments() {
     console.log("current", currentTime);
     const timeDifference = await compareTimes(start_time, currentTime);
     console.log("startdf", timeDifference);
-    const user = (await supabase.auth.getUser()).data.user;
+
     const messageData = {
       // client_id: user.id,
       slot_date: selectedOption,
@@ -300,7 +303,7 @@ function Appointments() {
         <div className="flex items-center">
           <div className="group">
             <button
-              disabled={start}
+              disabled={!can_start}
               onClick={() =>
                 handlestart(
                   appointments.length > 0
@@ -314,7 +317,7 @@ function Appointments() {
                 )
               }
               className={`${
-                start ? "bg-rose-300" : "bg-rose-500"
+                !can_start ? "bg-rose-300" : "bg-rose-500"
               } group-hover:bg-rose-300 text-white p-2 mr-2 rounded ${
                 appointments.length > 0 ? "" : "hidden"
               }xs:w-12 ss:h-10 xs:h-9 xs:text-xs  xs:p-1 xs:rounded   xs:mr-2 xs:ml-2 xs:text-white xs:font-semibold xs:tracking-wider xs:leading-3 xs:uppercase`}
@@ -375,18 +378,19 @@ function Appointments() {
                   index < array.length - 1 ? array[index + 1].phone : "";
                 return (
                   <tr key={appointment.token}>
-                    <td className="px-6 hidden sm:block py-7 whitespace-nowrap font-semibold ">
+                    <td className={`px-6 hidden sm:block py-7 whitespace-nowrap font-semibold ${!start || selectedOption != today?"text-gray-400":""} `}>
                       {appointment.app_time}
                     </td>
-                    <td className="px-6 py-7 whitespace-nowrap font-semibold">
+                    <td className={`${!start || selectedOption != today?"text-gray-400":""} px-6 py-7 whitespace-nowrap font-semibold`}>
                       {appointment.name}
                     </td>
-                    <td className="px-6 hidden sm:block py-7 whitespace-nowrap">
+                    <td className={`${!start || selectedOption != today?"text-gray-400":""} px-6 hidden sm:block py-7 whitespace-nowrap`}>
                       {appointment.phone.slice(2)}
                     </td>
 
                     <td className="px-6 py-7 whitespace-nowrap">
                       <Checkbox
+                        disabled={!start || selectedOption != today}
                         color="success"
                         onChange={() =>
                           handleInputChange(
@@ -400,10 +404,10 @@ function Appointments() {
                         checked={appointment.visit_status ? true : false}
                       />
                     </td>
-                    <td className="px-6  xs:block sm:hidden py-7 whitespace-nowrap font-semibold ">
+                    <td className={`px-6  xs:block sm:hidden  py-7 whitespace-nowrap font-semibold ${!start || selectedOption != today?"text-gray-400":""}`} >
                       {appointment.app_time}
                     </td>
-                    <td className="px-6 py-7 hidden md:flex   whitespace-nowrap">
+                    <td className={`${!start || selectedOption != today?"text-gray-400":""} px-6 py-7 hidden md:flex   whitespace-nowrap`}>
                       {appointment.token}
                     </td>
                   </tr>

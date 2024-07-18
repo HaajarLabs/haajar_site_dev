@@ -4,7 +4,6 @@ import { DotLottiePlayer, Controls } from "@dotlottie/react-player";
 import "@dotlottie/react-player/dist/index.css";
 
 const Hero = () => {
- 
   return (
     <div
       id="home"
@@ -53,7 +52,7 @@ const Hero = () => {
             </div>{" "}
             <div data-aos="zoom-in-up" data-aos-delay="400">
               {" "}
-              Queues made easy!
+              <h1>Queues made easy!</h1>
             </div>
           </div>{" "}
           <div
@@ -61,20 +60,22 @@ const Hero = () => {
             data-aos-delay="900"
             className="sm:font-vilane_Light text-center  ss:text-lg font-vilane_Extra_light text-xs  md:text-xl  xl:text-3xl"
           >
-            Simplifying customer bookings so that you can focus on delivering
-            quality.
+            <p>
+              Simplifying customer bookings so that you can focus on delivering
+              quality.
+            </p>
           </div>
           <div
             data-aos="zoom-out-up"
             data-aos-delay="700"
             className="md:pt-3 ss:pt-6 pt-5"
           >
-            <button class="bg-rose-500 hover:bg-rose-700 hover:ease-in-out transition duration-400 text-white  font-vilane_bold py-1 px-4 rounded">
-              <a href="https://api.whatsapp.com/send?phone=919400244505&text=Hi,can we talk about Haajar? I would like to learn more about its key features, pricing, and any available demos.">
+            <a href="https://api.whatsapp.com/send?phone=919400244505&text=Hi,can we talk about Haajar? I would like to learn more about its key features, pricing, and any available demos.">
+              <button class="bg-rose-500 hover:bg-rose-700 hover:ease-in-out transition duration-400 text-white  font-vilane_bold py-1 px-4 rounded">
                 {" "}
                 Book Demo
-              </a>
-            </button>
+              </button>
+            </a>
           </div>
         </div>
       </div>

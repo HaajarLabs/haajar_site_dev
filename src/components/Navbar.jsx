@@ -27,7 +27,7 @@ const Navbar = () => {
           data-aos-duration="1000"
           className=" cursor-pointer  border-black border-[1.5px] text-[#292f36] hover:border-green-400 z-50  hover:bg-green-400 hover:ease-in-out transition duration-300 px-4 py-2 rounded-3xl hover:text-white text-gray-00 "
         >
-          Log In
+          <h1>Log In</h1>
         </div>
       </Link>
     </nav>

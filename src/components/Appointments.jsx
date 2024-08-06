@@ -152,8 +152,9 @@ function Appointments() {
         const timeDifference = await compareTimes(start_time, currentTime);
         console.log("timedf", timeDifference);
         const messageData = {
-          delay_change: timeDifference,
           slot_id: token,
+          client_id:user.id,
+          slot_date: today
         };
         try {
           const response = await fetch(
@@ -232,9 +233,9 @@ function Appointments() {
     console.log("startdf", timeDifference);
 
     const messageData = {
-      // client_id: user.id,
+      client_id: user.id,
       slot_date: today,
-      delay: timeDifference,
+      // delay: timeDifference,
     };
     try {
       const response = await fetch(

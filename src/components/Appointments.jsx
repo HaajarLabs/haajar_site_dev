@@ -154,7 +154,7 @@ function Appointments() {
         const messageData = {
           slot_id: token,
           client_id:user.id,
-          slot_date: today
+          slot_date:today
         };
         try {
           const response = await fetch(

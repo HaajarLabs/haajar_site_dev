@@ -151,6 +151,7 @@ function Appointments() {
         const currentTime = `${currentDate.getHours()}:${currentDate.getMinutes()}:${currentDate.getSeconds()}`;
         const timeDifference = await compareTimes(start_time, currentTime);
         console.log("timedf", timeDifference);
+        const user = (await supabase.auth.getUser()).data.user;
         const messageData = {
           slot_id: token,
           client_id:user.id,
@@ -179,7 +180,7 @@ function Appointments() {
         } catch (error) {
           console.error("Error sending message:", error.message);
         }
-        const user = (await supabase.auth.getUser()).data.user;
+
         const { data, error } = await supabase
           .from("appointments")
           .upsert({

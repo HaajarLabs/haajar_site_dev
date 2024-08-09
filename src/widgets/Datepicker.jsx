@@ -116,7 +116,7 @@ const WeekCalendar = () => {
     const currentDate = new Date(today);
     return (
       date >= currentDate &&
-      date < currentDate.setDate(currentDate.getDate() + 3)
+      date < currentDate.setDate(currentDate.getDate() + 7)
     );
   };
 

@@ -7,15 +7,15 @@ const Settings = () => {
     const [selectedDate, setSelectedDate] = useState("");
   const [selectedSlot, setSelectedSlot] = useState("");
 
-  // Mock data for demonstration
-  const dates = ["Today", "Tomorrow", "Day After"];
-  const slots = [
-    { id: 1, time: "10:00 AM" },
-    { id: 2, time: "11:00 AM" },
-    { id: 3, time: "12:00 PM" },
-    { id: 4, time: "01:00 PM" },
-    { id: 5, time: "02:00 PM" },
-  ];
+  // // Mock data for demonstration
+  // const dates = ["Today", "Tomorrow", "Day After"];
+  // const slots = [
+  //   { id: 1, time: "10:00 AM" },
+  //   { id: 2, time: "11:00 AM" },
+  //   { id: 3, time: "12:00 PM" },
+  //   { id: 4, time: "01:00 PM" },
+  //   { id: 5, time: "02:00 PM" },
+  // ];
 
   return (
     <div className=" mx-auto py-4 font-poppins flex flex-col justify-between lg:px-24  items-start">

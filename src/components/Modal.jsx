@@ -4,6 +4,27 @@ import { toast } from "react-toastify";
 import { ThreeCircles } from 'react-loader-spinner';
 
 const Modal = ({ onClose }) => {
+
+  const generateNext7Days = () => {
+    const dates = [];
+    const today = new Date();
+  
+    for (let i = 0; i < 7; i++) {
+      const currentDate = new Date(today);
+      currentDate.setDate(today.getDate() + i);
+  
+      const year = currentDate.getFullYear();
+      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+      const day = String(currentDate.getDate()).padStart(2, '0');
+  
+      const formattedDate = `${year}-${month}-${day}`;
+      dates.push(formattedDate);
+    }
+  
+    return dates;
+  };
+
+  const availableDates = generateNext7Days();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [selectedSlot, setSelectedSlot] = useState("");
@@ -29,7 +50,7 @@ const Modal = ({ onClose }) => {
   const monthbf = date.getMonth() + 1;
   const yearbf = date.getFullYear();
   const dayAfterTomorrow = yearbf + "-" +formatNumber(monthbf)+ "-" + formatNumber(daybf);
-  const availableDates = [today, tomorrow, dayAfterTomorrow];
+
   const [selectedDate, setSelectedDate] = useState(availableDates[0]);
   const apiKey = process.env.SUPABASE_KEY;
   const apiUrl = process.env.SUPABASE_URL;
@@ -39,12 +60,12 @@ const Modal = ({ onClose }) => {
     getSlotData();
   }, [selectedDate]);
 
+  
   async function getSlotData() {
     try {
       const user = (await supabase.auth.getUser()).data.user;
       const client_id = user.id;
       const formattedSelectedDate = selectedDate; // Use selectedDate directly
-  
       const currentDate = new Date(); // Get current date
       const today = currentDate.toISOString().slice(0, 10); // Format current date as "YYYY-MM-DD"
       const currentTime = `${currentDate.getHours()}:${currentDate.getMinutes()}:${currentDate.getSeconds()}`; // Get current time in "HH:mm:ss" format
@@ -60,7 +81,6 @@ const Modal = ({ onClose }) => {
         console.error("Error fetching slot data:", error.message);
         return;
       }
-  
       const timeSlots = slotData
         .filter(slot => {
           if (formattedSelectedDate === today) {
@@ -71,6 +91,7 @@ const Modal = ({ onClose }) => {
           return true; // Return all slots if selectedDate is not today
         })
         .map(slot => slot.slot_start_time);
+  
   
       setAvailableTimeSlots(timeSlots);
       setSlotData(slotData);

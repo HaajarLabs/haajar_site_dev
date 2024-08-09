@@ -76,11 +76,10 @@ const WeekCalendar = () => {
 
       // setSlotData(slotData);
       console.log("Slot data fetched successfully:", timeSlots);
-      const timedata = slotData
-      .map((slot) => slot.slot_available);
+      const timedata = slotData.map((slot) => slot.slot_available);
 
       setAvailableTimeData(timedata);
-    console.log("Slot data fetched successfully:", timedata);
+      console.log("Slot data fetched successfully:", timedata);
     } catch (error) {
       console.error("Error fetching slot data:", error.message);
     }
@@ -127,7 +126,6 @@ const WeekCalendar = () => {
     return false;
   };
 
-
   const convertTimeFormat = (timeString) => {
     const [hours, minutes, seconds] = timeString.split(":");
     let period = "AM";
@@ -143,42 +141,59 @@ const WeekCalendar = () => {
     return `${formattedHours}:${minutes} ${period}`;
   };
   const handleDateChange = (date) => {
-    console.log("date", date);
+    // console.log("date", date);
+    const formattedDate = formatDate(date);
+
+    console.log("formatted",formattedDate);
     console.log("selecr", date.getDate());
-    if (date.getDate() == today.getDate()) {
-      setSelectedDate(todayfull);
-    } else if (date.getDate() == today.getDate() + 1) {
-      setSelectedDate(tomorrow);
-    } else {
-      setSelectedDate(dayAfterTomorrow);
-    }
+    setSelectedDate(formattedDate);
+    // if (date.getDate() == today.getDate()) {
+    //   setSelectedDate(todayfull);
+    // } else if (date.getDate() == today.getDate() + 1) {
+    //   setSelectedDate(tomorrow);
+    // } else {
+    //   setSelectedDate(dayAfterTomorrow);
+    // }
   };
 
- const handleSubmit = async (e) => {
-
-  try {
-    confirm("Are you sure you want to close this slot?")
-    console.log("selectedDate", selectedDate);
-    console.log("selectedSlot", selectedSlot);
-    const user = (await supabase.auth.getUser()).data.user;
-
-    const { error } = await supabase
-      .from("slots")
-      .update({ slot_available: false })
-      .eq("slot_date", selectedDate)
-      .eq("slot_start_time", selectedSlot)
-      .eq("client_id", user.id)
-      .select();
-    
-    if (error) {
-      throw error;
+  const formatDate = (inputDate) => {
+    const date = new Date(inputDate);  // Convert to Date object if it isn't already
+  
+    if (isNaN(date.getTime())) {
+      throw new Error("Invalid Date");  // Handle invalid date inputs
     }
-    window.location.reload();
-   
-  } catch (error) {
-    print(error);
-  }
- };
+  
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+  
+    return `${year}-${month}-${day}`;
+  };
+  
+
+  const handleSubmit = async (e) => {
+    try {
+      confirm("Are you sure you want to close this slot?");
+      console.log("selectedDate", selectedDate);
+      console.log("selectedSlot", selectedSlot);
+      const user = (await supabase.auth.getUser()).data.user;
+
+      const { error } = await supabase
+        .from("slots")
+        .update({ slot_available: false })
+        .eq("slot_date", selectedDate)
+        .eq("slot_start_time", selectedSlot)
+        .eq("client_id", user.id)
+        .select();
+
+      if (error) {
+        throw error;
+      }
+      window.location.reload();
+    } catch (error) {
+      print(error);
+    }
+  };
 
   return (
     <>
@@ -221,7 +236,9 @@ const WeekCalendar = () => {
       </div>
 
       <div className=" flex flex-col items-start lg:h-96 justify-between  w-full">
-        <h1 className=" lg:text-2xl lg:mb-6 xs:mb-2 text-lg mb-1">Time slots</h1>
+        <h1 className=" lg:text-2xl lg:mb-6 xs:mb-2 text-lg mb-1">
+          Time slots
+        </h1>
         <div className="flex flex-wrap justify-between lg:flex-1 ml-4 lg:gap-4 gap-2  ">
           {availableTimeSlots.length > 0 ? (
             availableTimeSlots.map((slot, index) => (
@@ -231,12 +248,11 @@ const WeekCalendar = () => {
                     !availabletimedata[index]
                       ? "bg-gray-100 border-gray-200  cursor-not-allowed"
                       : "bg-white  hover:border-rose-300  cursor-pointer"
-                  } ${ 
-                     selectedSlot === slot
+                  } ${
+                    selectedSlot === slot
                       ? "bg-rose-400 border-rose-500  cursor-not-allowed"
                       : " "
                   }`}
-                  
                 >
                   <input
                     type="radio"
@@ -246,11 +262,13 @@ const WeekCalendar = () => {
                     onChange={() => setSelectedSlot(slot)}
                     className="sr-only"
                   />
-                  <div className={`lg:py-2  lg:px-4  p-2 lg:text-xl font-poppins ${
-                    !availabletimedata[index]
-                      ? "text-gray-400"
-                      : "text-gray-800"
-                  }  font-semibold`}>
+                  <div
+                    className={`lg:py-2  lg:px-4  p-2 lg:text-xl font-poppins ${
+                      !availabletimedata[index]
+                        ? "text-gray-400"
+                        : "text-gray-800"
+                    }  font-semibold`}
+                  >
                     {convertTimeFormat(slot)}
                   </div>
                 </label>

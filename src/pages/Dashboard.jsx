@@ -218,6 +218,7 @@ import FloatingButton from "../components/Floatingbutton";
 import { BsThreeDots } from "react-icons/bs";
 import { FaChevronLeft } from "react-icons/fa6";
 import Settings from "../components/Settings";
+import History from "../components/history";
 const Dashboard = () => {
   const apiKey = process.env.SUPABASE_KEY;
   const apiUrl = process.env.SUPABASE_URL;
@@ -333,6 +334,8 @@ const Dashboard = () => {
             </div>
             <nav className="flex flex-col px-4 py-3 text-sm font-medium">
               <NavItem to="/Dashboard" label="Appointments" />
+              
+              <NavItem to="/Dashboard/History" label="History" />
               <NavItem to="/Dashboard/Settings" label="Settings" />
             </nav>
           </div>
@@ -368,6 +371,15 @@ const Dashboard = () => {
               }
             />
             <Route path="/Settings" element={<Settings />} />
+            <Route
+              path="/History"
+              element={
+                <>
+                  <Metrics metrics={metrics} />
+                  <Appointments />
+                </>
+              }
+            />
           </Routes>
         </main>
         <FloatingButton />

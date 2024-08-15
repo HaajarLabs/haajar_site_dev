@@ -72,16 +72,16 @@ const WeekCalendar = () => {
         })
         .map((slot) => slot.slot_start_time);
 
+      // Sort the time slots in ascending order
+      timeSlots.sort((a, b) => compareTimes(a, b));
+
       setAvailableTimeSlots(timeSlots);
 
-      // setSlotData(slotData);
-      console.log("Slot data fetched successfully:", timeSlots);
       const timedata = slotData.map((slot) => slot.slot_available);
-
       setAvailableTimeData(timedata);
-      console.log("Slot data fetched successfully:", timedata);
+      console.log("Slot data fetched successfully:", timeSlots);
     } catch (error) {
-      console.error("Error fetching slot data", error.message);
+      console.error("Error fetching slot data:", error.message);
     }
   }
 
@@ -144,7 +144,7 @@ const WeekCalendar = () => {
     // console.log("date", date);
     const formattedDate = formatDate(date);
 
-    console.log("formatted",formattedDate);
+    console.log("formatted", formattedDate);
     console.log("selecr", date.getDate());
     setSelectedDate(formattedDate);
     // if (date.getDate() == today.getDate()) {
@@ -157,19 +157,18 @@ const WeekCalendar = () => {
   };
 
   const formatDate = (inputDate) => {
-    const date = new Date(inputDate);  // Convert to Date object if it isn't already
-  
+    const date = new Date(inputDate); // Convert to Date object if it isn't already
+
     if (isNaN(date.getTime())) {
-      throw new Error("Invalid Date");  // Handle invalid date inputs
+      throw new Error("Invalid Date"); // Handle invalid date inputs
     }
-  
+
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-  
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
     return `${year}-${month}-${day}`;
   };
-  
 
   const handleSubmit = async (e) => {
     try {

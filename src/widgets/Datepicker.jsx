@@ -51,7 +51,6 @@ const WeekCalendar = () => {
       const client_id = user.id;
       const formattedSelectedDate = selectedDate; // Use selectedDate directly
       console.log(formattedSelectedDate);
-      console.log(client_id);
       const { data: slotData, error } = await supabase
         .from("slots")
         .select("*")
@@ -61,7 +60,7 @@ const WeekCalendar = () => {
         console.error("Error fetching slot data:", error.message);
         return;
       }
-  
+
       const timeSlots = slotData
         .filter((slot) => {
           if (formattedSelectedDate === today) {
@@ -72,15 +71,15 @@ const WeekCalendar = () => {
           return true; // Return all slots if selectedDate is not today
         })
         .map((slot) => slot.slot_start_time);
-  
-      // Sort the time slots in ascending order
-      timeSlots.sort((a, b) => compareTimes(a, b));
-  
+
       setAvailableTimeSlots(timeSlots);
-  
-      const timedata = slotData.map((slot) => slot.slot_available);
-      setAvailableTimeData(timedata);
+
+      // setSlotData(slotData);
       console.log("Slot data fetched successfully:", timeSlots);
+      const timedata = slotData.map((slot) => slot.slot_available);
+
+      setAvailableTimeData(timedata);
+      console.log("Slot data fetched successfully:", timedata);
     } catch (error) {
       console.error("Error fetching slot data:", error.message);
     }

@@ -81,7 +81,7 @@ const WeekCalendar = () => {
       setAvailableTimeData(timedata);
       console.log("Slot data fetched successfully:", timedata);
     } catch (error) {
-      console.error("Error fetching slot data:", error.message);
+      console.error("Error fetching slot data", error.message);
     }
   }
 

@@ -60,7 +60,7 @@ const WeekCalendar = () => {
         console.error("Error fetching slot data:", error.message);
         return;
       }
-
+  
       const timeSlots = slotData
         .filter((slot) => {
           if (formattedSelectedDate === today) {
@@ -71,15 +71,15 @@ const WeekCalendar = () => {
           return true; // Return all slots if selectedDate is not today
         })
         .map((slot) => slot.slot_start_time);
-
+  
+      // Sort the time slots in ascending order
+      timeSlots.sort((a, b) => compareTimes(a, b));
+  
       setAvailableTimeSlots(timeSlots);
-
-      // setSlotData(slotData);
-      console.log("Slot data fetched successfully:", timeSlots);
+  
       const timedata = slotData.map((slot) => slot.slot_available);
-
       setAvailableTimeData(timedata);
-      console.log("Slot data fetched successfully:", timedata);
+      console.log("Slot data fetched successfully:", timeSlots);
     } catch (error) {
       console.error("Error fetching slot data:", error.message);
     }

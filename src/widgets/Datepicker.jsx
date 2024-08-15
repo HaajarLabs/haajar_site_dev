@@ -51,6 +51,7 @@ const WeekCalendar = () => {
       const client_id = user.id;
       const formattedSelectedDate = selectedDate; // Use selectedDate directly
       console.log(formattedSelectedDate);
+      console.log(client_id);
       const { data: slotData, error } = await supabase
         .from("slots")
         .select("*")

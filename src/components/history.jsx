@@ -359,10 +359,7 @@ function History() {
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Arrived
             </th>
-            <th className="px-6 py-3 xs:block sm:hidden text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Slot Time
-            </th>
-            <th className="px-6 hidden md:block py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6  py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Date
             </th>
           </tr>
@@ -410,10 +407,7 @@ function History() {
                         checked={appointment.visit_status ? true : false}
                       />
                     </td>
-                    <td className={`px-6  xs:block sm:hidden  py-7 whitespace-nowrap font-semibold ${!start != today?"text-gray-400":""}`} >
-                      {appointment.app_time}
-                    </td>
-                    <td className={`  px-6 py-7 hidden md:flex   whitespace-nowrap`}>
+                    <td className={`  px-6 py-7  md:flex   whitespace-nowrap`}>
                       {appointment.date}
                     </td>
                   </tr>

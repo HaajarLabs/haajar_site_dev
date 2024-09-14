@@ -334,7 +334,7 @@ const Dashboard = () => {
             </div>
             <nav className="flex flex-col px-4 py-3 text-sm font-medium">
               <NavItem to="/Dashboard" label="Appointments" />
-              
+
               <NavItem to="/Dashboard/History" label="History" />
               <NavItem to="/Dashboard/Settings" label="Settings" />
             </nav>
@@ -375,8 +375,7 @@ const Dashboard = () => {
               path="/History"
               element={
                 <>
-                  <Metrics metrics={metrics} />
-                  <Appointments />
+                  <History />
                 </>
               }
             />

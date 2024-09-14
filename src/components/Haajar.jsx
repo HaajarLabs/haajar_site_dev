@@ -35,9 +35,9 @@ const Haajar = () => {
         >
           Struggling with long wait times and managing large crowds? Imagine
           effortlessly optimizing appointments and ensuring a smoother customer
-          experience with{" "}
-          <span className="ss:text-3xl xs:text-2xl text-[#F43F5E]">Haajar</span>. Ready to
+          experience with{" "}<span className="ss:text-3xl xs:text-2xl text-[#F43F5E]">Haajar</span>. Ready to
           transform your scheduling woes into seamless efficiency?
+          
         </p>
       </div>
       <img

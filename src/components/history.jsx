@@ -66,18 +66,9 @@ function History() {
 
   const [start, setStart] = useState(false);
   const [can_start, setCanStart] = useState(false);
-  async function getData(id) {
-    const { data: canstartData } = await supabase
-      .from("profiles")
-      .select("can_start")
-      .eq("id", id);
-    setCanStart(canstartData[0].can_start);
-    const { data: startData } = await supabase
-      .from("profiles")
-      .select("start_status")
-      .eq("id", id);
-    setStart(startData[0].start_status);
 
+
+  async function getData(id) {
     const channel = supabase
       .channel("schema-db-changes")
       .on(
@@ -90,7 +81,7 @@ function History() {
 
         async (payload) => {
           const { data } = await supabase
-            .from("appointments")
+            .from("history")
             .select("*")
             .eq("client_id", id);
           const app_data = data;
@@ -102,18 +93,13 @@ function History() {
               .select("*")
               .eq("pat_id", app_data[index].pat_id);
 
-            const { data: slot_data } = await supabase
-              .from("slots")
-              .select("*")
-              .eq("slot_id", app_data[index].slot_id);
             newAppointments.push({
-              date: slot_data[0].slot_date,
-              app_time: slot_data[0].slot_start_time,
-              end_time: slot_data[0].slot_end_time,
+              date: app_data[index].slot_date,
+              app_time: app_data[index].slot_start_time,
               name: pat_data[0].pat_name,
               phone: pat_data[0].pat_ph_num,
               id: app_data[index].appointment_id,
-              token: app_data[index].slot_id,
+              book_medium: app_data[index].book_medium,
               visit_status: app_data[index].visit_status,
             });
           }
@@ -124,10 +110,12 @@ function History() {
       .subscribe();
 
     const { data } = await supabase
-      .from("appointments")
+      .from("history")
       .select("*")
       .eq("client_id", id);
     const app_data = data;
+
+   
 
     const newAppointments = [];
     for (let index = 0; index < app_data.length; index++) {
@@ -136,18 +124,15 @@ function History() {
         .select("*")
         .eq("pat_id", app_data[index].pat_id);
 
-      const { data: slot_data } = await supabase
-        .from("slots")
-        .select("*")
-        .eq("slot_id", app_data[index].slot_id);
+
+
       newAppointments.push({
-        date: slot_data[0].slot_date,
-        app_time: slot_data[0].slot_start_time,
-        end_time: slot_data[0].slot_end_time,
+        date: app_data[index].slot_date,
+        app_time: app_data[index].slot_start_time,
         name: pat_data[0].pat_name,
         phone: pat_data[0].pat_ph_num,
         id: app_data[index].appointment_id,
-        token: app_data[index].slot_id,
+        book_medium: app_data[index].book_medium,
         visit_status: app_data[index].visit_status,
       });
     }
@@ -321,10 +306,10 @@ function History() {
 
       <div className="flex items-center mb-1 justify-between">
         <h1 className="md:text-2xl ss:text-xl font-semibold xs:text-md   pl-2">
-          Appointments
+          History
         </h1>
 
-        <div className="flex items-center">
+        {/* <div className="flex items-center">
           <div className="group">
             <button
               disabled={!can_start}
@@ -354,7 +339,7 @@ function History() {
             </span>
           </div>
           <Dropdown options={options} onSelect={handleSelect} />
-        </div>
+        </div> */}
       </div>
       <table className=" min-w-full xs:mt-4 border-2 rounded-lg border-gray-100 px-10 divide-y divide-gray-200">
         <thead className="">
@@ -374,18 +359,13 @@ function History() {
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Arrived
             </th>
-            <th className="px-6 py-3 xs:block sm:hidden text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Slot Time
-            </th>
-            <th className="px-6 hidden md:block py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Token No
+            <th className="px-6  py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Date
             </th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y  xs:text-xs md:text-base divide-gray-200">
-          {appointments.filter(
-            (appointment) => appointment.date === selectedOption
-          ).length === 0 ? (
+          {appointments.length === 0 ? (
             <tr>
               <td colSpan="5" className="text-center py-7">
                 No appointments found
@@ -393,28 +373,27 @@ function History() {
             </tr>
           ) : (
             appointments
-              .filter((appointment) => appointment.date === selectedOption)
-              .sort((a, b) => a.token - b.token) // Sort appointments in ascending order of token
+              .sort((a, b) => b.id - a.id) // Sort appointments in ascending order of token
               .map((appointment, index, array) => {
                 const nextAppointment =
                   index < array.length - 1 ? array[index + 1].name : "";
                 const nextAppointmentPh =
                   index < array.length - 1 ? array[index + 1].phone : "";
                 return (
-                  <tr key={appointment.token}>
-                    <td className={`px-6 hidden sm:block py-7 whitespace-nowrap font-semibold ${!start || selectedOption != today?"text-gray-400":""} `}>
+                  <tr key={appointment.id}>
+                    <td className={`px-6 hidden sm:block py-7 whitespace-nowrap font-semibold   `}>
                       {appointment.app_time}
                     </td>
-                    <td className={`${!start || selectedOption != today?"text-gray-400":""} px-6 py-7 whitespace-nowrap font-semibold`}>
+                    <td className={`  px-6 py-7 whitespace-nowrap font-semibold`}>
                       {appointment.name}
                     </td>
-                    <td className={`${!start || selectedOption != today?"text-gray-400":""} px-6 hidden sm:block py-7 whitespace-nowrap`}>
+                    <td className={`  px-6 hidden sm:block py-7 whitespace-nowrap`}>
                       {appointment.phone.slice(2)}
                     </td>
 
                     <td className="px-6 py-7 whitespace-nowrap">
                       <Checkbox
-                        disabled={!start || selectedOption != today}
+                        disabled={!start != today}
                         color="success"
                         onChange={() =>
                           handleInputChange(
@@ -428,11 +407,8 @@ function History() {
                         checked={appointment.visit_status ? true : false}
                       />
                     </td>
-                    <td className={`px-6  xs:block sm:hidden  py-7 whitespace-nowrap font-semibold ${!start || selectedOption != today?"text-gray-400":""}`} >
-                      {appointment.app_time}
-                    </td>
-                    <td className={`${!start || selectedOption != today?"text-gray-400":""} px-6 py-7 hidden md:flex   whitespace-nowrap`}>
-                      {appointment.token}
+                    <td className={`  px-6 py-7  md:flex   whitespace-nowrap`}>
+                      {appointment.date}
                     </td>
                   </tr>
                 );

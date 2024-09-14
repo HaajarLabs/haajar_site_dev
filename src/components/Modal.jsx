@@ -81,6 +81,7 @@ const Modal = ({ onClose }) => {
         console.error("Error fetching slot data:", error.message);
         return;
       }
+  
       const timeSlots = slotData
         .filter(slot => {
           if (formattedSelectedDate === today) {
@@ -90,8 +91,8 @@ const Modal = ({ onClose }) => {
           }
           return true; // Return all slots if selectedDate is not today
         })
-        .map(slot => slot.slot_start_time);
-  
+        .map(slot => slot.slot_start_time)
+        .sort((a, b) => a.localeCompare(b)); // Sort the time slots
   
       setAvailableTimeSlots(timeSlots);
       setSlotData(slotData);
@@ -99,6 +100,7 @@ const Modal = ({ onClose }) => {
       console.error("Error fetching slot data:", error.message);
     }
   }
+  
   
   // Function to compare two time strings in "HH:mm:ss" format
   function compareTimes(time1, time2) {

@@ -142,8 +142,8 @@ function Appointments() {
         
         // Set up real-time listener for new appointments
         const appointmentSubscription = supabase
-          .channel('appointments-channel')
-          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'appointments' }, async (payload) => {
+          .channel('schema-db-changes')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'appointments' }, async (payload) => {
             const { new: newAppointment } = payload;
             
             // Fetch the full appointment data
@@ -188,8 +188,8 @@ function Appointments() {
 
         // Set up real-time listener for cancelled appointments
         const cancelledAppointmentSubscription = supabase
-          .channel('appointments-channel')
-          .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'appointments' }, async (payload) => {
+          .channel('schema-db-changes')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'appointments' }, async (payload) => {
             const { new: updatedAppointment } = payload;
             
             dispatch({

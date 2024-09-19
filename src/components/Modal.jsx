@@ -61,8 +61,18 @@ const Modal = ({ onClose }) => {
 
   useEffect(() => {
     getSlotData();
-  }, [selectedDate]);
-
+    if (selectedSlotspec) {
+      fetchSlotsData(); // Fetch slot data after selectedSlotspec is updated
+    }
+  }, [selectedDate]); // Trigger when selectedDate changes
+  
+  // Add another useEffect for when selectedSlotspec changes
+  useEffect(() => {
+    if (selectedSlotspec) {
+      fetchSlotsData(); // Fetch slot data after selectedSlotspec is updated
+    }
+  }, [selectedSlotspec]); // Trigger when selectedSlotspec changes
+  
   async function getSlotData() {
     try {
       const user = (await supabase.auth.getUser()).data.user;
@@ -71,33 +81,48 @@ const Modal = ({ onClose }) => {
       const currentDate = new Date(); // Get current date
       const today = currentDate.toISOString().slice(0, 10); // Format current date as "YYYY-MM-DD"
       const currentTime = `${currentDate.getHours()}:${currentDate.getMinutes()}:${currentDate.getSeconds()}`; // Get current time in "HH:mm:ss" format
-
+  
       const { data: SlotspecData, error: specerror } = await supabase
         .from("profiles")
         .select("slot_spec")
         .eq("id", client_id)
         .single();
-
-      setSlotSpec(SlotspecData.slot_spec);
-      setselectedSlotspec(SlotspecData.slot_spec[0]); // Set the first slotspec as default
+  
       if (specerror) {
-        console.error("Error fetching slotspec data:", error.message);
+        console.error("Error fetching slotspec data:", specerror.message);
         return;
       }
-
+  
+      setSlotSpec(SlotspecData.slot_spec);
+      setselectedSlotspec(SlotspecData.slot_spec[0]); // Set the first slotspec as default
+    } catch (error) {
+      console.error("Error fetching slotspec data:", error.message);
+    }
+  }
+  
+  // Function to fetch slot data once selectedSlotspec is updated
+  async function fetchSlotsData() {
+    try {
+      const user = (await supabase.auth.getUser()).data.user;
+      const client_id = user.id;
+      const formattedSelectedDate = selectedDate; // Use selectedDate directly
+      const currentDate = new Date(); // Get current date
+      const today = currentDate.toISOString().slice(0, 10); // Format current date as "YYYY-MM-DD"
+      const currentTime = `${currentDate.getHours()}:${currentDate.getMinutes()}:${currentDate.getSeconds()}`; // Get current time in "HH:mm:ss" format
+  
       const { data: slotData, error } = await supabase
         .from("slots")
         .select("*")
         .eq("client_id", client_id)
         .eq("slot_date", formattedSelectedDate) // Filter by selectedDate
-        .eq("slot_available", true)// Filter by selectedDate
-        .eq("slot_spec", selectedSlotspec); // Filter by selectedSlotspec
-
+        .eq("slot_available", true)
+        .eq("slot_spec", selectedSlotspec); // Filter by updated selectedSlotspec
+  
       if (error) {
         console.error("Error fetching slot data:", error.message);
         return;
       }
-
+  
       const timeSlots = slotData
         .filter((slot) => {
           if (formattedSelectedDate === today) {
@@ -109,13 +134,13 @@ const Modal = ({ onClose }) => {
         })
         .map((slot) => slot.slot_start_time)
         .sort((a, b) => a.localeCompare(b)); // Sort the time slots
-
       setAvailableTimeSlots(timeSlots);
       setSlotData(slotData);
     } catch (error) {
       console.error("Error fetching slot data:", error.message);
     }
   }
+  
 
   // Function to compare two time strings in "HH:mm:ss" format
   function compareTimes(time1, time2) {

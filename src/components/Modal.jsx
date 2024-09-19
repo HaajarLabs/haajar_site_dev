@@ -1,26 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { toast } from "react-toastify";
-import { ThreeCircles } from 'react-loader-spinner';
+import { ThreeCircles } from "react-loader-spinner";
 
 const Modal = ({ onClose }) => {
-
   const generateNext7Days = () => {
     const dates = [];
     const today = new Date();
-  
+
     for (let i = 0; i < 7; i++) {
       const currentDate = new Date(today);
       currentDate.setDate(today.getDate() + i);
-  
+
       const year = currentDate.getFullYear();
-      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-      const day = String(currentDate.getDate()).padStart(2, '0');
-  
+      const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+      const day = String(currentDate.getDate()).padStart(2, "0");
+
       const formattedDate = `${year}-${month}-${day}`;
       dates.push(formattedDate);
     }
-  
+
     return dates;
   };
 
@@ -34,7 +33,7 @@ const Modal = ({ onClose }) => {
   const [slot_data, setSlotData] = useState();
   const [loading, setLoading] = useState(false); // State to track loading
   const formatNumber = (number) => {
-    return number.toString().padStart(2, '0');
+    return number.toString().padStart(2, "0");
   };
   const date = new Date();
   const day = date.getDate();
@@ -45,12 +44,14 @@ const Modal = ({ onClose }) => {
   const daytom = date.getDate();
   const monthtom = date.getMonth() + 1;
   const yeartom = date.getFullYear();
-  const tomorrow = yeartom + "-" + formatNumber(monthtom)+ "-" + formatNumber(daytom);
+  const tomorrow =
+    yeartom + "-" + formatNumber(monthtom) + "-" + formatNumber(daytom);
   date.setDate(date.getDate() + 1);
   const daybf = date.getDate();
   const monthbf = date.getMonth() + 1;
   const yearbf = date.getFullYear();
-  const dayAfterTomorrow = yearbf + "-" +formatNumber(monthbf)+ "-" + formatNumber(daybf);
+  const dayAfterTomorrow =
+    yearbf + "-" + formatNumber(monthbf) + "-" + formatNumber(daybf);
 
   const [selectedDate, setSelectedDate] = useState(availableDates[0]);
   const [selectedSlotspec, setselectedSlotspec] = useState();
@@ -62,7 +63,6 @@ const Modal = ({ onClose }) => {
     getSlotData();
   }, [selectedDate]);
 
-  
   async function getSlotData() {
     try {
       const user = (await supabase.auth.getUser()).data.user;
@@ -71,21 +71,35 @@ const Modal = ({ onClose }) => {
       const currentDate = new Date(); // Get current date
       const today = currentDate.toISOString().slice(0, 10); // Format current date as "YYYY-MM-DD"
       const currentTime = `${currentDate.getHours()}:${currentDate.getMinutes()}:${currentDate.getSeconds()}`; // Get current time in "HH:mm:ss" format
-  
+
+      const { data: SlotspecData, error: specerror } = await supabase
+        .from("profiles")
+        .select("slot_spec")
+        .eq("id", client_id)
+        .single();
+
+      setSlotSpec(SlotspecData.slot_spec);
+      setselectedSlotspec(SlotspecData.slot_spec[0]); // Set the first slotspec as default
+      if (specerror) {
+        console.error("Error fetching slotspec data:", error.message);
+        return;
+      }
+
       const { data: slotData, error } = await supabase
         .from("slots")
         .select("*")
         .eq("client_id", client_id)
         .eq("slot_date", formattedSelectedDate) // Filter by selectedDate
-        .eq("slot_available", true);
-  
+        .eq("slot_available", true)// Filter by selectedDate
+        .eq("slot_spec", selectedSlotspec); // Filter by selectedSlotspec
+
       if (error) {
         console.error("Error fetching slot data:", error.message);
         return;
       }
-  
+
       const timeSlots = slotData
-        .filter(slot => {
+        .filter((slot) => {
           if (formattedSelectedDate === today) {
             // Filter slots only if selectedDate is today
             const startTime = slot.slot_start_time;
@@ -93,32 +107,16 @@ const Modal = ({ onClose }) => {
           }
           return true; // Return all slots if selectedDate is not today
         })
-        .map(slot => slot.slot_start_time)
+        .map((slot) => slot.slot_start_time)
         .sort((a, b) => a.localeCompare(b)); // Sort the time slots
-  
+
       setAvailableTimeSlots(timeSlots);
       setSlotData(slotData);
-      const { data: SlotspecData, error:specerror } = await supabase
-      .from("profiles")
-      .select("slot_spec")
-      .eq("id", client_id).single();  
-      
-      setSlotSpec(SlotspecData.slot_spec);
-      if (specerror) {
-      console.error("Error fetching slotspec data:", error.message);
-      return;
-    }
-  
     } catch (error) {
       console.error("Error fetching slot data:", error.message);
     }
-   
-
-    // const slotSpec = 
-
   }
-  
-  
+
   // Function to compare two time strings in "HH:mm:ss" format
   function compareTimes(time1, time2) {
     const [hours1, minutes1, seconds1] = time1.split(":").map(Number);
@@ -148,7 +146,6 @@ const Modal = ({ onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true); // Start loading
-
 
     if (!selectedSlot) {
       toast.error("Please select a time slot");
@@ -185,8 +182,6 @@ const Modal = ({ onClose }) => {
 
     const newPatId = patient_data ? patient_data.pat_id + 1 : 1;
 
-
-
     const { error: insert_error } = await supabase
       .from("patients")
       .insert([
@@ -219,9 +214,8 @@ const Modal = ({ onClose }) => {
       const newAppId = 400;
       console.log(newAppId);
     }
-    const newAppId = app_data!=null ? app_data.appointment_id + 1 : 400;
+    const newAppId = app_data != null ? app_data.appointment_id + 1 : 400;
 
-  
     const { error: app_error } = await supabase
       .from("appointments")
       .insert([
@@ -280,7 +274,10 @@ const Modal = ({ onClose }) => {
         <h2 className="text-xl font-semibold mb-4">Add New Appointment</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700"
+            >
               Name
             </label>
             <input
@@ -293,7 +290,10 @@ const Modal = ({ onClose }) => {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="phone"
+              className="block text-sm font-medium text-gray-700"
+            >
               Phone Number
             </label>
             <input
@@ -310,7 +310,10 @@ const Modal = ({ onClose }) => {
           </div>
           <div className="flex flex-wrap -mx-2">
             {slotSpec.map((spec) => (
-              <div key={spec} className="w-1/2 sm:w-1/3 md:w-1/4 lg:w-1/3 xl:w-1/6 px-2 mb-4">
+              <div
+                key={spec}
+                className="w-1/2 sm:w-1/3 md:w-1/4 lg:w-1/3 xl:w-1/6 px-2 mb-4"
+              >
                 <label
                   className={`flex border-2 border-green-400 items-center rounded-lg overflow-hidden ${
                     selectedSlotspec === spec
@@ -332,13 +335,19 @@ const Modal = ({ onClose }) => {
                 </label>
               </div>
             ))}
-          </div> 
-          <label htmlFor="phone" className="block mt-1 mb-2 text-sm font-medium text-gray-700">
+          </div>
+          <label
+            htmlFor="phone"
+            className="block mt-1 mb-2 text-sm font-medium text-gray-700"
+          >
             Appointment Date
           </label>
           <div className="flex flex-wrap -mx-2">
             {availableDates.map((date) => (
-              <div key={date} className="w-1/2 sm:w-1/3 md:w-1/4 lg:w-1/3 xl:w-1/6 px-2 mb-4">
+              <div
+                key={date}
+                className="w-1/2 sm:w-1/3 md:w-1/4 lg:w-1/3 xl:w-1/6 px-2 mb-4"
+              >
                 <label
                   className={`flex border-2 border-green-400 items-center rounded-lg overflow-hidden ${
                     selectedDate === date
@@ -361,13 +370,19 @@ const Modal = ({ onClose }) => {
               </div>
             ))}
           </div>
-          <label htmlFor="phone" className="block mt-1 mb-2 text-sm font-medium text-gray-700">
+          <label
+            htmlFor="phone"
+            className="block mt-1 mb-2 text-sm font-medium text-gray-700"
+          >
             Slot time
           </label>
           <div className="flex flex-wrap -mx-2">
             {availableTimeSlots.length > 0 ? (
               availableTimeSlots.map((slot, index) => (
-                <div key={slot} className="w-1/2 sm:w-1/3 md:w-1/4 lg:w-1/5 xl:w-1/6 px-2 mb-4">
+                <div
+                  key={slot}
+                  className="w-1/2 sm:w-1/3 md:w-1/4 lg:w-1/5 xl:w-1/6 px-2 mb-4"
+                >
                   <label
                     className={`flex border-2 border-green-400 items-center rounded-lg overflow-hidden ${
                       selectedSlot === slot
@@ -411,15 +426,15 @@ const Modal = ({ onClose }) => {
               } rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-300 ease-in-out`}
             >
               {loading ? (
-               <ThreeCircles
-               visible={true}
-               height="15"
-               width="15"
-               color="#ffffff"
-               ariaLabel="three-circles-loading"
-               wrapperStyle={{}}
-               wrapperClass=""
-               />
+                <ThreeCircles
+                  visible={true}
+                  height="15"
+                  width="15"
+                  color="#ffffff"
+                  ariaLabel="three-circles-loading"
+                  wrapperStyle={{}}
+                  wrapperClass=""
+                />
               ) : (
                 "Save"
               )}

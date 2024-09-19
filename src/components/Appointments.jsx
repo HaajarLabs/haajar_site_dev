@@ -1,445 +1,539 @@
-import React, { useEffect, useState } from "react";
-import Checkbox from "@mui/material/Checkbox";
+import React, { useEffect, useReducer, useMemo, useCallback } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Dropdown from "./Dropdown.jsx";
-import { IoIosArrowDown } from "react-icons/io";
+import Cookies from "js-cookie";
+import { format, parse, addDays } from 'date-fns';
+
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+
+const formatDateForDisplay = (dateString) => {
+  return format(parse(dateString, 'yyyy-MM-dd', new Date()), 'dd-MM-yyyy');
+};
+
+const parseDateForDB = (dateString) => {
+  return format(parse(dateString, 'dd-MM-yyyy', new Date()), 'yyyy-MM-dd');
+};
+
+const formatTimeForDisplay = (timeString) => {
+  return format(parse(timeString, 'HH:mm:ss', new Date()), 'h:mm a');
+};
+
+// initial state
+const initialState = {
+  appointments: [],
+  allAppointments: [],
+  selectedSlot: Cookies.get("selectedSlot") || "ALL",
+  selectedDate: Cookies.get("selectedDate") || "",
+  start: false,
+  canStart: false,
+  isLoading: true,
+  doctorSlotSpecs: [],
+  error: null,
+};
+
+// reducer function
+function reducer(state, action) {
+  switch (action.type) {
+    case "SET_APPOINTMENTS":
+      return { ...state, appointments: action.payload, isLoading: false };
+    case "SET_ALL_APPOINTMENTS":
+      return { ...state, allAppointments: action.payload };
+    case "ADD_APPOINTMENT":
+      return {
+        ...state,
+        appointments: {
+          ...state.appointments,
+          [action.payload.slotSpec]: [
+            ...(state.appointments[action.payload.slotSpec] || []),
+            action.payload.appointment,
+          ],
+        },
+        allAppointments: [...state.allAppointments, action.payload.appointment],
+      };
+    case "SET_SELECTED_SLOT":
+      return { ...state, selectedSlot: action.payload };
+    case "SET_SELECTED_DATE":
+      return { ...state, selectedDate: action.payload };
+    case "SET_START":
+      return { ...state, start: action.payload };
+    case "SET_CAN_START":
+      return { ...state, canStart: action.payload };
+    case "SET_LOADING":
+      return { ...state, isLoading: action.payload };
+    case "UPDATE_APPOINTMENT":
+      return {
+        ...state,
+        appointments: {
+          ...state.appointments,
+          [state.selectedSlot]: state.appointments[state.selectedSlot]?.map(
+            app => app.appointment_id === action.payload.id ? { ...app, visit_status: action.payload.status } : app
+          ) || []
+        },
+        allAppointments: state.allAppointments.map((app) =>
+          app.appointment_id === action.payload.id
+            ? { ...app, visit_status: action.payload.status }
+            : app
+        ),
+      };
+    case 'DELETE_APPOINTMENT':
+      return {
+        ...state,
+        appointments: Object.fromEntries(
+          Object.entries(state.appointments).map(([key, appointments]) => [
+            key,
+            appointments.filter(app => app.appointment_id !== action.payload.id)
+          ])
+        ),
+        allAppointments: state.allAppointments.filter(
+          app => app.appointment_id !== action.payload.id
+        )
+      };
+    case 'SET_DOCTOR_SLOT_SPECS':
+      return { ...state, doctorSlotSpecs: action.payload };
+    case 'SET_ERROR':
+      return { ...state, error: action.payload };
+    default:
+      return state;
+  }
+}
+
+const useSupabaseQuery = (query, deps = []) => {
+  const [data, setData] = React.useState(null);
+  const [error, setError] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data, error } = await query();
+        if (error) throw error;
+        setData(data);
+      } catch (error) {
+        setError(error);
+        toast.error(`Error: ${error.message}`);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, deps);
+
+  return { data, error, loading };
+};
+
+// Sub-components
+const TabButton = React.memo(({ isSelected, onClick, children }) => (
+  <button
+    className={`px-4 py-3 rounded text-md font-semibold uppercase transition duration-300 ${
+      isSelected
+        ? "bg-green-500 text-white"
+        : "bg-gray-200 text-gray-700 hover:bg-green-100"
+    }`}
+    onClick={onClick}
+  >
+    {children}
+  </button>
+));
+
+const DateSelector = React.memo(({ value, onChange, dates }) => (
+  <select
+    value={value}
+    onChange={onChange}
+    className="border border-gray-300 rounded px-3 py-1 w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-blue-500"
+  >
+    <option value="">Select Date</option>
+    {dates.map((date) => (
+      <option key={date} value={date}>
+        {date}
+      </option>
+    ))}
+  </select>
+));
 
 function Appointments() {
-  const apiKey = process.env.SUPABASE_KEY;
-  const apiUrl = process.env.SUPABASE_URL;
-  const supabase = createClient(apiUrl, apiKey);
-  const [appointments, setAppointments] = useState([]);
-  const handleSelect = (option) => {
-    setSelectedOption(option);
-  };
-  const formatNumber = (number) => {
-    return number.toString().padStart(2, "0");
-  };
+  const [state, dispatch] = useReducer(reducer, initialState);
 
-  const date = new Date();
-  const day = date.getDate();
-  const month = date.getMonth() + 1;
-  const year = date.getFullYear();
-  const today = year + "-" + formatNumber(month) + "-" + formatNumber(day);
-  const [selectedOption, setSelectedOption] = useState(today);
-  date.setDate(date.getDate() + 1);
-  const daytom = date.getDate();
-  const monthtom = date.getMonth() + 1;
-  const yeartom = date.getFullYear();
-  const tomorrow =
-    yeartom + "-" + formatNumber(monthtom) + "-" + formatNumber(daytom);
-  date.setDate(date.getDate() + 1);
-  const daybf = date.getDate();
-  const monthbf = date.getMonth() + 1;
-  const yearbf = date.getFullYear();
-  const dayAfterTomorrow =
-    yearbf + "-" + formatNumber(monthbf) + "-" + formatNumber(daybf);
+  const getData = useCallback(async (userId) => {
+    dispatch({ type: 'SET_LOADING', payload: true });
+    try {
+      const [{ data: profileData }, { data: appointmentsData }] = await Promise.all([
+        supabase.from("profiles").select("can_start, start_status, slot_spec").eq("id", userId).single(),
+        supabase.from("appointments").select(`
+          *,
+          patients:pat_id (pat_name, pat_ph_num),
+          slots:slot_id (slot_date, slot_start_time, slot_end_time, slot_spec)
+        `).eq("client_id", userId)
+      ]);
 
-    const formatDate = (date) => {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    };
-    
-    const getNext7Days = () => {
-      const today = new Date();
-      const days = [];
-      
-      for (let i = 0; i < 7; i++) {
-        const currentDate = new Date();
-        currentDate.setDate(today.getDate() + i);
-        days.push(formatDate(currentDate));
+      if (!profileData || !appointmentsData) {
+        throw new Error("Failed to fetch data");
       }
+
+      dispatch({ type: 'SET_CAN_START', payload: profileData.can_start });
+      dispatch({ type: 'SET_START', payload: profileData.start_status });
+      dispatch({ type: 'SET_DOCTOR_SLOT_SPECS', payload: profileData.slot_spec });
+
+      const groupedAppointments = appointmentsData.reduce((acc, appointment) => {
+        const { slots, patients, ...appointmentData } = appointment;
+        const formattedAppointment = {
+          ...appointmentData,
+          date: formatDateForDisplay(slots.slot_date),
+          appTime: formatTimeForDisplay(slots.slot_start_time),
+          endTime: formatTimeForDisplay(slots.slot_end_time),
+          name: patients.pat_name,
+          phone: patients.pat_ph_num,
+          originalDate: slots.slot_date,
+          slots: slots
+        };
+        
+        acc[slots.slot_spec] = [...(acc[slots.slot_spec] || []), formattedAppointment];
+        return acc;
+      }, {});
+
+        const allAppointments = Object.values(groupedAppointments).flat();
+
+      dispatch({ type: 'SET_APPOINTMENTS', payload: groupedAppointments });
+      dispatch({ type: 'SET_ALL_APPOINTMENTS', payload: allAppointments });
       
-      return days;
-    };
-    const options = getNext7Days();
-  // Fetch appointments data here
+      if (!state.selectedSlot) {
+        dispatch({ type: 'SET_SELECTED_SLOT', payload: 'ALL' });
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      dispatch({ type: 'SET_ERROR', payload: error.message });
+      toast.error("Failed to fetch appointments");
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
+    }
+  }, []);
+
   useEffect(() => {
-    supabase.auth.getUser().then((user) => {
-      getData(user.data.user.id);
+    const fetchData = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+  
+      if (user) {
+        await getData(user.id);
+        
+        const appointmentSubscription = supabase
+          .channel('schema-db-changes')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'appointments' }, handleAppointmentChange)
+          .subscribe();
+
+        return () => {
+          appointmentSubscription.unsubscribe();
+        };
+      }
+    };
+    fetchData();
+  }, [getData]);
+
+  const handleAppointmentChange = useCallback(async (payload) => {
+    const { new: newAppointment, old: oldAppointment, eventType } = payload;
+    
+    try {
+      if (eventType === 'INSERT' || eventType === 'UPDATE') {
+        const { data, error } = await supabase
+          .from("appointments")
+          .select(`
+            *,
+            patients:pat_id (pat_name, pat_ph_num),
+            slots:slot_id (slot_date, slot_start_time, slot_end_time, slot_spec)
+          `)
+          .eq("appointment_id", newAppointment.appointment_id)
+          .single();
+
+        if (error) throw error;
+
+        const { slots, patients, ...appointmentData } = data;
+        const formattedAppointment = {
+          ...appointmentData,
+          date: formatDateForDisplay(slots.slot_date),
+          appTime: formatTimeForDisplay(slots.slot_start_time),
+          endTime: formatTimeForDisplay(slots.slot_end_time),
+          name: patients.pat_name,
+          phone: patients.pat_ph_num,
+          originalDate: slots.slot_date,
+          slots: slots
+        };
+
+        if (eventType === 'INSERT') {
+          dispatch({
+            type: 'ADD_APPOINTMENT',
+            payload: {
+              slotSpec: slots.slot_spec,
+              appointment: formattedAppointment
+            }
+          });
+          toast.success(`New appointment added for ${formattedAppointment.name}`);
+        } else if (eventType === 'UPDATE') {
+          dispatch({
+            type: 'UPDATE_APPOINTMENT',
+            payload: {
+              id: newAppointment.appointment_id,
+              status: newAppointment.visit_status
+            }
+          });
+          toast.info(`Appointment updated for ${formattedAppointment.name}`);
+        }
+      } else if (eventType === 'DELETE') {
+        dispatch({
+          type: 'DELETE_APPOINTMENT',
+          payload: { id: oldAppointment.appointment_id }
+        });
+        toast.warning(`Appointment deleted`);
+      }
+    } catch (error) {
+      console.error("Error handling appointment change:", error);
+      toast.error("Failed to update appointment data");
+    }
+  }, []);
+
+  const getNext7Days = useMemo(() => {
+    const today = new Date();
+    return Array.from({ length: 7 }, (_, i) => {
+      const date = addDays(today, i);
+      return formatDateForDisplay(format(date, 'yyyy-MM-dd'));
     });
   }, []);
 
-  const [start, setStart] = useState(false);
-  const [can_start, setCanStart] = useState(false);
-  async function getData(id) {
-    const { data: canstartData } = await supabase
-      .from("profiles")
-      .select("can_start")
-      .eq("id", id);
-    setCanStart(canstartData[0].can_start);
-    const { data: startData } = await supabase
-      .from("profiles")
-      .select("start_status")
-      .eq("id", id);
-    setStart(startData[0].start_status);
+  const handleTabSelect = useCallback((slot) => {
+    dispatch({ type: "SET_SELECTED_SLOT", payload: slot });
+    Cookies.set("selectedSlot", slot, { expires: 7 });
+  }, []);
 
-    const channel = supabase
-      .channel("schema-db-changes")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "appointments",
-        },
+  const handleDateSelect = useCallback((e) => {
+    const date = e.target.value;
+    dispatch({ type: 'SET_SELECTED_DATE', payload: date });
+    Cookies.set("selectedDate", date, { expires: 7 });
+  }, []);
 
-        async (payload) => {
-          const { data } = await supabase
-            .from("appointments")
-            .select("*")
-            .eq("client_id", id);
-          const app_data = data;
+  const filteredAppointments = useMemo(() => {
+    return state.allAppointments.filter(app => 
+      (state.selectedSlot === 'ALL' || app.slots.slot_spec === state.selectedSlot) &&
+      (!state.selectedDate || app.date === state.selectedDate)
+    );
+  }, [state.allAppointments, state.selectedSlot, state.selectedDate]);
 
-          const newAppointments = [];
-          for (let index = 0; index < app_data.length; index++) {
-            const { data: pat_data } = await supabase
-              .from("patients")
-              .select("*")
-              .eq("pat_id", app_data[index].pat_id);
+  const handleInputChange = useCallback(async (appointmentId, currentVisitStatus, name, time) => {
+    try {
+      const updatedStatus = !currentVisitStatus;
+      const { error } = await supabase
+        .from("appointments")
+        .update({ visit_status: updatedStatus })
+        .eq("appointment_id", appointmentId);
 
-            const { data: slot_data } = await supabase
-              .from("slots")
-              .select("*")
-              .eq("slot_id", app_data[index].slot_id);
-            newAppointments.push({
-              date: slot_data[0].slot_date,
-              app_time: slot_data[0].slot_start_time,
-              end_time: slot_data[0].slot_end_time,
-              name: pat_data[0].pat_name,
-              phone: pat_data[0].pat_ph_num,
-              id: app_data[index].appointment_id,
-              token: app_data[index].slot_id,
-              visit_status: app_data[index].visit_status,
-            });
-          }
+      if (error) throw error;
 
-          setAppointments(newAppointments);
-        }
-      )
-      .subscribe();
-
-    const { data } = await supabase
-      .from("appointments")
-      .select("*")
-      .eq("client_id", id);
-    const app_data = data;
-
-    const newAppointments = [];
-    for (let index = 0; index < app_data.length; index++) {
-      const { data: pat_data } = await supabase
-        .from("patients")
-        .select("*")
-        .eq("pat_id", app_data[index].pat_id);
-
-      const { data: slot_data } = await supabase
-        .from("slots")
-        .select("*")
-        .eq("slot_id", app_data[index].slot_id);
-      newAppointments.push({
-        date: slot_data[0].slot_date,
-        app_time: slot_data[0].slot_start_time,
-        end_time: slot_data[0].slot_end_time,
-        name: pat_data[0].pat_name,
-        phone: pat_data[0].pat_ph_num,
-        id: app_data[index].appointment_id,
-        token: app_data[index].slot_id,
-        visit_status: app_data[index].visit_status,
+      dispatch({
+        type: "UPDATE_APPOINTMENT",
+        payload: { id: appointmentId, status: updatedStatus },
       });
-    }
 
-    setAppointments(newAppointments);
+      toast.success(`${name}'s appointment at ${time} was updated`);
+    } catch (error) {
+      console.error("Error updating appointment:", error);
+      toast.error("An error occurred while updating the appointment");
+    }
+  }, []);
+
+  const handlestart = useCallback(async (time) => {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user) {
+        const { error } = await supabase
+          .from("profiles")
+          .update({ start_status: true })
+          .eq("id", user.id);
+
+        if (error) throw error;
+
+        dispatch({ type: 'SET_START', payload: true });
+        toast.success(`Started appointments for ${time}`);
+      }
+    } catch (error) {
+      console.error("Error starting appointments:", error);
+      toast.error("Failed to start appointments");
+    }
+  }, []);
+
+  const renderTabs = useCallback(() => {
+    return (
+      <div className="flex flex-wrap justify-center sm:justify-start gap-2 w-full sm:w-auto">
+        <TabButton
+          isSelected={state.selectedSlot === 'ALL'}
+          onClick={() => handleTabSelect('ALL')}
+        >
+          ALL
+        </TabButton>
+        {Array.isArray(state.doctorSlotSpecs) && state.doctorSlotSpecs.map((slotSpec) => (
+          <TabButton
+            key={slotSpec}
+            isSelected={state.selectedSlot === slotSpec}
+            onClick={() => handleTabSelect(slotSpec)}
+          >
+            {slotSpec}
+          </TabButton>
+        ))}
+      </div>
+    );
+  }, [state.selectedSlot, state.doctorSlotSpecs, handleTabSelect]);
+
+  if (state.isLoading) {
+    return <div className="flex justify-center items-center h-screen">Loading...</div>;
   }
 
-  const handleInputChange = async (
-    appointment_id,
-    visit_status,
-    name,
-    start_time,
-    token
-  ) => {
-    if (visit_status == false) {
-      let text =
-        "Press ok to sent message to " + name + " for appointment reminder.";
-      if (confirm(text) == true) {
-        console.log("You pressed OK!");
-        const currentDate = new Date(); // Get current date
-        const currentTime = `${currentDate.getHours()}:${currentDate.getMinutes()}:${currentDate.getSeconds()}`;
-        const timeDifference = await compareTimes(start_time, currentTime);
-        console.log("timedf", timeDifference);
-        const user = (await supabase.auth.getUser()).data.user;
-        const messageData = {
-          slot_id: token,
-          client_id:user.id,
-          slot_date:today
-        };
-        try {
-          const response = await fetch(
-            "https://message-send.azurewebsites.net/update_check_slots",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                // Add any additional headers if required
-              },
-              body: JSON.stringify(messageData), // Convert messageData to JSON string
-            }
-          );
-
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-
-          const responseData = await response;
-
-          console.log("Message sent successfully:", responseData);
-        } catch (error) {
-          console.error("Error sending message:", error.message);
-        }
-
-        const { data, error } = await supabase
-          .from("appointments")
-          .upsert({
-            appointment_id: appointment_id,
-            visit_status: visit_status ? false : true,
-            client_id: user.id,
-          })
-          .select();
-        console.log(error);
-      } else {
-        console.log("You pressed Cancel!");
-      }
-    } else {
-      const user = (await supabase.auth.getUser()).data.user;
-      const { data, error } = await supabase
-        .from("appointments")
-        .upsert({
-          appointment_id: appointment_id,
-          visit_status: visit_status ? false : true,
-          client_id: user.id,
-        })
-        .select();
-      console.log(error);
-    }
-  };
-
-  const handlestart = async (start_time) => {
-    setCanStart(false);
-    setStart(true);
-    console.log("start", can_start);
-    const user = (await supabase.auth.getUser()).data.user;
-    
-
-    const { data, error } = await supabase
-      .from("profiles")
-      .update({ can_start: false })
-      .eq("id", user.id)
-      .select();
-    const { data: strt, error: strterr } = await supabase
-      .from("profiles")
-      .update({ start_status: true })
-      .eq("id", user.id)
-      .select();
-
-    console.log(true);
-    console.log("starttime", start_time);
-    const currentDate = new Date(); // Get current date
-    const currentTime = `${currentDate.getHours()}:${currentDate.getMinutes()}:${currentDate.getSeconds()}`;
-    console.log("current", currentTime);
-    const timeDifference = await compareTimes(start_time, currentTime);
-    console.log("startdf", timeDifference);
-
-    const messageData = {
-      client_id: user.id,
-      slot_date: today,
-      // delay: timeDifference,
-    };
-    try {
-      const response = await fetch(
-        "https://message-send.azurewebsites.net/start_find_check_slots",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            // Add any additional headers if required
-          },
-          body: JSON.stringify(messageData), // Convert messageData to JSON string
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const responseData = await response;
-
-      console.log("Message sent successfully:", responseData);
-    } catch (error) {
-      console.error("Error sending message:", error.message);
-    }
-  };
-
-  function compareTimes(time1, time2) {
-    const [hours1, minutes1] = time1.split(":").map(Number).slice(0, 2);
-    const [hours2, minutes2] = time2.split(":").map(Number).slice(0, 2);
-
-    // Convert both times to total minutes
-    const totalMinutes1 = hours1 * 60 + minutes1;
-    const totalMinutes2 = hours2 * 60 + minutes2;
-
-    // Calculate the difference in minutes
-    const difference = totalMinutes2 - totalMinutes1;
-
-    // Determine if time2 is delayed or early
-    if (difference > 0) {
-      return difference;
-    } else if (difference < 0) {
-      return difference;
-    } else {
-      return "On time";
-    }
+  if (state.error) {
+    return <div className="text-red-500">Error: {state.error}</div>;
   }
 
   return (
-    <div className="md:p-4    font-poppins   ">
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
+    <div className="md:p-4 font-poppins">
+      <ToastContainer 
+        position="top-right" 
+        autoClose={5000} 
+        hideProgressBar={false} 
+        newestOnTop={false} 
+        closeOnClick 
+        rtl={false} 
+        pauseOnFocusLoss 
+        draggable 
+        pauseOnHover 
+        theme="light" 
       />
-
-      <div className="flex items-center mb-1 justify-between">
-        <h1 className="md:text-2xl ss:text-xl font-semibold xs:text-md   pl-2">
-          Appointments
-        </h1>
-
-        <div className="flex items-center">
-          <div className="group">
-            <button
-              disabled={!can_start}
-              onClick={() =>
-                handlestart(
-                  appointments.length > 0
-                    ? appointments
-                        .filter(
-                          (appointment) => appointment.date === selectedOption
-                        )
-                        .sort((a, b) => a.token - b.token)
-                        .at(0).app_time // Sort appointments in ascending order of token
-                    : "00:00:00"
-                )
-              }
-              className={`${
-                !can_start ? "bg-rose-300" : "bg-rose-500"
-              } group-hover:bg-rose-300 text-white p-2 mr-2 rounded ${
-                appointments.length > 0 ? "" : "hidden"
-              }xs:w-12 ss:h-10 xs:h-9 xs:text-xs  xs:p-1 xs:rounded   xs:mr-2 xs:ml-2 xs:text-white xs:font-semibold xs:tracking-wider xs:leading-3 xs:uppercase`}
-            >
-              Start now
-            </button>
-            <span class="absolute  top-60 right-48 duration-500  scale-0 transition-all rounded bg-slate-800 p-2 text-xs text-white group-hover:scale-100">
-              Pressing this button will start the next patient's appointment and
-              send reminders.⌛
-            </span>
-          </div>
-          <Dropdown options={options} onSelect={handleSelect} />
+      
+      {state.canStart && !state.start && (
+        <button
+          onClick={() => handlestart("08:00:00")}
+          className="bg-blue-500 text-white px-4 py-2 rounded mb-4 hover:bg-blue-600 transition duration-300 w-full sm:w-auto"
+        >
+          Start Appointment
+        </button>
+      )}
+  
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
+        {renderTabs()}
+        
+        <div className="w-full sm:w-auto">
+          <DateSelector
+            value={state.selectedDate}
+            onChange={handleDateSelect}
+            dates={getNext7Days}
+          />
         </div>
       </div>
-      <table className=" min-w-full xs:mt-4 border-2 rounded-lg border-gray-100 px-10 divide-y divide-gray-200">
-        <thead className="">
-          <tr>
-            <th className="px-6 py-3 hidden sm:block text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Slot Time
-            </th>
-
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Name
-            </th>
-
-            <th className="px-6 hidden sm:flex py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Phone No
-            </th>
-
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Arrived
-            </th>
-            <th className="px-6 py-3 xs:block sm:hidden text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Slot Time
-            </th>
-            <th className="px-6 hidden md:block py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Token No
-            </th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y  xs:text-xs md:text-base divide-gray-200">
-          {appointments.filter(
-            (appointment) => appointment.date === selectedOption
-          ).length === 0 ? (
-            <tr>
-              <td colSpan="5" className="text-center py-7">
-                No appointments found
-              </td>
-            </tr>
-          ) : (
-            appointments
-              .filter((appointment) => appointment.date === selectedOption)
-              .sort((a, b) => a.token - b.token) // Sort appointments in ascending order of token
-              .map((appointment, index, array) => {
-                const nextAppointment =
-                  index < array.length - 1 ? array[index + 1].name : "";
-                const nextAppointmentPh =
-                  index < array.length - 1 ? array[index + 1].phone : "";
-                return (
-                  <tr key={appointment.token}>
-                    <td className={`px-6 hidden sm:block py-7 whitespace-nowrap font-semibold ${!start || selectedOption != today?"text-gray-400":""} `}>
-                      {appointment.app_time}
+  
+      <div className="overflow-x-auto bg-white shadow-md rounded-lg">
+        {filteredAppointments.length > 0 ? (
+          <table className="w-full min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Date
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Time
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Name
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Phone
+                </th>
+                {state.selectedSlot === "ALL" && (
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Slot
+                  </th>
+                )}
+                {state.selectedSlot !== 'ALL' && (
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                )}
+                </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredAppointments.map((appointment) => (
+                <tr key={appointment.appointment_id}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {appointment.date}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {appointment.appTime} - {appointment.endTime}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {appointment.name}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {appointment.phone}
+                  </td>
+                  {state.selectedSlot === "ALL" && (
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">
+                      {appointment.slots.slot_spec}
                     </td>
-                    <td className={`${!start || selectedOption != today?"text-gray-400":""} px-6 py-7 whitespace-nowrap font-semibold`}>
-                      {appointment.name}
-                    </td>
-                    <td className={`${!start || selectedOption != today?"text-gray-400":""} px-6 hidden sm:block py-7 whitespace-nowrap`}>
-                      {appointment.phone.slice(2)}
-                    </td>
-
-                    <td className="px-6 py-7 whitespace-nowrap">
-                      <Checkbox
-                        disabled={!start || selectedOption != today}
-                        color="success"
-                        onChange={() =>
+                  )}
+                  {state.selectedSlot !== 'ALL' && (
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <button
+                        className={`px-4 py-2 text-sm rounded ${
+                          appointment.visit_status ? 'bg-green-500' : 'bg-red-500'
+                        } text-white hover:opacity-90 transition duration-300`}
+                        onClick={() =>
                           handleInputChange(
-                            appointment.id,
+                            appointment.appointment_id,
                             appointment.visit_status,
-                            nextAppointment,
-                            appointment.end_time,
-                            appointment.token
+                            appointment.name,
+                            appointment.appTime
                           )
                         }
-                        checked={appointment.visit_status ? true : false}
-                      />
+                      >
+                        {appointment.visit_status ? "Visited" : "Mark as Visited"}
+                      </button>
                     </td>
-                    <td className={`px-6  xs:block sm:hidden  py-7 whitespace-nowrap font-semibold ${!start || selectedOption != today?"text-gray-400":""}`} >
-                      {appointment.app_time}
-                    </td>
-                    <td className={`${!start || selectedOption != today?"text-gray-400":""} px-6 py-7 hidden md:flex   whitespace-nowrap`}>
-                      {appointment.token}
-                    </td>
-                  </tr>
-                );
-              })
-          )}
-        </tbody>
-      </table>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Date
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Time
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Name
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Phone
+                </th>
+                {state.selectedSlot === "ALL" && (
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Slot
+                  </th>
+                )}
+                {state.selectedSlot !== 'ALL' && (
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                )}    
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              <tr>
+                <td colSpan={state.selectedSlot === 'ALL' ? 5 : 5} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                  No appointments found for the selected date and slot
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
   );
 }

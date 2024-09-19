@@ -29,6 +29,7 @@ const Modal = ({ onClose }) => {
   const [phone, setPhone] = useState("");
   const [selectedSlot, setSelectedSlot] = useState("");
   const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
+  const [slotSpec, setSlotSpec] = useState([]);
   const [slot_id, setSlotId] = useState();
   const [slot_data, setSlotData] = useState();
   const [loading, setLoading] = useState(false); // State to track loading
@@ -52,6 +53,7 @@ const Modal = ({ onClose }) => {
   const dayAfterTomorrow = yearbf + "-" +formatNumber(monthbf)+ "-" + formatNumber(daybf);
 
   const [selectedDate, setSelectedDate] = useState(availableDates[0]);
+  const [selectedSlotspec, setselectedSlotspec] = useState();
   const apiKey = process.env.SUPABASE_KEY;
   const apiUrl = process.env.SUPABASE_URL;
   const supabase = createClient(apiUrl, apiKey);
@@ -96,9 +98,24 @@ const Modal = ({ onClose }) => {
   
       setAvailableTimeSlots(timeSlots);
       setSlotData(slotData);
+      const { data: SlotspecData, error:specerror } = await supabase
+      .from("profiles")
+      .select("slot_spec")
+      .eq("id", client_id).single();  
+      
+      setSlotSpec(SlotspecData.slot_spec);
+      if (specerror) {
+      console.error("Error fetching slotspec data:", error.message);
+      return;
+    }
+  
     } catch (error) {
       console.error("Error fetching slot data:", error.message);
     }
+   
+
+    // const slotSpec = 
+
   }
   
   
@@ -132,6 +149,7 @@ const Modal = ({ onClose }) => {
     e.preventDefault();
     setLoading(true); // Start loading
 
+
     if (!selectedSlot) {
       toast.error("Please select a time slot");
       setLoading(false); // Stop loading if error
@@ -142,7 +160,7 @@ const Modal = ({ onClose }) => {
 
     const { error } = await supabase
       .from("slots")
-      .update({ slot_available: false })
+      .update({ slot_available: false, slot_spec: selectedSlotspec })
       .eq("slot_id", slot_id)
       .eq("client_id", user.id)
       .select();
@@ -159,7 +177,6 @@ const Modal = ({ onClose }) => {
       .order("pat_id", { ascending: false })
       .limit(1)
       .single();
-console.log(patient_data);
     if (patient_error) {
       console.error("pat_id_error", patient_error);
       setLoading(false); // Stop loading if error
@@ -167,6 +184,7 @@ console.log(patient_data);
     }
 
     const newPatId = patient_data ? patient_data.pat_id + 1 : 1;
+
 
 
     const { error: insert_error } = await supabase
@@ -202,7 +220,7 @@ console.log(patient_data);
       console.log(newAppId);
     }
     const newAppId = app_data!=null ? app_data.appointment_id + 1 : 400;
-      console.log(newAppId);
+
   
     const { error: app_error } = await supabase
       .from("appointments")
@@ -290,6 +308,31 @@ console.log(patient_data);
               className="mt-1 block w-full h-10 border-green-300 px-2 border-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
           </div>
+          <div className="flex flex-wrap -mx-2">
+            {slotSpec.map((spec) => (
+              <div key={spec} className="w-1/2 sm:w-1/3 md:w-1/4 lg:w-1/3 xl:w-1/6 px-2 mb-4">
+                <label
+                  className={`flex border-2 border-green-400 items-center rounded-lg overflow-hidden ${
+                    selectedSlotspec === spec
+                      ? "bg-green-200 cursor-not-allowed"
+                      : "bg-white hover:bg-gray-100 cursor-pointer"
+                  }`}
+                  onClick={() => setselectedSlotspec(spec)}
+                >
+                  <input
+                    type="radio"
+                    value={spec}
+                    checked={selectedSlotspec === spec}
+                    onChange={() => setselectedSlotspec(spec)}
+                    className="sr-only"
+                  />
+                  <div className="flex-1 py-2 px-4 text-xs font-poppins text-green-900 font-semibold">
+                    {spec}
+                  </div>
+                </label>
+              </div>
+            ))}
+          </div> 
           <label htmlFor="phone" className="block mt-1 mb-2 text-sm font-medium text-gray-700">
             Appointment Date
           </label>

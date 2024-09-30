@@ -7,6 +7,7 @@ import { format, parse, addDays } from 'date-fns';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
+// Utility functions for date formatting
 const formatDateForDisplay = (dateString) => {
   return format(parse(dateString, 'yyyy-MM-dd', new Date()), 'dd-MM-yyyy');
 };
@@ -19,20 +20,50 @@ const formatTimeForDisplay = (timeString) => {
   return format(parse(timeString, 'HH:mm:ss', new Date()), 'h:mm a');
 };
 
-// initial state
+const getTodayFormatted = () => format(new Date(), 'dd-MM-yyyy');
+
+// Sub-components
+const TabButton = React.memo(({ isSelected, onClick, children }) => (
+  <button
+    className={`px-4 py-3 rounded text-md font-semibold uppercase transition duration-300 ${
+      isSelected
+        ? "bg-green-500 text-white"
+        : "bg-gray-200 text-gray-700 hover:bg-green-100"
+    }`}
+    onClick={onClick}
+  >
+    {children}
+  </button>
+));
+
+const DateSelector = React.memo(({ value, onChange, dates }) => (
+  <select
+    value={value || getTodayFormatted()}
+    onChange={onChange}
+    className="border border-gray-300 rounded px-3 py-1 w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-blue-500"
+  >
+    {dates.map((date) => (
+      <option key={date} value={date}>
+        {date}
+      </option>
+    ))}
+  </select>
+));
+
+// Initial state
 const initialState = {
   appointments: {},
   allAppointments: [],
   selectedSlot: Cookies.get("selectedSlot") || "ALL",
-  selectedDate: Cookies.get("selectedDate") || "",
-  start: false,
+  selectedDate: Cookies.get("selectedDate") || getTodayFormatted(),
   canStart: false,
+  start: false,
   isLoading: true,
   doctorSlotSpecs: [],
   error: null,
 };
 
-// reducer function
+// Reducer function
 function reducer(state, action) {
   switch (action.type) {
     case 'SET_APPOINTMENTS':
@@ -55,10 +86,10 @@ function reducer(state, action) {
       return { ...state, selectedSlot: action.payload };
     case 'SET_SELECTED_DATE':
       return { ...state, selectedDate: action.payload };
-    case 'SET_START':
-      return { ...state, start: action.payload };
     case 'SET_CAN_START':
       return { ...state, canStart: action.payload };
+    case 'SET_START':
+      return { ...state, start: action.payload };
     case 'SET_LOADING':
       return { ...state, isLoading: action.payload };
     case 'UPDATE_APPOINTMENT':
@@ -95,60 +126,6 @@ function reducer(state, action) {
       return state;
   }
 }
-
-const useSupabaseQuery = (query, deps = []) => {
-  const [data, setData] = React.useState(null);
-  const [error, setError] = React.useState(null);
-  const [loading, setLoading] = React.useState(true);
-
-  React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { data, error } = await query();
-        if (error) throw error;
-        setData(data);
-      } catch (error) {
-        setError(error);
-        toast.error(`Error: ${error.message}`);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, deps);
-
-  return { data, error, loading };
-};
-
-// Sub-components
-const TabButton = React.memo(({ isSelected, onClick, children }) => (
-  <button
-    className={`px-4 py-3 rounded text-md font-semibold uppercase transition duration-300 ${
-      isSelected
-        ? "bg-green-500 text-white"
-        : "bg-gray-200 text-gray-700 hover:bg-green-100"
-    }`}
-    onClick={onClick}
-  >
-    {children}
-  </button>
-));
-
-const DateSelector = React.memo(({ value, onChange, dates }) => (
-  <select
-    value={value}
-    onChange={onChange}
-    className="border border-gray-300 rounded px-3 py-1 w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-blue-500"
-  >
-    <option value="">Select Date</option>
-    {dates.map((date) => (
-      <option key={date} value={date}>
-        {date}
-      </option>
-    ))}
-  </select>
-));
 
 function Appointments() {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -213,6 +190,13 @@ function Appointments() {
       if (user) {
         await getData(user.id);
         
+        // Set today's date if it's the first render (no cookie)
+        if (!Cookies.get("selectedDate")) {
+          const today = getTodayFormatted();
+          dispatch({ type: 'SET_SELECTED_DATE', payload: today });
+          Cookies.set("selectedDate", today, { expires: 7 });
+        }
+        
         const appointmentSubscription = supabase
           .channel('schema-db-changes')
           .on('postgres_changes', { event: '*', schema: 'public', table: 'appointments' }, handleAppointmentChange)
@@ -272,7 +256,6 @@ function Appointments() {
               status: newAppointment.visit_status
             }
           });
-          toast.info(`Appointment updated for ${formattedAppointment.name}`);
         }
       } else if (eventType === 'DELETE') {
         dispatch({
@@ -290,7 +273,7 @@ function Appointments() {
   const getNext7Days = useMemo(() => {
     const today = new Date();
     return Array.from({ length: 7 }, (_, i) => {
-      const date = addDays(today, i);
+      const date = i === 0 ? today : addDays(today, i);
       return formatDateForDisplay(format(date, 'yyyy-MM-dd'));
     });
   }, []);
@@ -335,25 +318,65 @@ function Appointments() {
     }
   }, []);
 
-  const handlestart = useCallback(async (time) => {
+  const handlestart = useCallback(async () => {
+    if (!state.canStart) return;
+
+    dispatch({ type: 'SET_LOADING', payload: true });
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        const { error } = await supabase
+        // Update the profile
+        const { error: profileError } = await supabase
           .from("profiles")
-          .update({ start_status: true })
+          .update({ can_start: false, start_status: true })
           .eq("id", user.id);
 
-        if (error) throw error;
+        if (profileError) throw profileError;
 
+        dispatch({ type: 'SET_CAN_START', payload: false });
         dispatch({ type: 'SET_START', payload: true });
-        toast.success(`Started appointments for ${time}`);
+
+        // Find the next appointment
+        const today = getTodayFormatted();
+        const nextAppointment = state.allAppointments
+          .filter(app => app.date === today)
+          .sort((a, b) => a.token - b.token)[0];
+
+        if (!nextAppointment) {
+          toast.warning("No appointments found for today");
+          return;
+        }
+
+        // Make the API call
+        const messageData = {
+          client_id: user.id,
+          slot_date: parseDateForDB(today),
+        };
+
+        const response = await fetch(
+          "https://message-send.azurewebsites.net/start_find_check_slots",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(messageData),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        toast.success(`Started appointments for today. Notified client for appointment at ${nextAppointment.appTime}`);
       }
     } catch (error) {
-      console.error("Error starting appointments:", error);
-      toast.error("Failed to start appointments");
+      console.error("Error starting appointment:", error);
+      toast.error("Failed to start appointment");
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
-  }, []);
+  }, [state.canStart, state.allAppointments]);
 
   const renderTabs = useCallback(() => {
     return (
@@ -399,15 +422,21 @@ function Appointments() {
         pauseOnHover 
         theme="light" 
       />
-      
-      {state.canStart && !state.start && (
+      <div className="flex justify-between items-center mb-4">
+      {state.canStart && state.allAppointments.length > 0 && (
         <button
-          onClick={() => handlestart("08:00:00")}
-          className="bg-blue-500 text-white px-4 py-2 rounded mb-4 hover:bg-blue-600 transition duration-300 w-full sm:w-auto"
+          onClick={handlestart}
+          disabled={state.isLoading}
+          className={`${
+            !state.canStart ? "bg-rose-300" : "bg-rose-500"
+          } group-hover:bg-rose-300 text-white p-2 mr-2 rounded  
+          xs:w-12 ss:h-10 xs:h-9 xs:text-xs xs:p-1 xs:rounded xs:mr-2 xs:ml-2 
+          xs:text-white xs:font-semibold xs:tracking-wider xs:leading-3 xs:uppercase`}
         >
-          Start Appointment
+          {state.isLoading ? 'Processing...' : 'Start now'}
         </button>
       )}
+      </div>
   
       <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
         {renderTabs()}

@@ -52,7 +52,7 @@ const DateSelector = React.memo(({ value, onChange, dates }) => (
 
 // Initial state
 const initialState = {
-  appointments: {},
+  appointments: [],
   allAppointments: [],
   selectedSlot: Cookies.get("selectedSlot") || "ALL",
   selectedDate: Cookies.get("selectedDate") || getTodayFormatted(),
@@ -66,25 +66,25 @@ const initialState = {
 // Reducer function
 function reducer(state, action) {
   switch (action.type) {
-    case 'SET_APPOINTMENTS':
+    case "SET_APPOINTMENTS":
       return { ...state, appointments: action.payload, isLoading: false };
-    case 'SET_ALL_APPOINTMENTS':
+    case "SET_ALL_APPOINTMENTS":
       return { ...state, allAppointments: action.payload };
-    case 'ADD_APPOINTMENT':
+    case "ADD_APPOINTMENT":
       return {
         ...state,
         appointments: {
           ...state.appointments,
           [action.payload.slotSpec]: [
             ...(state.appointments[action.payload.slotSpec] || []),
-            action.payload.appointment
-          ]
+            action.payload.appointment,
+          ],
         },
-        allAppointments: [...state.allAppointments, action.payload.appointment]
+        allAppointments: [...state.allAppointments, action.payload.appointment],
       };
-    case 'SET_SELECTED_SLOT':
+    case "SET_SELECTED_SLOT":
       return { ...state, selectedSlot: action.payload };
-    case 'SET_SELECTED_DATE':
+    case "SET_SELECTED_DATE":
       return { ...state, selectedDate: action.payload };
     case 'SET_CAN_START':
       return { ...state, canStart: action.payload };
@@ -92,7 +92,7 @@ function reducer(state, action) {
       return { ...state, start: action.payload };
     case 'SET_LOADING':
       return { ...state, isLoading: action.payload };
-    case 'UPDATE_APPOINTMENT':
+    case "UPDATE_APPOINTMENT":
       return {
         ...state,
         appointments: {
@@ -101,9 +101,11 @@ function reducer(state, action) {
             app => app.appointment_id === action.payload.id ? { ...app, visit_status: action.payload.status } : app
           ) || []
         },
-        allAppointments: state.allAppointments.map(
-          app => app.appointment_id === action.payload.id ? { ...app, visit_status: action.payload.status } : app
-        )
+        allAppointments: state.allAppointments.map((app) =>
+          app.appointment_id === action.payload.id
+            ? { ...app, visit_status: action.payload.status }
+            : app
+        ),
       };
     case 'DELETE_APPOINTMENT':
       return {
@@ -167,7 +169,7 @@ function Appointments() {
         return acc;
       }, {});
 
-      const allAppointments = Object.values(groupedAppointments).flat();
+        const allAppointments = Object.values(groupedAppointments).flat();
 
       dispatch({ type: 'SET_APPOINTMENTS', payload: groupedAppointments });
       dispatch({ type: 'SET_ALL_APPOINTMENTS', payload: allAppointments });
@@ -186,7 +188,10 @@ function Appointments() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+  
       if (user) {
         await getData(user.id);
         
@@ -279,7 +284,7 @@ function Appointments() {
   }, []);
 
   const handleTabSelect = useCallback((slot) => {
-    dispatch({ type: 'SET_SELECTED_SLOT', payload: slot });
+    dispatch({ type: "SET_SELECTED_SLOT", payload: slot });
     Cookies.set("selectedSlot", slot, { expires: 7 });
   }, []);
 
@@ -307,8 +312,8 @@ function Appointments() {
       if (error) throw error;
 
       dispatch({
-        type: 'UPDATE_APPOINTMENT',
-        payload: { id: appointmentId, status: updatedStatus }
+        type: "UPDATE_APPOINTMENT",
+        payload: { id: appointmentId, status: updatedStatus },
       });
 
       toast.success(`${name}'s appointment at ${time} was updated`);
@@ -323,7 +328,9 @@ function Appointments() {
 
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (user) {
         // Update the profile
         const { error: profileError } = await supabase
@@ -455,12 +462,22 @@ function Appointments() {
           <table className="w-full min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
-                {state.selectedSlot === 'ALL' && (
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Slot</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Date
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Time
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Name
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Phone
+                </th>
+                {state.selectedSlot === "ALL" && (
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Slot
+                  </th>
                 )}
                 {state.selectedSlot !== 'ALL' && (
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -470,12 +487,22 @@ function Appointments() {
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredAppointments.map((appointment) => (
                 <tr key={appointment.appointment_id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{appointment.date}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{appointment.appTime} - {appointment.endTime}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{appointment.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{appointment.phone}</td>
-                  {state.selectedSlot === 'ALL' && (
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">{appointment.slots.slot_spec}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {appointment.date}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {appointment.appTime} - {appointment.endTime}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {appointment.name}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {appointment.phone}
+                  </td>
+                  {state.selectedSlot === "ALL" && (
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">
+                      {appointment.slots.slot_spec}
+                    </td>
                   )}
                   {state.selectedSlot !== 'ALL' && (
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -504,12 +531,22 @@ function Appointments() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
-                {state.selectedSlot === 'ALL' && (
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Slot</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Date
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Time
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Name
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Phone
+                </th>
+                {state.selectedSlot === "ALL" && (
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Slot
+                  </th>
                 )}
                 {state.selectedSlot !== 'ALL' && (
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>

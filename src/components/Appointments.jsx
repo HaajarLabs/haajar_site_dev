@@ -61,6 +61,7 @@ const initialState = {
   selectedDate: Cookies.get("selectedDate") || getTodayFormatted(),
   canStart: false,
   start: false,
+  startStatus: {},
   isLoading: true,
   doctorSlotSpecs: [],
   error: null,
@@ -89,10 +90,10 @@ function reducer(state, action) {
       return { ...state, selectedSlot: action.payload };
     case "SET_SELECTED_DATE":
       return { ...state, selectedDate: action.payload };
-    case "SET_CAN_START":
-      return { ...state, canStart: action.payload };
-    case "SET_START":
-      return { ...state, start: action.payload };
+      case "SET_CAN_START":
+        return { ...state, canStart: action.payload };
+      case "SET_START":
+        return { ...state, start: action.payload };
     case "SET_LOADING":
       return { ...state, isLoading: action.payload };
     case "UPDATE_APPOINTMENT":
@@ -132,6 +133,14 @@ function reducer(state, action) {
       return { ...state, doctorSlotSpecs: action.payload };
     case "SET_ERROR":
       return { ...state, error: action.payload };
+    case "SET_START_STATUS":
+        return {
+          ...state,
+          startStatus: {
+            ...state.startStatus,
+            [action.payload.slot]: action.payload.status,
+          },
+        };
     default:
       return state;
   }
@@ -339,8 +348,11 @@ function Appointments() {
   }, [state.allAppointments, state.selectedSlot, state.selectedDate]);
 
   const handleInputChange = useCallback(
-    async (appointmentId, currentVisitStatus, name, time) => {
+    async (appointmentId, currentVisitStatus, name, time, slot,slot_id) => {
       try {
+        console.log("slot", slot);
+        console.log("appointmentId", appointmentId);
+        console.log("slot_id", slot_id);
         const updatedStatus = !currentVisitStatus;
         const { error } = await supabase
           .from("appointments")
@@ -355,22 +367,26 @@ function Appointments() {
         });
         const user = (await supabase.auth.getUser()).data.user.id;
         const today = getTodayFormatted();
+
+        console.log(user, appointmentId, parseDateForDB(today), slot,slot_id);
+
         // Make the API call
         const messageData = {
           client_id: user,
-          slot_id: appointmentId,
+          slot_id: slot_id,
           slot_date: parseDateForDB(today),
+          slot_spec: slot,
         };
-        const response = await fetch(
-          "https://message-send.azurewebsites.net/update_check_slots",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(messageData),
-          }
-        );
+
+        console.log("Sending API request with data:", messageData); // Debug log
+
+        const response = await fetch('/api/update_check_slots', {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(messageData),
+        });
         console.log("response", response);
         toast.success(`${name}'s appointment at ${time} was updated`);
       } catch (error) {
@@ -381,46 +397,70 @@ function Appointments() {
     []
   );
 
-  const handlestart = useCallback(async () => {
-    if (state.canStart) return;
 
+  // const compareTimes = async (startTime, currentTime) => {
+  //   const [startHours, startMinutes] = startTime.split(':').map(Number);
+  //   const [currentHours, currentMinutes] = currentTime.split(':').map(Number);
+  
+  //   const startTimeInMinutes = startHours * 60 + startMinutes;
+  //   const currentTimeInMinutes = currentHours * 60 + currentMinutes;
+  
+  //   return startTimeInMinutes - currentTimeInMinutes;
+  // };
+  
+  const handleStart = useCallback(async (slot) => {
+    console.log("handleStart called for slot:", slot); // Debug log
+    
     dispatch({ type: "SET_LOADING", payload: true });
     try {
       const {
         data: { user },
       } = await supabase.auth.getUser();
+      
       if (user) {
-        // Update the profile
-        const { error: profileError } = await supabase
-          .from("profiles")
-          .update({ can_start: false, start_status: true })
-          .eq("id", user.id);
-
-        if (profileError) throw profileError;
-
-        dispatch({ type: "SET_CAN_START", payload: false });
-        dispatch({ type: "SET_START", payload: true });
-
-        // Find the next appointment
+        // Find the next appointment for the specific slot
         const today = getTodayFormatted();
+        console.log("Checking appointments for date:", today); // Debug log
+        
         const nextAppointment = state.allAppointments
-          .filter((app) => app.date === today)
+          .filter((app) => {
+            console.log("Filtering appointment:", app); // Debug log
+            return app.date === today && app.slots.slot_spec === slot;
+          })
           .sort((a, b) => a.token - b.token)[0];
-
+  
+        console.log("Next appointment found:", nextAppointment); // Debug log
+  
         if (!nextAppointment) {
-          toast.warning("No appointments found for today");
+          toast.warning(`No appointments found for today in ${slot} slot`);
           return;
         }
-
-        // Make the API call
+  
+        // Get current time
+        const currentDate = new Date();
+        const currentTime = `${currentDate.getHours()}:${currentDate.getMinutes()}:${currentDate.getSeconds()}`;
+        
+        // Get start time from the next appointment
+        const appointmentStartTime = nextAppointment.slots.slot_start_time;
+        
+        console.log("Current time:", currentTime);
+        console.log("Appointment start time:", appointmentStartTime);
+  
+        // Update local state before API call
+        dispatch({ type: "SET_START_STATUS", payload: { slot, status: true }});
+        dispatch({ type: "SET_CAN_START", payload: false });
+        dispatch({ type: "SET_START", payload: true });
+  
+        // Make the API call to Azure
         const messageData = {
           client_id: user.id,
           slot_date: parseDateForDB(today),
+          slot_spec: slot,
         };
-
-        const response = await fetch(
-          "https://message-send.azurewebsites.net/start_find_check_slots",
-          {
+        
+        console.log("Sending API request with data:", messageData); // Debug log
+  
+        const response = await fetch('/api/start_find_check_slots', {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -428,22 +468,66 @@ function Appointments() {
             body: JSON.stringify(messageData),
           }
         );
-
+  
+        console.log("API Response received:", response); // Debug log
+  
+        const responseData = await response.json();
+        console.log("Response data:", responseData);
+  
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
-
+  
         toast.success(
-          `Started appointments for today. Notified client for appointment at ${nextAppointment.appTime}`
+          `Notifications started successfully for ${slot} slot at ${appointmentStartTime}`
         );
       }
     } catch (error) {
-      console.error("Error starting appointment:", error);
-      toast.error("Failed to start appointment");
+      console.error("Error details:", error); // Enhanced error logging
+      toast.error(`Failed to start notifications for ${slot}: ${error.message}`);
+      
+      // Reset states on error
+      dispatch({ type: "SET_START_STATUS", payload: { slot, status: false }});
+      dispatch({ type: "SET_CAN_START", payload: true });
+      dispatch({ type: "SET_START", payload: false });
     } finally {
       dispatch({ type: "SET_LOADING", payload: false });
     }
-  }, [state.canStart, state.allAppointments]);
+  }, [state.allAppointments]);
+  
+  const StartNowButton = useCallback(({ slot }) => {
+    const isLoading = state.isLoading;
+    const hasStarted = state.startStatus[slot];
+    
+    console.log("Button states:", { // Debug log
+      isLoading,
+      hasStarted,
+      slot,
+      startStatus: state.startStatus
+    });
+  
+    return (
+      <button
+        onClick={() => {
+          console.log("Button clicked for slot:", slot); // Debug log
+          handleStart(slot);
+        }}
+        disabled={isLoading || hasStarted}
+        className={`${
+          isLoading || hasStarted
+            ? "bg-rose-300"
+            : "bg-rose-500 hover:bg-rose-600"
+        } text-white p-2 rounded 
+        lg:w-32 lg:h-10 lg:text-base lg:font-semibold lg:tracking-wider lg:leading-3 
+        xs:w-24 xs:h-9 xs:text-xs xs:p-1 xs:rounded xs:ml-2 
+        xs:font-semibold xs:tracking-wider xs:leading-3 xs:uppercase
+        transition-colors duration-200`}
+      >
+        {isLoading ? "Starting..." : hasStarted ? "Started" : "Start Now"}
+      </button>
+    );
+  }, [state.isLoading, state.startStatus, handleStart]);  
+
 
   const renderTabs = useCallback(() => {
     return (
@@ -497,23 +581,10 @@ function Appointments() {
 
       <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
         {renderTabs()}
-
+        {state.appointments[state.selectedSlot]?.length > 0 && (
+          <StartNowButton slot={state.selectedSlot} />
+        )}  
         <div className="w-auto h-auto sm:w-auto">
-          {/* {console.log("canStart:", state.canStart, "allAppointments:", state.allAppointments.length)} */}
-          {state.allAppointments.length > 0 && (
-            <button
-              onClick={handlestart}
-              disabled={state.isLoading}
-              className={`${
-                state.isLoading ? "bg-rose-300" : "bg-rose-500"
-              } group-hover:bg-rose-300 text-white p-2 mr-2 rounded  
-    lg:w-32 lg:h-10 lg:text-base lg:font-semibold lg:tracking-wider lg:leading-3 
-     xs:w-12 ss:h-10 xs:h-9 xs:text-xs xs:p-1 xs:rounded xs:mr-2 xs:ml-2 
-     xs:text-white xs:font-semibold xs:tracking-wider xs:leading-3 xs:uppercase`}
-            >
-              {state.isLoading ? "Processing..." : "Start now"}
-            </button>
-          )}
           <DateSelector
             value={state.selectedDate}
             onChange={handleDateSelect}
@@ -584,7 +655,9 @@ function Appointments() {
                             appointment.appointment_id,
                             appointment.visit_status,
                             appointment.name,
-                            appointment.appTime
+                            appointment.appTime,
+                            appointment.slots.slot_spec,
+                            appointment.slot_id
                           )
                         }
                       >

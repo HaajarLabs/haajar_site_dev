@@ -339,12 +339,17 @@ function Appointments() {
   }, []);
 
   const filteredAppointments = useMemo(() => {
-    return state.allAppointments.filter(
+    const filtered = state.allAppointments.filter(
       (app) =>
         (state.selectedSlot === "ALL" ||
           app.slots.slot_spec === state.selectedSlot) &&
         (!state.selectedDate || app.date === state.selectedDate)
     );
+    return filtered.sort((a, b) => {
+      const timeA = new Date(`1970/01/01 ${a.slots.slot_start_time}`).getTime();
+      const timeB = new Date(`1970/01/01 ${b.slots.slot_start_time}`).getTime();
+      return timeA - timeB;
+    });
   }, [state.allAppointments, state.selectedSlot, state.selectedDate]);
 
   const handleInputChange = useCallback(

@@ -385,7 +385,7 @@ function Appointments() {
 
         console.log("Sending API request with data:", messageData); // Debug log
 
-        const response = await fetch("https://message-send.azurewebsites.net/update_check_slots", {
+        const response =  await fetch("https://message-send.azurewebsites.net/update_check_slots",  {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -464,8 +464,8 @@ function Appointments() {
         };
         
         console.log("Sending API request with data:", messageData); // Debug log
-  
-        const response = await fetch("https://message-send.azurewebsites.net/start_find_check_slots", {
+ 
+        const response =  await fetch("https://message-send.azurewebsites.net/start_find_check_slots",{
             method: "POST",
             headers: {
               "Content-Type": "application/json",

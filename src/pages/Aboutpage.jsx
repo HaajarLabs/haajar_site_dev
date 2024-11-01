@@ -5,7 +5,7 @@ import Footer from '../components/Footer';
 import goutham from "../assets/goutham.png";
 import alfred from "../assets/alfred.png";
 import athul from "../assets/athul.png";
-import james from "../assets/james.png";
+// import james from "../assets/james.png";
 import Social from '../components/Social';
 
 const Aboutpage = () => {

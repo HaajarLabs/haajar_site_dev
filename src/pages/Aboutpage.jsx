@@ -5,6 +5,7 @@ import Footer from '../components/Footer';
 import goutham from "../assets/goutham.png";
 import alfred from "../assets/alfred.png";
 import athul from "../assets/athul.png";
+// import james from "../assets/james.png";
 import Social from '../components/Social';
 
 const Aboutpage = () => {
@@ -56,6 +57,14 @@ const Aboutpage = () => {
             </div>
             <img src={athul} className='group-hover:scale-125 duration-500 absolute -bottom-0.5 right-0 w- h-48 z-10 -my-' alt="athul" />
           </div>
+          {/* <div className="duration-300 hover:-rotate-12 -rotate-0 group border-rose-900 border-4 overflow-hidden rounded-2xl relative h-52 w-72 bg-rose-800 p-5 flex flex-col items-start gap-5">
+            <div className="text-gray-50">
+              <span className="font-bold text-3xl">James <br/>Joseph K</span>
+              <p className="text-xs">james.jk1903@gmail.com</p>
+              <Social linkedin={"https://www.linkedin.com/in/james-joseph-k-83568122b/"} whatsapp={"8714441495"} github={"https://github.com/Jamie-19"} top={"10"} />
+            </div>
+            <img src={james} className='group-hover:scale-125 duration-500 absolute -bottom-0.5 right-0 w- h-48 z-10 -my-' alt="james" />
+          </div> */}
         </div>
       </div>
       <Footer />

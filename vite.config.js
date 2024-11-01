@@ -6,15 +6,15 @@ export default defineConfig(({ command, mode }) => {
     const env = loadEnv(mode, process.cwd(), '');
     return {
       plugins: [react()],
-        server: {
-            proxy: {
-            '/api': {
-            target: 'https://message-send.azurewebsites.net',
-            changeOrigin: true,
-            rewrite: (path) => path.replace(/^\/api/, ''),
-                },
-            },
-        },
+        // server: {
+        //     proxy: {
+        //     '/api': {
+        //     target: 'https://message-send.azurewebsites.net',
+        //     changeOrigin: true,
+        //     rewrite: (path) => path.replace(/^\/api/, ''),
+        //         },
+        //     },
+        // },
         define: {
             'process.env.SUPABASE_URL': JSON.stringify(env.SUPABASE_URL),
             'process.env.SUPABASE_KEY': JSON.stringify(env.SUPABASE_KEY),
